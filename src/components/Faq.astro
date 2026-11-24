@@ -1,0 +1,149 @@
+---
+const faqs = [
+  {
+    q: 'What does BatchRx actually do?',
+    a: 'BatchRx reconciles the medication you purchase from wholesalers against the claims you bill to each PBM, flags discrepancies like shortages and aberrant claims, and organizes the documents auditors request. When an audit arrives, a dedicated BatchRx specialist helps you through it one-on-one.',
+  },
+  {
+    q: 'Which pharmacy management systems do you support?',
+    a: 'BatchRx works with all major PMS systems, including PrimeRx, Pioneer, Datascan, DigitalRx, BestRx and Liberty. Not sure about yours? Ask during your demo.',
+  },
+  {
+    q: 'Which wholesalers do you work with?',
+    a: 'All primary and secondary wholesalers, including Kinray, McKesson, AmerisourceBergen, Real Value, TopRx, Alpine Health, AXIA, Smart Source, CityMed, DrugZone, KeySource, Masters, Smith Drugs, Parmed and Akron.',
+  },
+  {
+    q: 'What types of audits do you help with?',
+    a: 'Desktop, onsite, CMS and investigative audits, plus the inventory (invoice) reconciliation PBMs use to find shortages. One-on-one assistance with every audit is included in your plan.',
+  },
+  {
+    q: 'How much does it cost?',
+    a: 'One plan: $350 per month. It includes every report, every audit tool and dedicated one-on-one audit assistance. Billed monthly, no setup fees, cancel anytime.',
+  },
+  {
+    q: 'Is my pharmacy’s data secure?',
+    a: 'Yes. BatchRx is HIPAA compliant and built to protect patient health information end to end.',
+  },
+  {
+    q: 'I own several pharmacies. Can I manage them together?',
+    a: 'Yes. Multi-store owners can oversee every location’s reports and audits from one screen.',
+  },
+  {
+    q: 'Where do you operate?',
+    a: 'BatchRx serves independent and multi-store pharmacies in all 50 states.',
+  },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<section class="section faq" id="faq" aria-labelledby="faq-title">
+  <div class="container grid">
+    <div class="section-head reveal">
+      <span class="eyebrow">FAQ</span>
+      <h2 id="faq-title" class="h2">Questions, <span class="serif">answered</span></h2>
+      <p class="lead">Can't find what you're looking for? Request a demo and we'll walk you through it.</p>
+      <a href="#demo" class="btn btn--ghost">Talk to our team <span class="arrow" aria-hidden="true">→</span></a>
+    </div>
+    <div class="list reveal">
+      {
+        faqs.map((f, i) => (
+          <details name="faq" open={i === 0}>
+            <summary>
+              {f.q}
+              <span class="plus" aria-hidden="true" />
+            </summary>
+            <p>{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: start;
+  }
+  .section-head {
+    justify-items: start;
+    position: sticky;
+    top: 112px;
+  }
+  .list {
+    border-top: 1px solid var(--line);
+  }
+  details {
+    border-bottom: 1px solid var(--line);
+  }
+  summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 22px 0;
+    font-size: 17px;
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary:hover {
+    color: var(--green-800);
+  }
+  .plus {
+    flex: none;
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--mint-100);
+  }
+  .plus::before,
+  .plus::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 12px;
+    height: 1.6px;
+    background: var(--green-800);
+    transform: translate(-50%, -50%);
+    transition: transform 0.25s;
+  }
+  .plus::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  details[open] .plus::after {
+    transform: translate(-50%, -50%) rotate(0);
+  }
+  details p {
+    padding: 0 48px 24px 0;
+    color: var(--ink-2);
+  }
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .section-head {
+      position: static;
+    }
+    details p {
+      padding-right: 0;
+    }
+  }
+</style>

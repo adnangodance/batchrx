@@ -1,0 +1,564 @@
+---
+import Icon from './Icon.astro';
+import { pmsSystems, wholesalers } from '../site';
+
+const todo = [
+  { t: 'Audit letter reviewed with your specialist', s: 'done' },
+  { t: '26 claims pulled from Billed report', s: 'done' },
+  { t: 'Prescription images & signatures uploaded', s: 'done' },
+  { t: 'Invoices matched to dispensed quantities', s: 'now' },
+  { t: 'Response submitted to PBM', s: 'next' },
+];
+const ws = wholesalers.slice(0, 5);
+---
+
+<section class="sec feats" id="product" aria-labelledby="feats-h">
+  <div class="wrap">
+    <div class="sec-head sec-head--c">
+      <span class="eyebrow rv"><Icon name="sparkle" /> The platform</span>
+      <h2 id="feats-h" class="h2 rv" style="--d:.05s">One platform for every part of the audit.</h2>
+      <p class="lead rv" style="--d:.1s">
+        From the first file you upload to the final response you submit, BatchRx replaces spreadsheets, shoeboxes and
+        guesswork with one clear system.
+      </p>
+    </div>
+
+    <!-- Row 1: Reconcile -->
+    <article class="row">
+      <div class="row__copy rv">
+        <span class="tag"><Icon name="box" size={16} /> Inventory reconciliation</span>
+        <h3 class="h3">Know your shortages before the PBM does.</h3>
+        <p>
+          PBM invoice audits compare what you billed against what your wholesalers say you bought. BatchRx runs that same
+          comparison first, NDC by NDC and payer by payer, so you can fix gaps while it still matters.
+        </p>
+        <ul class="checks">
+          <li>Purchased vs. billed for every NDC</li>
+          <li>Shortages broken out by PBM</li>
+          <li>Supplier & tag management, review status on every line</li>
+        </ul>
+      </div>
+      <div class="row__vis rv" style="--d:.08s" aria-hidden="true">
+        <div class="card">
+          <div class="card__head">
+            <b>Shortages by NDC</b>
+            <span class="chip chip--bad">3 need review</span>
+          </div>
+          <div class="cmp">
+            {
+              [
+                ['Lisinopril 10 MG Tab', 120, 150],
+                ['Gabapentin 300 MG Cap', 140, 170],
+                ['Omeprazole 20 MG Cap', 90, 110],
+                ['Atorvastatin 20 MG Tab', 240, 240],
+              ].map(([d, a, b]) => {
+                const pa = ((a as number) / 260) * 100;
+                const pb = ((b as number) / 260) * 100;
+                return (
+                  <div class="cmp__row">
+                    <div class="cmp__top">
+                      <span>{d}</span>
+                      {(a as number) < (b as number) ? (
+                        <span class="chip chip--bad tnum">{(a as number) - (b as number)} units</span>
+                      ) : (
+                        <span class="chip chip--ok">Matched</span>
+                      )}
+                    </div>
+                    <div class="bars">
+                      <span class="bar bar--a" style={`--w:${pa}%`}>
+                        <em>Bought {a}</em>
+                      </span>
+                      <span class="bar bar--b" style={`--w:${pb}%`}>
+                        <em>Billed {b}</em>
+                      </span>
+                    </div>
+                  </div>
+                );
+              })
+            }
+          </div>
+          <div class="legend">
+            <span><i class="lg-a"></i>Purchased</span>
+            <span><i class="lg-b"></i>Billed to PBMs</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Row 2: Audit workspace -->
+    <article class="row row--flip">
+      <div class="row__copy rv">
+        <span class="tag"><Icon name="folder" size={16} /> Audit workspace</span>
+        <h3 class="h3">Every audit organized, tracked and on time.</h3>
+        <p>
+          When a letter arrives, BatchRx turns it into a clear checklist. Pull claims, store prescription images,
+          signatures and copay records, and work through each item with your specialist until it's submitted.
+        </p>
+        <ul class="checks">
+          <li>Desktop, onsite, CMS and investigative audits</li>
+          <li>Front & back of prescription, signature and copay records</li>
+          <li>File management & document storage, organized by audit</li>
+        </ul>
+      </div>
+      <div class="row__vis rv" style="--d:.08s" aria-hidden="true">
+        <div class="card">
+          <div class="card__head">
+            <div>
+              <small class="mono">Desktop audit · Express Scripts</small>
+              <b>26 prescriptions requested</b>
+            </div>
+            <span class="chip chip--warn"><Icon name="clock" size={13} /> Due in 9 days</span>
+          </div>
+          <div class="progress"><span style="--w:72%"></span></div>
+          <ol class="todo">
+            {
+              todo.map((x) => (
+                <li class={x.s}>
+                  <span class="box">{x.s === 'done' && <Icon name="check" size={12} stroke={3} />}</span>
+                  {x.t}
+                </li>
+              ))
+            }
+          </ol>
+          <div class="msg">
+            <span class="msg__av">AS</span>
+            <div>
+              <b>Your audit specialist <span>· 2m ago</span></b>
+              <p>Kinray and McKesson invoices are matched. Let's review the last two items together tomorrow at 10.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Row 3: Integrations -->
+    <article class="row">
+      <div class="row__copy rv">
+        <span class="tag"><Icon name="truck" size={16} /> Integrations</span>
+        <h3 class="h3">Works with the systems you already use.</h3>
+        <p>
+          No new workflow, no IT project. Upload files from your pharmacy management system and from every primary and
+          secondary wholesaler, and BatchRx does the rest.
+        </p>
+        <div class="logos">
+          <div>
+            <small>Pharmacy systems</small>
+            <ul>{pmsSystems.map((p) => <li>{p}</li>)}</ul>
+          </div>
+          <div>
+            <small>Wholesalers</small>
+            <ul>
+              {wholesalers.slice(0, 8).map((p) => <li>{p}</li>)}
+              <li class="more">+ {wholesalers.length - 8} more</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="row__vis rv" style="--d:.08s" aria-hidden="true">
+        <div class="flow">
+          <div class="flow__col">
+            <small>Your PMS</small>
+            {pmsSystems.slice(0, 3).map((p, i) => <span class:list={['node', { on: i === 0 }]}>{p}</span>)}
+          </div>
+          <div class="flow__hub">
+            <svg class="wires" viewBox="0 0 200 240" preserveAspectRatio="none">
+              <path d="M0 50 C 80 50, 80 120, 100 120" />
+              <path d="M0 120 L 100 120" />
+              <path d="M0 190 C 80 190, 80 120, 100 120" />
+              <path d="M200 30 C 120 30, 120 120, 100 120" />
+              <path d="M200 75 C 130 75, 130 120, 100 120" />
+              <path d="M200 120 L 100 120" />
+              <path d="M200 165 C 130 165, 130 120, 100 120" />
+              <path d="M200 210 C 120 210, 120 120, 100 120" />
+            </svg>
+            <span class="hub">
+              <svg width="26" height="26" viewBox="0 0 27.7279 27.7279" fill="none"><path d="M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z" fill="#fff"></path></svg>
+            </span>
+          </div>
+          <div class="flow__col">
+            <small>Your wholesalers</small>
+            {ws.map((p) => <span class="node">{p}</span>)}
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<style>
+  .feats {
+    background: var(--bg-soft);
+    border-block: 1px solid var(--line);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1.08fr;
+    gap: clamp(40px, 6vw, 96px);
+    align-items: center;
+  }
+  .row + .row {
+    margin-top: clamp(80px, 10vw, 136px);
+  }
+  .row--flip .row__copy {
+    order: 2;
+  }
+  .row__copy {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+  .row__copy > p {
+    font-size: 17px;
+    color: var(--ink-3);
+    letter-spacing: -0.011em;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--line);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--b-700);
+  }
+  .checks {
+    margin-top: 6px;
+  }
+
+  .row__vis {
+    position: relative;
+  }
+  .row__vis::before {
+    content: '';
+    position: absolute;
+    inset: -24px;
+    border-radius: 28px;
+    background: radial-gradient(closest-side, rgba(43, 117, 96, 0.14), transparent);
+    z-index: 0;
+  }
+  .card {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 16px;
+    padding: 22px;
+    border-radius: var(--r-lg);
+    background: #fff;
+    box-shadow: var(--sh-lg);
+    font-size: 13.5px;
+  }
+  .card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .card__head b {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  .card__head small {
+    font-size: 11.5px;
+    color: var(--ink-3);
+  }
+
+  .cmp {
+    display: grid;
+    gap: 16px;
+  }
+  .cmp__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .bars {
+    display: grid;
+    gap: 4px;
+  }
+  .bar {
+    position: relative;
+    display: block;
+    height: 20px;
+    width: var(--w);
+    border-radius: 5px;
+  }
+  .bar em {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .bar--a {
+    background: var(--b-100);
+    color: var(--b-900);
+  }
+  .bar--b {
+    background: var(--b-800);
+    color: #fff;
+  }
+  .legend {
+    display: flex;
+    gap: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend i {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+  .lg-a {
+    background: var(--b-100);
+  }
+  .lg-b {
+    background: var(--b-800);
+  }
+
+  .progress {
+    height: 6px;
+    border-radius: 4px;
+    background: var(--bg-mute);
+    overflow: hidden;
+  }
+  .progress span {
+    display: block;
+    height: 100%;
+    width: var(--w);
+    border-radius: inherit;
+    background: var(--b-600);
+  }
+  .todo {
+    display: grid;
+    gap: 2px;
+  }
+  .todo li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 9px;
+    color: var(--ink-4);
+  }
+  .todo .done {
+    color: var(--ink-2);
+  }
+  .todo .now {
+    background: var(--bg-soft);
+    color: var(--ink);
+    font-weight: 500;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .box {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--line-2);
+  }
+  .done .box {
+    background: var(--b-800);
+    border-color: var(--b-800);
+    color: #fff;
+  }
+  .now .box {
+    border-color: var(--b-600);
+    box-shadow: 0 0 0 3px var(--b-50);
+  }
+  .msg {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--b-900);
+    color: #fff;
+  }
+  .msg b {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .msg b span {
+    font-weight: 400;
+    color: var(--b-200);
+  }
+  .msg p {
+    font-size: 13px;
+    color: var(--b-100);
+    line-height: 1.45;
+    margin-top: 2px;
+  }
+  .msg__av {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--b-100);
+    color: var(--b-900);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .logos {
+    display: grid;
+    gap: 18px;
+    margin-top: 4px;
+    width: 100%;
+  }
+  .logos small {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .logos ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .logos li {
+    padding: 5px 11px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--line);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+  .logos .more {
+    background: transparent;
+    box-shadow: 0 0 0 1px var(--line) inset;
+    color: var(--ink-4);
+  }
+
+  .flow {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 160px 1fr;
+    align-items: center;
+    padding: 28px;
+    border-radius: var(--r-lg);
+    background: #fff;
+    box-shadow: var(--sh-lg);
+  }
+  .flow__col {
+    display: grid;
+    gap: 8px;
+  }
+  .flow__col small {
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-4);
+    margin-bottom: 4px;
+  }
+  .node {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    font-size: 13.5px;
+    font-weight: 500;
+    background: #fff;
+  }
+  .node::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ok);
+  }
+  .flow__hub {
+    position: relative;
+    height: 240px;
+    display: grid;
+    place-items: center;
+  }
+  .wires {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .wires path {
+    fill: none;
+    stroke: var(--b-200);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 5;
+    vector-effect: non-scaling-stroke;
+    animation: dash 1.6s linear infinite;
+  }
+  @keyframes dash {
+    to {
+      stroke-dashoffset: -18;
+    }
+  }
+  .hub {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: var(--b-800);
+    box-shadow:
+      0 0 0 8px var(--b-50),
+      0 12px 24px -8px rgba(7, 24, 19, 0.5);
+  }
+
+  @media (max-width: 960px) {
+    .row {
+      grid-template-columns: 1fr;
+    }
+    .row--flip .row__copy {
+      order: 0;
+    }
+  }
+  @media (max-width: 520px) {
+    .flow {
+      grid-template-columns: 1fr 72px 1fr;
+      padding: 16px;
+    }
+    .node {
+      font-size: 12px;
+      padding: 0 8px;
+    }
+    .hub {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+    }
+    .card {
+      padding: 16px;
+    }
+  }
+</style>

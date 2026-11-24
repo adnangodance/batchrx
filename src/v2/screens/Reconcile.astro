@@ -1,0 +1,151 @@
+---
+const payers = [
+  { p: 'Express Scripts', v: 86, n: 14 },
+  { p: 'CVS Caremark', v: 64, n: 9 },
+  { p: 'OptumRx', v: 52, n: 7 },
+  { p: 'Prime', v: 22, n: 2 },
+];
+const rows = [
+  ['Lisinopril 10 MG Tab', 12, 15],
+  ['Gabapentin 300 MG Cap', 14, 17],
+  ['Omeprazole 20 MG Cap', 10, 12],
+];
+---
+
+<div class="scr" aria-hidden="true">
+  <div class="scr__head">
+    <b>Inventory report · October</b>
+    <span class="chip chip--bad">3 need review</span>
+  </div>
+  <div class="kpi">
+    <div><small>Purchased</small><b>1,284</b></div>
+    <div><small>Billed</small><b>1,302</b></div>
+    <div class="bad"><small>Shortage</small><b>−18</b></div>
+  </div>
+  <div class="payers">
+    <small class="mono lbl">Shortage units by PBM</small>
+    {
+      payers.map((x) => (
+        <div class="pb">
+          <span>{x.p}</span>
+          <span class="pb__t">
+            <span style={`width:${x.v}%`} />
+          </span>
+          <span class="mono">{x.n}</span>
+        </div>
+      ))
+    }
+  </div>
+  <ul class="rows">
+    {
+      rows.map(([d, a, b]) => (
+        <li>
+          <span>{d}</span>
+          <span class="mono">
+            {a} → {b}
+          </span>
+          <span class="chip chip--bad">{(a as number) - (b as number)}</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .scr {
+    display: grid;
+    gap: 14px;
+  }
+  .scr__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+  }
+  .scr__head b {
+    font-weight: 600;
+  }
+  .kpi {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .kpi div {
+    display: grid;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #fff;
+  }
+  .kpi small,
+  .lbl {
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .kpi b {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .kpi .bad {
+    background: var(--red-bg);
+    border-color: transparent;
+    color: var(--red);
+  }
+  .payers {
+    display: grid;
+    gap: 9px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #fafaf7;
+    border: 1px solid var(--line);
+  }
+  .lbl {
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .pb {
+    display: grid;
+    grid-template-columns: 110px 1fr 22px;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+  }
+  .pb .mono {
+    text-align: right;
+    color: var(--red);
+  }
+  .pb__t {
+    height: 8px;
+    border-radius: 9px;
+    background: #ecebe4;
+    overflow: hidden;
+  }
+  .pb__t span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--g-800);
+  }
+  .rows {
+    display: grid;
+    gap: 6px;
+  }
+  .rows li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #fff7f4;
+    border: 1px solid #f3d4cb;
+    font-size: 13px;
+  }
+  .rows li > :first-child {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>

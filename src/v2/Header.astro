@@ -1,0 +1,222 @@
+---
+import Logo from '../components/Logo.astro';
+import { site } from '../site';
+const links = [
+  { href: '#how', label: 'How it works' },
+  { href: '#product', label: 'Product' },
+  { href: '#support', label: 'Audit support' },
+  { href: '#pricing', label: 'Pricing' },
+  { href: '#faq', label: 'FAQ' },
+];
+---
+
+<div class="bar">
+  <div class="wrap bar__in">
+    <span class="bar__tag mono">Simple pricing</span>
+    <span>One plan, <b>$350/mo</b>, one-on-one support with every audit included.</span>
+    <a href="#pricing" class="bar__link">See what's included →</a>
+  </div>
+</div>
+
+<header class="hd" data-hd>
+  <div class="wrap hd__in">
+    <a href="/" class="hd__logo" aria-label="BatchRx home"><Logo /></a>
+    <nav class="hd__nav" aria-label="Primary">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+    <div class="hd__cta">
+      <a href={site.loginUrl} class="hd__login">Log in</a>
+      <a href="#demo" class="btn btn--dark btn--sm">Book a demo</a>
+      <button class="hd__burger" aria-label="Open menu" aria-expanded="false" aria-controls="m-menu" data-burger>
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="hd__menu" id="m-menu" hidden>
+    <div class="wrap">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+      <a href={site.loginUrl}>Log in</a>
+      <a href="#demo" class="btn btn--dark">Book a demo</a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const hd = document.querySelector<HTMLElement>('[data-hd]')!;
+  const b = hd.querySelector<HTMLButtonElement>('[data-burger]')!;
+  const m = hd.querySelector<HTMLElement>('#m-menu')!;
+  const onScroll = () => hd.classList.toggle('is-stuck', scrollY > 40);
+  onScroll();
+  addEventListener('scroll', onScroll, { passive: true });
+  const set = (open: boolean) => {
+    m.hidden = !open;
+    b.setAttribute('aria-expanded', String(open));
+    b.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    hd.classList.toggle('is-open', open);
+  };
+  b.addEventListener('click', () => set(m.hasAttribute('hidden')));
+  m.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)));
+</script>
+
+<style>
+  .bar {
+    background: var(--g-900);
+    color: var(--mint);
+    font-size: 13.5px;
+  }
+  .bar__in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 44px;
+    padding-block: 8px;
+    text-align: center;
+    flex-wrap: wrap;
+  }
+  .bar b {
+    color: #fff;
+    font-weight: 500;
+  }
+  .bar__tag {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--lime);
+    color: var(--g-950);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .bar__link {
+    color: var(--lime);
+    font-weight: 500;
+  }
+  .bar__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .hd {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    transition:
+      background-color 0.3s,
+      box-shadow 0.3s,
+      border-color 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+  .hd.is-stuck,
+  .hd.is-open {
+    background: rgba(244, 242, 235, 0.82);
+    backdrop-filter: saturate(1.5) blur(16px);
+    -webkit-backdrop-filter: saturate(1.5) blur(16px);
+    border-color: var(--line);
+  }
+  .hd__in {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 76px;
+  }
+  .hd__nav {
+    display: flex;
+    gap: 2px;
+    margin-inline: auto;
+    padding: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid var(--line);
+  }
+  .hd__nav a {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    color: var(--ink-2);
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .hd__nav a:hover {
+    background: #fff;
+    color: var(--ink);
+  }
+  .hd__cta {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .hd__login {
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+  .hd__login:hover {
+    color: var(--ink);
+  }
+  .hd__burger {
+    display: none;
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--line-2);
+    background: transparent;
+    cursor: pointer;
+  }
+  .hd__burger span {
+    position: absolute;
+    left: 13px;
+    right: 13px;
+    height: 1.6px;
+    background: var(--ink);
+    transition: transform 0.25s var(--ease);
+  }
+  .hd__burger span:first-child {
+    top: 17px;
+  }
+  .hd__burger span:last-child {
+    top: 23px;
+  }
+  .is-open .hd__burger span:first-child {
+    transform: translateY(3px) rotate(45deg);
+  }
+  .is-open .hd__burger span:last-child {
+    transform: translateY(-3px) rotate(-45deg);
+  }
+  .hd__menu .wrap {
+    display: grid;
+    padding-block: 8px 24px;
+  }
+  .hd__menu a:not(.btn) {
+    padding: 14px 2px;
+    font-size: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .hd__menu .btn {
+    margin-top: 18px;
+  }
+  @media (max-width: 1020px) {
+    .hd__nav,
+    .hd__login {
+      display: none;
+    }
+    .hd__cta {
+      margin-left: auto;
+      gap: 10px;
+    }
+    .hd__burger {
+      display: block;
+    }
+  }
+  @media (max-width: 560px) {
+    .bar__link {
+      display: none;
+    }
+    .bar__tag {
+      display: none;
+    }
+    .hd__cta .btn {
+      display: none;
+    }
+  }
+</style>

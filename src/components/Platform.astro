@@ -1,0 +1,563 @@
+---
+const tabs = [
+  {
+    id: 'inventory',
+    label: 'Inventory report',
+    title: 'Know exactly where your inventory doesn’t add up',
+    body: 'BatchRx compares every unit you purchased from your wholesalers against every unit you billed, NDC by NDC. Shortages that would trigger an invoice audit show up in red, months before a PBM asks.',
+    points: ['Purchased vs. billed for every NDC', 'Shortages broken out by payer', 'Supplier & tag management', 'Mark items “Need to review” or “Ordered”'],
+  },
+  {
+    id: 'pbm',
+    label: 'PBM report',
+    title: 'See your exposure, payer by payer',
+    body: 'Each PBM audits differently. The PBM report shows what you billed to each payer so you know where risk is concentrated, and where to focus first.',
+    points: ['Billed quantities by PBM', 'Spot the payers driving your risk', 'Built for Caremark, ESI, OptumRx & more'],
+  },
+  {
+    id: 'billed',
+    label: 'Billed report',
+    title: 'Every claim, searchable in seconds',
+    body: 'Pull up any claim in the period by drug, NDC, payer or date. When an auditor asks for a list, you can have it before the call ends.',
+    points: ['Filter by drug, NDC, payer, date', 'Export what auditors ask for', 'BIN number search'],
+  },
+  {
+    id: 'aberrant',
+    label: 'Aberrant report',
+    title: 'Catch the claims auditors look for',
+    body: 'Aberrant dispensing patterns are what put pharmacies on an audit list. BatchRx surfaces the outliers so you can review them on your terms.',
+    points: ['Unusual quantity & frequency patterns', 'BIN number search', 'Review queue with status tags'],
+  },
+  {
+    id: 'controlled',
+    label: 'Controlled substances',
+    title: 'Controlled substance records you can defend',
+    body: 'Track controlled substances end to end, including returns to reverse distributors, so your counts reconcile when someone checks.',
+    points: ['Controlled substance reports', 'Reverse distributor tracking', 'Purchase & dispense reconciliation'],
+  },
+  {
+    id: 'documents',
+    label: 'Document audits',
+    title: 'Every document, ready when it’s requested',
+    body: 'Store prescription images, signatures and copay records in one place, organized by audit. Upload once, find it in seconds.',
+    points: ['Front & back of prescription', 'Signature & copay records', 'File management & document storage'],
+  },
+];
+
+const bars = [
+  { name: 'Express Scripts', v: 82, short: 14 },
+  { name: 'CVS Caremark', v: 68, short: 9 },
+  { name: 'OptumRx', v: 54, short: 11 },
+  { name: 'Prime Therapeutics', v: 31, short: 3 },
+  { name: 'MedImpact', v: 18, short: 1 },
+];
+---
+
+<section class="section platform" id="platform" aria-labelledby="platform-title">
+  <div class="container">
+    <div class="section-head section-head--center reveal">
+      <span class="eyebrow">The platform</span>
+      <h2 id="platform-title" class="h2">One tool to pass <span class="serif">all</span> your pharmacy audits</h2>
+      <p class="lead">Every report you need to stay audit-ready, in one place, without spreadsheets.</p>
+    </div>
+
+    <div class="tabs reveal" data-tabs>
+      <div class="tabs__list" role="tablist" aria-label="BatchRx reports">
+        {
+          tabs.map((t, i) => (
+            <button
+              role="tab"
+              id={`tab-${t.id}`}
+              aria-controls={`panel-${t.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              {t.label}
+            </button>
+          ))
+        }
+      </div>
+
+      {
+        tabs.map((t, i) => (
+          <div class="panel" role="tabpanel" id={`panel-${t.id}`} aria-labelledby={`tab-${t.id}`} hidden={i !== 0}>
+            <div class="panel__copy">
+              <h3>{t.title}</h3>
+              <p>{t.body}</p>
+              <ul class="check-list">
+                {t.points.map((p) => (
+                  <li>{p}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="panel__visual" aria-hidden="true">
+              {t.id === 'inventory' && (
+                <div class="mock">
+                  <div class="mock__head">
+                    <span>Inventory Report</span>
+                    <span class="pill pill--red">3 shortages</span>
+                  </div>
+                  <div class="kpis">
+                    <div><small>Purchased</small><b>1,284</b></div>
+                    <div><small>Billed</small><b>1,302</b></div>
+                    <div class="is-bad"><small>Shortage</small><b>−18</b></div>
+                  </div>
+                  {[
+                    ['Lisinopril 10 MG Tab', 12, 15],
+                    ['Gabapentin 300 MG Cap', 14, 17],
+                    ['Atorvastatin 20 MG Tab', 24, 26],
+                    ['Metformin HCl 500 MG', 18, 18],
+                  ].map(([d, o, b]) => (
+                    <div class="row">
+                      <span>{d}</span>
+                      <span class="mono">{o} → {b}</span>
+                      {(o as number) < (b as number) ? (
+                        <span class="pill pill--red">{(o as number) - (b as number)}</span>
+                      ) : (
+                        <span class="pill pill--green">OK</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {t.id === 'pbm' && (
+                <div class="mock">
+                  <div class="mock__head">
+                    <span>Shortage exposure by PBM</span>
+                    <span class="mono small">Last 90 days</span>
+                  </div>
+                  <div class="bars">
+                    {bars.map((b) => (
+                      <div class="bar">
+                        <span class="bar__name">{b.name}</span>
+                        <span class="bar__track">
+                          <span class="bar__fill" style={`--w:${b.v}%`} />
+                        </span>
+                        <span class="mono bar__n">{b.short}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {t.id === 'billed' && (
+                <div class="mock">
+                  <div class="search">
+                    <span>⌕</span> Atorvastatin 20 MG · Express Scripts · Oct
+                  </div>
+                  {[
+                    ['Rx 4410923', '10/03', '90', 'ESI'],
+                    ['Rx 4411278', '10/09', '30', 'ESI'],
+                    ['Rx 4412051', '10/17', '90', 'ESI'],
+                    ['Rx 4412630', '10/24', '90', 'ESI'],
+                  ].map(([rx, d, q, p]) => (
+                    <div class="row">
+                      <span class="mono">{rx}</span>
+                      <span class="mono small">{d}</span>
+                      <span class="mono">qty {q}</span>
+                      <span class="pill pill--green">{p}</span>
+                    </div>
+                  ))}
+                  <div class="mock__foot">
+                    <span class="small">4 claims · 300 units</span>
+                    <span class="btn-mini">Export CSV</span>
+                  </div>
+                </div>
+              )}
+
+              {t.id === 'aberrant' && (
+                <div class="mock">
+                  <div class="mock__head">
+                    <span>Aberrant claims</span>
+                    <span class="pill pill--amber">5 to review</span>
+                  </div>
+                  <div class="search">
+                    <span>⌕</span> BIN 610014
+                  </div>
+                  {[
+                    ['Early refill pattern', 'Need to review', 'red'],
+                    ['Quantity above typical', 'Need to review', 'red'],
+                    ['High-cost brand, new patient', 'In review', 'amber'],
+                    ['Days supply mismatch', 'Resolved', 'green'],
+                  ].map(([d, s, c]) => (
+                    <div class="row">
+                      <span>{d}</span>
+                      <span class={`pill pill--${c}`}>{s}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {t.id === 'controlled' && (
+                <div class="mock">
+                  <div class="mock__head">
+                    <span>Controlled substances · C-II</span>
+                    <span class="pill pill--green">Reconciled</span>
+                  </div>
+                  {[
+                    ['Opening count', '1,240'],
+                    ['+ Purchased', '600'],
+                    ['− Dispensed', '1,410'],
+                    ['− Returned to reverse distributor', '30'],
+                  ].map(([k, v]) => (
+                    <div class="row">
+                      <span>{k}</span>
+                      <span class="mono">{v}</span>
+                    </div>
+                  ))}
+                  <div class="row row--total">
+                    <span>Expected on hand</span>
+                    <span class="mono">400</span>
+                  </div>
+                </div>
+              )}
+
+              {t.id === 'documents' && (
+                <div class="mock">
+                  <div class="mock__head">
+                    <span>Desktop audit · Rx 3 of 26</span>
+                    <span class="mono small">3/26</span>
+                  </div>
+                  <div class="progress">
+                    <span style="--w:12%" />
+                  </div>
+                  <div class="docs">
+                    {[
+                      ['Front of prescription', true],
+                      ['Back of prescription', true],
+                      ['Signature', true],
+                      ['Copay', false],
+                    ].map(([n, done]) => (
+                      <div class:list={['doc', { 'is-done': done }]}>
+                        <span class="doc__icon">{done ? '✓' : '↑'}</span>
+                        <span>{n}</span>
+                        <small>{done ? 'Uploaded' : 'Upload file'}</small>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const select = (tab: HTMLButtonElement, focus = false) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        const panel = root.querySelector<HTMLElement>('#' + t.getAttribute('aria-controls'))!;
+        panel.hidden = !on;
+      });
+      if (focus) tab.focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t));
+      t.addEventListener('keydown', (e) => {
+        const k = e.key;
+        if (k === 'ArrowRight' || k === 'ArrowDown') select(tabs[(i + 1) % tabs.length], true);
+        else if (k === 'ArrowLeft' || k === 'ArrowUp') select(tabs[(i - 1 + tabs.length) % tabs.length], true);
+        else if (k === 'Home') select(tabs[0], true);
+        else if (k === 'End') select(tabs[tabs.length - 1], true);
+        else return;
+        e.preventDefault();
+      });
+    });
+  });
+</script>
+
+<style>
+  .platform {
+    background: var(--white);
+    border-block: 1px solid var(--line);
+  }
+  .tabs__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px;
+    margin: 0 auto 32px;
+    width: fit-content;
+    max-width: 100%;
+    background: var(--mint-50);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  [role='tab'] {
+    border: 0;
+    background: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      box-shadow 0.2s;
+  }
+  [role='tab']:hover {
+    color: var(--ink);
+  }
+  [role='tab'][aria-selected='true'] {
+    background: var(--white);
+    color: var(--green-800);
+    box-shadow: var(--shadow-sm), 0 0 0 1px var(--line);
+  }
+
+  .panel {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(32px, 6vw, 80px);
+    align-items: center;
+    padding: clamp(24px, 4vw, 48px);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    animation: fade 0.4s ease both;
+  }
+  .panel > * {
+    min-width: 0;
+  }
+  .panel[hidden] {
+    display: none;
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  .panel__copy {
+    display: grid;
+    gap: 18px;
+  }
+  .panel__copy h3 {
+    font-size: clamp(24px, 2.6vw, 32px);
+  }
+  .panel__copy p {
+    color: var(--ink-2);
+  }
+
+  .panel__visual {
+    padding: clamp(16px, 3vw, 32px);
+    border-radius: var(--radius);
+    background:
+      radial-gradient(circle at 80% 0%, rgba(150, 180, 168, 0.35), transparent 60%),
+      var(--mint-100);
+  }
+  .mock {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    padding: 18px;
+    display: grid;
+    gap: 6px;
+    font-size: 13.5px;
+  }
+  .mock__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .small {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    font-weight: 400;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--mint-50);
+  }
+  .row > :first-child {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .row--total {
+    background: var(--green-800);
+    color: var(--white);
+    font-weight: 600;
+  }
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .kpis div {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+  .kpis small {
+    display: block;
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .kpis b {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .kpis .is-bad {
+    background: var(--red-bg);
+    border-color: transparent;
+    color: var(--red-ink);
+  }
+  .bars {
+    display: grid;
+    gap: 12px;
+  }
+  .bar {
+    display: grid;
+    grid-template-columns: 130px 1fr 28px;
+    align-items: center;
+    gap: 12px;
+  }
+  .bar__name {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bar__track {
+    height: 10px;
+    border-radius: 99px;
+    background: var(--mint-50);
+    overflow: hidden;
+  }
+  .bar__fill {
+    display: block;
+    height: 100%;
+    width: var(--w);
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--green-700), var(--green-800));
+    animation: grow 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes grow {
+    from {
+      width: 0;
+    }
+  }
+  .bar__n {
+    text-align: right;
+    color: var(--red-ink);
+  }
+  .search {
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+  .mock__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .btn-mini {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: var(--green-800);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .progress {
+    height: 6px;
+    border-radius: 99px;
+    background: var(--mint-50);
+    margin-bottom: 10px;
+  }
+  .progress span {
+    display: block;
+    height: 100%;
+    width: var(--w);
+    border-radius: inherit;
+    background: var(--green-700);
+  }
+  .docs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .doc {
+    display: grid;
+    gap: 4px;
+    padding: 14px;
+    border: 1px dashed var(--green-300);
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .doc small {
+    font-weight: 400;
+    font-size: 11.5px;
+    color: var(--ink-3);
+  }
+  .doc__icon {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: var(--mint-100);
+    color: var(--green-800);
+    font-size: 13px;
+  }
+  .doc.is-done {
+    border-style: solid;
+    border-color: var(--line);
+    background: var(--mint-50);
+  }
+  .doc.is-done .doc__icon {
+    background: var(--green-800);
+    color: var(--white);
+  }
+
+  @media (max-width: 900px) {
+    .panel {
+      grid-template-columns: 1fr;
+    }
+    .tabs__list {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      justify-content: flex-start;
+      width: auto;
+      scrollbar-width: none;
+    }
+    [role='tab'] {
+      white-space: nowrap;
+    }
+  }
+  @media (max-width: 480px) {
+    .bar {
+      grid-template-columns: 96px 1fr 24px;
+    }
+  }
+</style>

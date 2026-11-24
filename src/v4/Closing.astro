@@ -1,0 +1,528 @@
+---
+import Arrow from './Arrow.astro';
+import Steps from './Steps.astro';
+import { site } from '../site';
+
+const faqs = [
+  {
+    q: 'What does BatchRx actually do?',
+    a: 'BatchRx reconciles the medication you purchase from wholesalers against the claims you bill to each PBM, flags discrepancies like shortages and aberrant claims, and organizes the documents auditors request. When an audit arrives, a dedicated BatchRx specialist helps you through it one-on-one.',
+  },
+  {
+    q: 'Which pharmacy systems and wholesalers do you support?',
+    a: 'All major pharmacy management systems, including PrimeRx, Pioneer, Datascan, DigitalRx, BestRx and Liberty, and all primary and secondary wholesalers, including Kinray, McKesson, AmerisourceBergen, Real Value, TopRx, Alpine Health, AXIA and many more.',
+  },
+  {
+    q: 'What kinds of audits do you help with?',
+    a: 'Desktop, onsite, CMS and investigative audits, plus the inventory (invoice) reconciliation PBMs use to find shortages. One-on-one assistance with every audit is included in your plan.',
+  },
+  {
+    q: 'How much does it cost?',
+    a: 'One plan at $350 per month, with every report, every audit tool and dedicated one-on-one audit assistance. Billed monthly, no setup fees, cancel anytime.',
+  },
+  { q: 'Is my pharmacy’s data secure?', a: 'Yes. BatchRx is HIPAA compliant and built to protect patient health information.' },
+  { q: 'I own several pharmacies. Can I manage them together?', a: 'Yes. Multi-store owners can oversee every location’s reports and audits from one screen.' },
+  { q: 'Where do you operate?', a: 'BatchRx serves independent and multi-store pharmacies in all 50 states.' },
+];
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+const year = new Date().getFullYear();
+---
+
+<section class="faq" id="faq" aria-labelledby="faq-h">
+  <div class="wrap">
+    <div class="faq__grid">
+      <div>
+        <span class="kick rv">FAQ</span>
+        <h2 id="faq-h" class="d2 rv" style="--d:.05s">Questions, answered</h2>
+      </div>
+      <div class="faq__list rv">
+        {
+          faqs.map((f, i) => (
+            <details name="faq" open={i === 0}>
+              <summary>
+                <span class="mono">0{i + 1}</span>
+                <span class="q">{f.q}</span>
+                <span class="pm" aria-hidden="true" />
+              </summary>
+              <p>{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />
+</section>
+
+<Steps from="#f3f3f1" to="#0d2b27" />
+
+<section class="cta on-dk" id="demo" aria-labelledby="cta-h">
+  <div class="wrap cta__grid">
+    <div class="cta__copy">
+      <h2 id="cta-h" class="d2 rv">Pass your next audit with someone in your corner.</h2>
+      <p class="body rv" style="--d:.06s">
+        Book a demo. We'll show you where pharmacies like yours find discrepancies, and how we'd support you through
+        your next audit. $350/month, no setup fees, cancel anytime.
+      </p>
+    </div>
+    <form class="form rv" style="--d:.1s" data-form data-endpoint={site.demoEndpoint ?? ''} novalidate>
+      <div class="fields">
+        <label><span>Pharmacy name</span><input name="pharmacyName" required autocomplete="organization" /></label>
+        <label><span>Your name</span><input name="contactName" required autocomplete="name" /></label>
+        <label><span>Email</span><input name="email" type="email" required autocomplete="email" /></label>
+        <label><span>Phone</span><input name="phone" type="tel" required autocomplete="tel" /></label>
+        <label class="full"><span>Pharmacy address</span><input name="pharmacyAddress" required autocomplete="street-address" /></label>
+      </div>
+      <div class="form__foot">
+        <button type="submit" class="btn">
+          <span class="btn__l">Request a demo</span><span class="btn__a"><Arrow /></span>
+        </button>
+        <a href="#faq" class="link">Read the FAQ</a>
+      </div>
+      <p class="msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+  <div class="slashes" aria-hidden="true">
+    {
+      Array.from({ length: 6 }).map((_, r) => (
+        <div class="srow" style={`--r:${r}`}>
+          {Array.from({ length: 40 }).map(() => (
+            <i>/</i>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<footer class="ft on-dk">
+  <div class="ft__grid">
+    <div class="ft__a">
+      <p class="ft__news">Pharmacy audit software, with a specialist for every audit.</p>
+      <p class="ft__legal">
+        BatchRx is HIPAA compliant and serves independent and multi-store pharmacies in all 50 states.<br />© {year} BatchRx.
+        All rights reserved.
+      </p>
+    </div>
+    <div class="ft__col">
+      <h3>Product</h3>
+      <a href="#problems">Audits we fix</a>
+      <a href="#approach">How it works</a>
+      <a href="#plan">Pricing</a>
+      <a href="#savings">Savings estimator</a>
+    </div>
+    <div class="ft__col">
+      <h3>Company</h3>
+      <a href="#stories">Pharmacy stories</a>
+      <a href="#faq">FAQ</a>
+      <a href="#demo">Book a demo</a>
+      <a href={site.loginUrl}>Log in</a>
+      <a href="/version-2">Version 2</a>
+    </div>
+    <div class="ft__word" aria-hidden="true">
+      <svg viewBox="0 0 27.7279 27.7279" fill="none"
+        ><path
+          d="M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z"
+          fill="#F2F5F3"></path></svg
+      >
+      <span>BatchRx</span>
+    </div>
+    <div class="ft__col ft__col--sm">
+      <a href={`${site.appUrl}/privacy-policy`}>Privacy Policy</a>
+      <a href={`${site.appUrl}/terms-of-service`}>Terms of Service</a>
+    </div>
+    <div class="ft__col ft__col--sm">
+      <span>HIPAA compliant</span>
+      <span>All 50 states</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-form]').forEach((form) => {
+    const msg = form.querySelector<HTMLElement>('.msg')!;
+    const btn = form.querySelector<HTMLButtonElement>('button')!;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      form.classList.add('checked');
+      if (!form.checkValidity()) {
+        msg.textContent = 'Please fill in every field.';
+        msg.dataset.t = 'err';
+        form.querySelector<HTMLInputElement>(':invalid')?.focus();
+        return;
+      }
+      const url = form.dataset.endpoint;
+      if (!url) {
+        msg.textContent = 'The demo form isn’t connected yet. Set PUBLIC_DEMO_ENDPOINT to enable it.';
+        msg.dataset.t = 'err';
+        return;
+      }
+      btn.disabled = true;
+      msg.textContent = 'Sending…';
+      try {
+        const r = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        });
+        if (!r.ok) throw new Error(String(r.status));
+        form.reset();
+        form.classList.remove('checked');
+        msg.textContent = 'Thank you! Our team will be in touch shortly.';
+        msg.dataset.t = 'ok';
+      } catch {
+        msg.textContent = 'Something went wrong. Please try again.';
+        msg.dataset.t = 'err';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+<style>
+  /* FAQ */
+  .faq {
+    padding-block: clamp(72px, 9vw, 112px);
+  }
+  .faq__grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 40px 64px;
+    align-items: start;
+  }
+  .faq h2 {
+    margin-top: 24px;
+    max-width: 9ch;
+  }
+  .faq__list {
+    background: var(--card);
+    border: 1px solid var(--line);
+  }
+  details + details {
+    border-top: 1px solid var(--line);
+  }
+  summary {
+    display: grid;
+    grid-template-columns: 40px 1fr 24px;
+    align-items: center;
+    gap: 12px;
+    padding: 22px 24px;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary .mono {
+    font-size: 12px;
+    color: var(--ink-4);
+  }
+  .q {
+    font-size: 18px;
+    letter-spacing: -0.02em;
+  }
+  summary:hover .q {
+    color: var(--brand);
+  }
+  .pm {
+    position: relative;
+    width: 24px;
+    height: 24px;
+  }
+  .pm::before,
+  .pm::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 12px;
+    height: 1.5px;
+    background: var(--ink);
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s var(--ease);
+  }
+  .pm::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  details[open] .pm::after {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  details[open] summary {
+    box-shadow: inset 2px 0 0 var(--glow);
+  }
+  details p {
+    padding: 0 64px 24px 76px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  /* CTA */
+  .cta {
+    position: relative;
+    padding-top: clamp(80px, 10vw, 128px);
+    overflow: hidden;
+  }
+  .cta__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px clamp(40px, 6vw, 96px);
+    align-items: start;
+    position: relative;
+    z-index: 1;
+  }
+  .cta__copy {
+    display: grid;
+    gap: 24px;
+  }
+  .cta h2 {
+    max-width: 14ch;
+  }
+  .cta .body {
+    font-size: 16px;
+    max-width: 48ch;
+  }
+  .form {
+    display: grid;
+    gap: 24px;
+  }
+  .fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--dk-line);
+    border: 1px solid var(--dk-line);
+  }
+  .full {
+    grid-column: 1 / -1;
+  }
+  label {
+    display: grid;
+    gap: 2px;
+    padding: 12px 16px 6px;
+    background: var(--dk);
+    transition: background-color 0.2s;
+  }
+  label:focus-within {
+    background: var(--dk-2);
+  }
+  label span {
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--dk-txt);
+  }
+  input {
+    height: 34px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 16px;
+  }
+  input:focus {
+    outline: none;
+  }
+  label:has(input:focus) {
+    box-shadow: inset 0 -2px 0 var(--glow);
+  }
+  .checked label:has(input:invalid) {
+    box-shadow: inset 0 -2px 0 #f07a5f;
+  }
+  .form__foot {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px 32px;
+  }
+  .form .btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+  .msg:empty {
+    display: none;
+  }
+  .msg {
+    font-size: 14px;
+  }
+  .msg[data-t='ok'] {
+    color: var(--glow);
+  }
+  .msg[data-t='err'] {
+    color: #f6a08c;
+  }
+  .slashes {
+    margin-top: clamp(64px, 8vw, 104px);
+    display: grid;
+    gap: 6px;
+    overflow: hidden;
+    user-select: none;
+  }
+  .srow {
+    display: flex;
+    justify-content: space-between;
+    padding-inline: 8px;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--glow);
+    opacity: calc(0.08 + var(--r) * 0.16);
+    transform: translateX(calc(var(--r) * -6px));
+  }
+  .srow i {
+    font-style: normal;
+    animation: flick 3.2s ease-in-out infinite;
+  }
+  .srow i:nth-child(3n) {
+    animation-delay: -1s;
+  }
+  .srow i:nth-child(5n) {
+    animation-delay: -2s;
+  }
+  .srow i:nth-child(7n) {
+    animation-delay: -0.4s;
+  }
+  @keyframes flick {
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  /* Footer */
+  .ft {
+    border-top: 1px solid var(--dk-line);
+  }
+  .ft__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    max-width: 1440px;
+    margin-inline: auto;
+  }
+  .ft__grid > * {
+    border-bottom: 1px solid var(--dk-line);
+  }
+  .ft__a {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 48px;
+    padding: 32px 40px;
+    border-right: 1px solid var(--dk-line);
+  }
+  .ft__news {
+    font-size: clamp(22px, 2vw, 28px);
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    max-width: 18ch;
+  }
+  .ft__legal {
+    font-size: 11.5px;
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--dk-txt);
+    max-width: 52ch;
+  }
+  .ft__col {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 32px 40px;
+  }
+  .ft__col + .ft__col,
+  .ft__a + .ft__col + .ft__col {
+    border-left: 1px solid var(--dk-line);
+  }
+  .ft__col h3 {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--dk-txt);
+    margin-bottom: 8px;
+  }
+  .ft__col a {
+    width: fit-content;
+    font-size: 15px;
+  }
+  .ft__col a:hover {
+    color: var(--glow);
+  }
+  .ft__col--sm a,
+  .ft__col--sm span {
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--dk-txt);
+  }
+  .ft__col--sm {
+    border-left: 1px solid var(--dk-line);
+  }
+  .ft__word {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2vw, 28px);
+    padding: 40px;
+    border-right: 1px solid var(--dk-line);
+    font-size: clamp(64px, 10vw, 148px);
+    font-weight: 500;
+    letter-spacing: -0.065em;
+    line-height: 0.8;
+    color: #f2f5f3;
+  }
+  .ft__word svg {
+    width: 0.62em;
+    height: 0.62em;
+    flex: none;
+  }
+
+  @media (max-width: 960px) {
+    .faq__grid,
+    .cta__grid {
+      grid-template-columns: 1fr;
+    }
+    details p {
+      padding: 0 24px 24px 76px;
+    }
+    .ft__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .ft__a,
+    .ft__word {
+      grid-column: 1 / -1;
+      border-right: 0;
+    }
+    .ft__a {
+      padding: 32px var(--pad);
+    }
+    .ft__col {
+      padding: 28px var(--pad);
+    }
+    .ft__a + .ft__col {
+      border-left: 0;
+    }
+    .ft__word {
+      padding: 32px var(--pad);
+    }
+    .ft__word + .ft__col--sm {
+      border-left: 0;
+    }
+  }
+  @media (max-width: 520px) {
+    .fields {
+      grid-template-columns: 1fr;
+    }
+    summary {
+      grid-template-columns: 28px 1fr 20px;
+      padding: 18px 16px;
+    }
+    .q {
+      font-size: 16px;
+    }
+    details p {
+      padding: 0 16px 20px 56px;
+    }
+  }
+</style>

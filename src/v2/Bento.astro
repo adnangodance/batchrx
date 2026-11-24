@@ -1,0 +1,527 @@
+---
+import { wholesalers, pmsSystems } from '../site';
+const orbit = [...pmsSystems.slice(0, 4), ...wholesalers.slice(0, 6)];
+---
+
+<section class="bento" id="product" aria-labelledby="bento-h">
+  <div class="wrap">
+    <div class="bento__head">
+      <div>
+        <span class="kicker rv">The product</span>
+        <h2 id="bento-h" class="display h-lg rv" style="--d:.06s">One tool for <em>every</em> pharmacy audit.</h2>
+      </div>
+      <p class="lede rv" style="--d:.12s">
+        Every report an auditor might ask for, already built, already reconciled, already organized. Replace the
+        spreadsheets, the shoeboxes and the guesswork.
+      </p>
+    </div>
+
+    <div class="grid">
+      <!-- Inventory -->
+      <article class="tile tile--wide rv">
+        <div class="tile__copy">
+          <span class="mono tile__k">Inventory report</span>
+          <h3>Purchased vs. billed, for every NDC.</h3>
+          <p>The comparison PBMs run in an invoice audit, run first by you, with shortages broken out by payer.</p>
+        </div>
+        <div class="viz viz--table" aria-hidden="true">
+          <div class="vt vt--h mono"><span>Drug</span><span>Bought</span><span>Billed</span><span>Gap</span></div>
+          <div class="vt"><span>Atorvastatin 20 MG</span><span>24</span><span>26</span><span class="chip chip--bad">−2</span></div>
+          <div class="vt"><span>Metformin 500 MG</span><span>18</span><span>18</span><span class="chip chip--ok">0</span></div>
+          <div class="vt"><span>Lisinopril 10 MG</span><span>12</span><span>15</span><span class="chip chip--bad">−3</span></div>
+          <div class="vt"><span>Amlodipine 5 MG</span><span>16</span><span>16</span><span class="chip chip--ok">0</span></div>
+        </div>
+      </article>
+
+      <!-- Aberrant -->
+      <article class="tile rv" style="--d:.06s">
+        <div class="tile__copy">
+          <span class="mono tile__k">Aberrant report</span>
+          <h3>Spot the claims auditors flag.</h3>
+          <p>Surface outliers and search any BIN number in seconds.</p>
+        </div>
+        <div class="viz viz--search" aria-hidden="true">
+          <div class="srch"><span>⌕</span><span class="mono">BIN 610014</span><span class="caret"></span></div>
+          <div class="hits">
+            <span class="chip chip--bad">4 flagged</span>
+            <span class="chip chip--warn">2 in review</span>
+            <span class="chip chip--ok">31 clear</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Controlled -->
+      <article class="tile rv">
+        <div class="tile__copy">
+          <span class="mono tile__k">Controlled substances</span>
+          <h3>Counts that reconcile.</h3>
+          <p>Purchases, dispensing and reverse-distributor returns, tracked end to end.</p>
+        </div>
+        <div class="viz viz--ledger mono" aria-hidden="true">
+          <div><span>Opening</span><span>1,240</span></div>
+          <div><span>+ Purchased</span><span>600</span></div>
+          <div><span>− Dispensed</span><span>1,410</span></div>
+          <div><span>− Reverse dist.</span><span>30</span></div>
+          <div class="tot"><span>On hand</span><span>400 ✓</span></div>
+        </div>
+      </article>
+
+      <!-- Documents -->
+      <article class="tile rv" style="--d:.06s">
+        <div class="tile__copy">
+          <span class="mono tile__k">Document audits</span>
+          <h3>Every record, one click away.</h3>
+          <p>Prescriptions, signatures and copay records stored and organized by audit.</p>
+        </div>
+        <div class="viz viz--docs" aria-hidden="true">
+          <span class="doc d1"><b>Rx front</b><i>✓</i></span>
+          <span class="doc d2"><b>Signature</b><i>✓</i></span>
+          <span class="doc d3"><b>Copay</b><i>↑</i></span>
+        </div>
+      </article>
+
+      <!-- Multi-store -->
+      <article class="tile tile--dark rv" style="--d:.12s">
+        <div class="tile__copy">
+          <span class="mono tile__k">Multi-store</span>
+          <h3>Every location, one screen.</h3>
+          <p>Own several pharmacies? See every store's risk and every open audit side by side.</p>
+        </div>
+        <div class="viz viz--stores" aria-hidden="true">
+          {
+            [
+              ['Main St.', 'ok', 'No open audits'],
+              ['Riverside', 'bad', '1 desktop audit'],
+              ['Eastgate', 'ok', 'No open audits'],
+            ].map(([n, s, t]) => (
+              <div class="store">
+                <span class:list={['st', s]} />
+                <b>{n}</b>
+                <small>{t}</small>
+              </div>
+            ))
+          }
+        </div>
+      </article>
+
+      <!-- Integrations -->
+      <article class="tile tile--wide tile--int rv">
+        <div class="tile__copy">
+          <span class="mono tile__k">Integrations</span>
+          <h3>Works with your PMS and every wholesaler you buy from.</h3>
+          <p>
+            PrimeRx, Pioneer, Datascan, DigitalRx, BestRx and Liberty, plus Kinray, McKesson, AmerisourceBergen and
+            all primary and secondary wholesalers.
+          </p>
+        </div>
+        <div class="viz viz--orbit" aria-hidden="true">
+          <div class="hub">
+            <svg width="30" height="30" viewBox="0 0 27.7279 27.7279" fill="none">
+              <path d="M18.3894 4.52548L15.7024 1.83848C14.6871 0.823115 13.0408 0.823114 12.0255 1.83848L9.33848 4.52548C8.32312 5.54085 8.32312 7.18708 9.33848 8.20244L12.0255 10.8894C13.0408 11.9048 14.6871 11.9048 15.7024 10.8894L18.3894 8.20244C19.4048 7.18708 19.4048 5.54085 18.3894 4.52548Z" fill="#D6F07A"></path>
+              <path d="M10.8894 12.0255L8.20244 9.33848C7.18708 8.32311 5.54085 8.32311 4.52548 9.33848L1.83848 12.0255C0.823115 13.0408 0.823114 14.6871 1.83848 15.7024L4.52548 18.3894C5.54085 19.4048 7.18708 19.4048 8.20244 18.3894L10.8894 15.7024C11.9048 14.6871 11.9048 13.0408 10.8894 12.0255Z" fill="#D6F07A"></path>
+              <path d="M25.8894 12.0255L23.2024 9.33848C22.1871 8.32311 20.5408 8.32311 19.5255 9.33848L16.8385 12.0255C15.8231 13.0408 15.8231 14.6871 16.8385 15.7024L19.5255 18.3894C20.5408 19.4048 22.1871 19.4048 23.2024 18.3894L25.8894 15.7024C26.9048 14.6871 26.9048 13.0408 25.8894 12.0255Z" fill="#D6F07A"></path>
+              <path d="M18.3894 19.5255L15.7024 16.8385C14.6871 15.8231 13.0408 15.8231 12.0255 16.8385L9.33848 19.5255C8.32312 20.5408 8.32312 22.1871 9.33848 23.2024L12.0255 25.8894C13.0408 26.9048 14.6871 26.9048 15.7024 25.8894L18.3894 23.2024C19.4048 22.1871 19.4048 20.5408 18.3894 19.5255Z" fill="#D6F07A"></path>
+            </svg>
+          </div>
+          <div class="ring r1"></div>
+          <div class="ring r2"></div>
+          <div class="sat-spin">
+            {
+              orbit.map((o, i) => (
+                <span class="sat" style={`--a:${(360 / orbit.length) * i}deg`}>
+                  <span>{o}</span>
+                </span>
+              ))
+            }
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bento {
+    padding-block: clamp(64px, 8vw, 120px);
+  }
+  .bento__head {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 32px 64px;
+    align-items: end;
+    margin-bottom: clamp(40px, 5vw, 64px);
+  }
+  .bento__head > div {
+    display: grid;
+    gap: 22px;
+    justify-items: start;
+  }
+  .bento__head em {
+    color: var(--g-800);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .tile {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 24px;
+    padding: 28px;
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    transition:
+      transform 0.4s var(--ease),
+      box-shadow 0.4s var(--ease),
+      opacity 0.9s var(--ease);
+  }
+  .tile:hover {
+    box-shadow: var(--sh-2);
+  }
+  .tile--wide {
+    grid-column: span 2;
+    grid-template-columns: 0.9fr 1.1fr;
+    grid-template-rows: none;
+    align-items: center;
+    gap: 32px;
+  }
+  .tile__copy {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .tile__k {
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g-700);
+  }
+  .tile h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(28px, 2.4vw, 34px);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+  .tile p {
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+  .tile--dark {
+    background: var(--g-900);
+    border-color: var(--g-900);
+    color: #fff;
+  }
+  .tile--dark .tile__k {
+    color: var(--lime);
+  }
+  .tile--dark p {
+    color: rgba(216, 229, 224, 0.75);
+  }
+  .viz {
+    align-self: end;
+  }
+
+  .viz--table {
+    display: grid;
+    gap: 4px;
+    padding: 12px;
+    border-radius: 16px;
+    background: #f7f6f1;
+    border: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .vt {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 54px 54px 52px;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #fff;
+  }
+  .vt span:not(:first-child) {
+    text-align: right;
+    justify-self: end;
+  }
+  .vt span:first-child {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vt--h {
+    background: none;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding-block: 4px;
+  }
+
+  .viz--search {
+    display: grid;
+    gap: 12px;
+  }
+  .srch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1.5px solid var(--g-800);
+    box-shadow: 0 0 0 4px var(--mint);
+    font-size: 14px;
+  }
+  .caret {
+    width: 1.5px;
+    height: 16px;
+    background: var(--g-800);
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  .hits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .viz--ledger {
+    display: grid;
+    gap: 2px;
+    font-size: 12.5px;
+  }
+  .viz--ledger div {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 10px;
+    border-bottom: 1px dashed var(--line-2);
+  }
+  .viz--ledger .tot {
+    margin-top: 6px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--g-900);
+    color: var(--lime);
+  }
+
+  .viz--docs {
+    position: relative;
+    height: 150px;
+  }
+  .doc {
+    position: absolute;
+    width: 128px;
+    height: 120px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-image: repeating-linear-gradient(transparent 0 14px, #efede6 14px 15px);
+    background-position: 0 40px;
+    background-size: 100% 60px;
+    background-repeat: no-repeat;
+    transition: transform 0.5s var(--ease);
+  }
+  .doc b {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .doc i {
+    align-self: flex-end;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--g-800);
+    color: #fff;
+    font-style: normal;
+    font-size: 11px;
+  }
+  .d3 i {
+    background: var(--lime);
+    color: var(--g-950);
+  }
+  .d1 {
+    left: 0;
+    top: 22px;
+    transform: rotate(-6deg);
+  }
+  .d2 {
+    left: 33%;
+    top: 6px;
+    transform: rotate(2deg);
+    z-index: 1;
+  }
+  .d3 {
+    left: 64%;
+    top: 24px;
+    transform: rotate(7deg);
+    border-style: dashed;
+    border-color: var(--g-300);
+  }
+  .tile:hover .d1 {
+    transform: rotate(-10deg) translateX(-6px);
+  }
+  .tile:hover .d3 {
+    transform: rotate(11deg) translateX(6px);
+  }
+
+  .viz--stores {
+    display: grid;
+    gap: 6px;
+  }
+  .store {
+    display: grid;
+    grid-template-columns: 10px auto 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(216, 229, 224, 0.07);
+    border: 1px solid rgba(216, 229, 224, 0.12);
+  }
+  .store b {
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+  .store small {
+    justify-self: end;
+    font-size: 12px;
+    color: rgba(216, 229, 224, 0.7);
+  }
+  .st {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #46c08a;
+  }
+  .st.bad {
+    background: #f07a5f;
+    box-shadow: 0 0 0 4px rgba(240, 122, 95, 0.2);
+  }
+
+  .tile--int {
+    grid-column: 1 / -1;
+    background:
+      radial-gradient(500px 300px at 85% 50%, var(--mint-2), transparent 70%),
+      var(--surface);
+  }
+  .viz--orbit {
+    position: relative;
+    height: 300px;
+    align-self: center;
+    display: grid;
+    place-items: center;
+  }
+  .hub {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    border-radius: 22px;
+    background: var(--g-900);
+    box-shadow:
+      0 0 0 10px rgba(29, 80, 67, 0.08),
+      var(--sh-3);
+  }
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px dashed var(--line-2);
+  }
+  .r1 {
+    width: 170px;
+    height: 170px;
+  }
+  .r2 {
+    width: 280px;
+    height: 280px;
+  }
+  .sat-spin {
+    position: absolute;
+    inset: 0;
+    animation: spin 60s linear infinite;
+  }
+  .tile:hover .sat-spin,
+  .tile:hover .sat > span {
+    animation-play-state: paused;
+  }
+  .sat {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: rotate(var(--a)) translateY(-140px) rotate(calc(var(--a) * -1));
+  }
+  .sat:nth-child(even) {
+    transform: rotate(var(--a)) translateY(-85px) rotate(calc(var(--a) * -1));
+  }
+  .sat > span {
+    display: block;
+    transform: translate(-50%, -50%);
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-1);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    animation: counter 60s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes counter {
+    from {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+      transform: translate(-50%, -50%) rotate(-360deg);
+    }
+  }
+
+  @media (max-width: 1020px) {
+    .bento__head {
+      grid-template-columns: 1fr;
+    }
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .tile--wide {
+      grid-column: span 2;
+    }
+  }
+  @media (max-width: 680px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .tile--wide {
+      grid-column: auto;
+      grid-template-columns: 1fr;
+    }
+    .tile {
+      padding: 22px;
+    }
+    .viz--orbit {
+      height: 280px;
+      transform: scale(0.9);
+    }
+  }
+</style>

@@ -1,0 +1,145 @@
+---
+import { site } from '../site';
+
+const included = [
+  'Inventory reports',
+  'PBM & billed reports',
+  'Aberrant reports',
+  'Controlled substance reports',
+  'Document audits & storage',
+  'Investigative audit support',
+  'Dedicated one-on-one audit assistance',
+  'Works with all your PMS systems',
+  'All primary & secondary wholesalers',
+  'Supplier & tag management',
+  'Reverse distributor tracking',
+  'BIN number search',
+];
+---
+
+<section class="section pricing" id="pricing" aria-labelledby="pricing-title">
+  <div class="container">
+    <div class="section-head section-head--center reveal">
+      <span class="eyebrow">Pricing</span>
+      <h2 id="pricing-title" class="h2">One simple plan for <span class="serif">every</span> pharmacy</h2>
+      <p class="lead">Everything you need to pass every audit. No tiers, no hidden fees, no surprises.</p>
+    </div>
+
+    <div class="plan reveal">
+      <div class="plan__price">
+        <span class="pill pill--green">All-in-One Plan</span>
+        <div class="amount">
+          <span class="currency">$</span><span class="num">{site.price}</span><span class="per">/ month</span>
+        </div>
+        <p class="plan__desc">Full access to every BatchRx audit and report tool, plus a real person for every audit.</p>
+        <a href="#demo" class="btn btn--primary">Request a demo <span class="arrow" aria-hidden="true">→</span></a>
+        <ul class="terms">
+          <li>Billed monthly</li>
+          <li>No setup fees</li>
+          <li>Cancel anytime</li>
+        </ul>
+      </div>
+      <div class="plan__list">
+        <h3>Everything included</h3>
+        <ul class="check-list cols">
+          {included.map((i) => <li>{i}</li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .plan {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    max-width: 1040px;
+    margin-inline: auto;
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .plan__price {
+    display: grid;
+    gap: 18px;
+    align-content: start;
+    justify-items: start;
+    padding: clamp(28px, 4vw, 44px);
+    background:
+      radial-gradient(circle at 0% 0%, rgba(150, 180, 168, 0.35), transparent 60%),
+      var(--mint-50);
+    border-right: 1px solid var(--line);
+  }
+  .amount {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    color: var(--green-900);
+    line-height: 1;
+  }
+  .currency {
+    font-size: 28px;
+    font-weight: 500;
+    margin-top: 10px;
+  }
+  .num {
+    font-size: clamp(64px, 8vw, 88px);
+    font-weight: 600;
+    letter-spacing: -0.05em;
+  }
+  .per {
+    align-self: flex-end;
+    margin: 0 0 10px 8px;
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--ink-3);
+  }
+  .plan__desc {
+    color: var(--ink-2);
+    font-size: 15px;
+  }
+  .plan__price .btn {
+    width: 100%;
+  }
+  .terms {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+  .terms li::before {
+    content: '✓ ';
+    color: var(--green-700);
+  }
+  .plan__list {
+    padding: clamp(28px, 4vw, 44px);
+  }
+  .plan__list h3 {
+    font-size: 18px;
+    margin-bottom: 22px;
+  }
+  .cols {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 24px;
+  }
+  @media (max-width: 880px) {
+    .plan {
+      grid-template-columns: 1fr;
+    }
+    .plan__price {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+  }
+  @media (max-width: 520px) {
+    .cols {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

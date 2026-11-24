@@ -1,0 +1,971 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../site';
+
+const nav = [
+  { i: 'grid', t: 'Overview' },
+  { i: 'box', t: 'Inventory report', on: true },
+  { i: 'chart', t: 'PBM report' },
+  { i: 'receipt', t: 'Billed report' },
+  { i: 'alert', t: 'Aberrant report' },
+  { i: 'pill', t: 'Controlled substances' },
+  { i: 'folder', t: 'Audits', badge: '1' },
+  { i: 'file', t: 'Documents' },
+] as const;
+
+const rows = [
+  { ndc: '00000-0101-01', drug: 'Atorvastatin 20 MG Tab', from: 'Kinray', bought: 240, billed: 240 },
+  { ndc: '00000-0103-10', drug: 'Lisinopril 10 MG Tab', from: 'McKesson', bought: 120, billed: 150 },
+  { ndc: '00000-0102-05', drug: 'Metformin HCl 500 MG Tab', from: 'Real Value', bought: 500, billed: 500 },
+  { ndc: '00000-0107-01', drug: 'Gabapentin 300 MG Cap', from: 'Kinray', bought: 140, billed: 170 },
+  { ndc: '00000-0104-02', drug: 'Amlodipine 5 MG Tab', from: 'TopRx', bought: 180, billed: 180 },
+  { ndc: '00000-0105-30', drug: 'Omeprazole 20 MG Cap', from: 'AXIA', bought: 90, billed: 110 },
+  { ndc: '00000-0108-12', drug: 'Levothyroxine 50 MCG Tab', from: 'Kinray', bought: 90, billed: 90 },
+];
+const payers = [
+  { p: 'Express Scripts', v: 30 },
+  { p: 'CVS Caremark', v: 20 },
+  { p: 'OptumRx', v: 20 },
+  { p: 'Prime Therapeutics', v: 6 },
+  { p: 'MedImpact', v: 4 },
+];
+const max = Math.max(...payers.map((p) => p.v));
+---
+
+<section class="hero" aria-labelledby="hero-h">
+  <div class="hero__bg" aria-hidden="true"></div>
+
+  <div class="wrap hero__copy">
+    <a href="#proof" class="badge rv">
+      <span class="badge__dot"></span>
+      Trusted by 400+ pharmacies<span class="badge__more"> · $50M+ in recoupments saved</span>
+      <Icon name="arrow" size={14} />
+    </a>
+    <h1 id="hero-h" class="h1 rv" style="--d:.05s">
+      Catch shortages before PBMs do.<br />
+      <span class="muted">Get expert help when they audit.</span>
+    </h1>
+    <p class="lead rv" style="--d:.1s">
+      BatchRx reconciles every unit you buy against every claim you bill, flags discrepancies early, and pairs you with a
+      dedicated specialist for every desktop, onsite, CMS and investigative audit.
+    </p>
+    <div class="hero__ctas rv" style="--d:.15s">
+      <a href="#demo" class="btn btn--primary btn--lg">Book a demo <Icon name="arrow" /></a>
+      <a href="#pricing" class="btn btn--secondary btn--lg">See pricing</a>
+    </div>
+    <ul class="hero__fine rv" style="--d:.2s">
+      <li><Icon name="check" size={16} stroke={2.2} /> ${site.price}/month, all-inclusive</li>
+      <li><Icon name="check" size={16} stroke={2.2} /> No setup fees</li>
+      <li><Icon name="check" size={16} stroke={2.2} /> HIPAA compliant</li>
+    </ul>
+  </div>
+
+  <div class="wrap shot-wrap rv" style="--d:.2s">
+    <div class="shot" data-shot role="img" aria-label="BatchRx inventory report: purchases from wholesalers reconciled against PBM claims, with shortages flagged">
+      <div class="shot__top" aria-hidden="true">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="crumb"><span>Main St. Pharmacy</span> <span class="sep">/</span> <b>Inventory report</b></span>
+        <span class="search"><Icon name="search" size={14} /> Search NDC, drug, Rx…</span>
+        <span class="tb-ic"><Icon name="bell" size={16} /></span>
+        <span class="me">MS</span>
+      </div>
+
+      <div class="shot__body" aria-hidden="true">
+        <aside class="side">
+          <div class="side__brand">
+            <svg width="18" height="18" viewBox="0 0 27.7279 27.7279" fill="none"><path d="M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z" fill="#1D5043"></path></svg>
+            BatchRx
+          </div>
+          <nav>
+            {
+              nav.map((n) => (
+                <span class:list={['side__it', { on: 'on' in n && n.on }]}>
+                  <Icon name={n.i} size={15} />
+                  {n.t}
+                  {'badge' in n && <em>{n.badge}</em>}
+                </span>
+              ))
+            }
+          </nav>
+          <div class="side__help">
+            <span class="side__av">AS<i></i></span>
+            <span>
+              <b>Audit specialist</b>
+              <small>Online · replies fast</small>
+            </span>
+          </div>
+        </aside>
+
+        <div class="main">
+          <div class="main__head">
+            <div>
+              <h2>Inventory report</h2>
+              <p>Oct 1 – Oct 31 · All wholesalers · All PBMs</p>
+            </div>
+            <div class="main__acts">
+              <span class="pillbtn"><Icon name="calendar" size={14} /> Last 30 days</span>
+              <span class="pillbtn pillbtn--dark"><Icon name="download" size={14} /> Export</span>
+            </div>
+          </div>
+
+          <div class="kpis">
+            <div class="kpi">
+              <small>Units purchased</small>
+              <b class="tnum">12,840</b>
+              <span class="kpi__sub">from 5 wholesalers</span>
+            </div>
+            <div class="kpi">
+              <small>Units billed</small>
+              <b class="tnum">12,920</b>
+              <span class="kpi__sub">across 7 PBMs</span>
+            </div>
+            <div class="kpi kpi--bad">
+              <small>Shortages</small>
+              <b class="tnum" data-k="short">0 NDCs</b>
+              <span class="kpi__sub">billed &gt; purchased</span>
+            </div>
+            <div class="kpi kpi--bad">
+              <small>Recoupment risk</small>
+              <b class="tnum" data-k="risk">$0</b>
+              <svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none"><path d="M0 24 L14 22 L28 23 L42 18 L56 19 L70 12 L84 10 L100 4" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg>
+            </div>
+          </div>
+
+          <div class="split">
+            <div class="tbl">
+              <div class="tbl__bar">
+                <b>Reconciliation</b>
+                <span class="prog" data-prog><span class="spin"></span> Reconciling <span data-k="n">0</span>/{rows.length}</span>
+              </div>
+              <div class="tr th">
+                <span class="c-ndc">NDC</span><span>Drug</span><span class="n">Bought</span><span class="n">Billed</span><span class="n">Diff</span><span class="st">Status</span>
+              </div>
+              {
+                rows.map((r) => {
+                  const d = r.bought - r.billed;
+                  return (
+                    <div class="tr row" data-d={d} data-units={-d}>
+                      <span class="c-ndc mono">{r.ndc}</span>
+                      <span class="drug">
+                        {r.drug}
+                        <small>{r.from}</small>
+                      </span>
+                      <span class="n tnum">{r.bought}</span>
+                      <span class="n tnum">{r.billed}</span>
+                      <span class:list={['n tnum', { neg: d < 0 }]}>{d < 0 ? d : '0'}</span>
+                      <span class="st">
+                        <span class="chip chip--neutral wait">Checking</span>
+                        {d < 0 ? <span class="chip chip--bad res">Shortage</span> : <span class="chip chip--ok res">Matched</span>}
+                      </span>
+                    </div>
+                  );
+                })
+              }
+            </div>
+
+            <div class="bycard">
+              <b>Shortage units by PBM</b>
+              <ul>
+                {
+                  payers.map((p) => (
+                    <li>
+                      <span class="by__n">{p.p}</span>
+                      <span class="by__t">
+                        <span style={`--w:${(p.v / max) * 100}%`} />
+                      </span>
+                      <span class="tnum by__v">{p.v}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+              <div class="by__note">
+                <Icon name="sparkle" size={14} />
+                Express Scripts holds 38% of your shortage exposure this month.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note note--l" aria-hidden="true" data-note>
+      <span class="note__ic note__ic--bad"><Icon name="alert" size={16} /></span>
+      <div>
+        <b>Shortage flagged</b>
+        <p>Lisinopril 10 MG: 30 units billed above purchases.</p>
+      </div>
+    </div>
+    <div class="note note--r" aria-hidden="true" data-note>
+      <span class="note__av">AS</span>
+      <div>
+        <b>Your audit specialist</b>
+        <p>“Let's pull invoices for the 3 flagged NDCs before your next audit.”</p>
+      </div>
+    </div>
+    <p class="shot__cap">Product preview with illustrative sample data</p>
+  </div>
+</section>
+
+<script>
+  const shot = document.querySelector<HTMLElement>('[data-shot]');
+  if (shot) {
+    const rows = [...shot.querySelectorAll<HTMLElement>('.row')];
+    const k = (n: string) => shot.querySelector<HTMLElement>(`[data-k="${n}"]`)!;
+    const prog = shot.querySelector<HTMLElement>('[data-prog]')!;
+    const notes = document.querySelectorAll<HTMLElement>('[data-note]');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const PER_UNIT = 49; // illustrative $ at risk per unit
+    let timers: number[] = [];
+
+    const tally = (n: number) => {
+      const done = rows.slice(0, n);
+      const short = done.filter((r) => Number(r.dataset.d) < 0);
+      const units = short.reduce((s, r) => s + Number(r.dataset.units), 0);
+      k('short').textContent = `${short.length} NDC${short.length === 1 ? '' : 's'}`;
+      k('risk').textContent = '$' + (units * PER_UNIT).toLocaleString('en-US');
+      k('n').textContent = String(n);
+      if (n === rows.length) {
+        prog.classList.add('done');
+        prog.innerHTML = '✓ Reconciled';
+      }
+    };
+
+    const run = () => {
+      timers.forEach(clearTimeout);
+      timers = [];
+      rows.forEach((r) => r.classList.remove('run', 'done'));
+      notes.forEach((n) => n.classList.remove('show'));
+      if (reduce) {
+        rows.forEach((r) => r.classList.add('done'));
+        tally(rows.length);
+        notes.forEach((n) => n.classList.add('show'));
+        return;
+      }
+      rows.forEach((r, i) => {
+        timers.push(window.setTimeout(() => r.classList.add('run'), 500 + i * 520));
+        timers.push(
+          window.setTimeout(() => {
+            r.classList.add('done');
+            tally(i + 1);
+          }, 950 + i * 520),
+        );
+      });
+      const end = 950 + rows.length * 520;
+      timers.push(window.setTimeout(() => notes[0]?.classList.add('show'), end - 1200));
+      timers.push(window.setTimeout(() => notes[1]?.classList.add('show'), end + 300));
+    };
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          run();
+          io.disconnect();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(shot);
+  }
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    padding-top: clamp(56px, 8vw, 104px);
+    padding-bottom: clamp(64px, 8vw, 104px);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: center top;
+    mask-image: radial-gradient(ellipse 70% 52% at 50% 0%, rgba(0, 0, 0, 0.7), transparent 75%);
+    opacity: 0.6;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: min(1400px, 140vw);
+    height: 900px;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, rgba(43, 117, 96, 0.22), rgba(43, 117, 96, 0.06) 55%, transparent);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .hero__copy {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 34px;
+    padding: 0 14px 0 12px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow:
+      0 0 0 1px var(--line),
+      var(--sh-xs);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink-2);
+    transition: box-shadow 0.2s;
+  }
+  .badge:hover {
+    box-shadow:
+      0 0 0 1px var(--line-2),
+      var(--sh-sm);
+  }
+  .badge svg {
+    color: var(--ink-4);
+  }
+  .badge__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 0 3px var(--ok-bg);
+  }
+  .h1 {
+    font-size: clamp(40px, 5.8vw, 70px);
+    max-width: 22ch;
+  }
+  .lead {
+    max-width: 640px;
+  }
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .hero__fine {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 22px;
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+  .hero__fine li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hero__fine svg {
+    color: var(--b-600);
+  }
+
+  /* ---------- Product shot ---------- */
+  .shot-wrap {
+    position: relative;
+    margin-top: clamp(48px, 7vw, 80px);
+  }
+  .shot {
+    position: relative;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: var(--sh-xl);
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .shot__top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 48px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--line);
+    background: #fbfcfb;
+  }
+  .dots {
+    display: flex;
+    gap: 6px;
+  }
+  .dots i {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #e3e7e5;
+  }
+  .crumb {
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  .crumb b {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .sep {
+    margin-inline: 4px;
+    color: var(--ink-4);
+  }
+  .search {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    width: 260px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink-4);
+    font-size: 12.5px;
+  }
+  .tb-ic {
+    color: var(--ink-3);
+  }
+  .me {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--b-800);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .shot__body {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+  }
+  .side {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 14px;
+    padding: 16px 12px;
+    border-right: 1px solid var(--line);
+    background: #fbfcfb;
+  }
+  .side__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 8px 6px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+  }
+  .side nav {
+    display: grid;
+    gap: 2px;
+    align-content: start;
+  }
+  .side__it {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .side__it.on {
+    background: #fff;
+    color: var(--ink);
+    box-shadow:
+      0 0 0 1px var(--line),
+      var(--sh-xs);
+  }
+  .side__it.on svg {
+    color: var(--b-700);
+  }
+  .side__it em {
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--bad);
+    color: #fff;
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .side__help {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--b-900);
+    color: #fff;
+  }
+  .side__help b {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  .side__help small {
+    display: block;
+    font-size: 11px;
+    color: var(--b-200);
+  }
+  .side__av {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--b-100);
+    color: var(--b-900);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .side__av i {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #3ad08b;
+    border: 2px solid var(--b-900);
+  }
+
+  .main {
+    padding: 20px 22px 22px;
+    min-width: 0;
+    background: #fff;
+  }
+  .main__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .main__head h2 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .main__head p {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    margin-top: 2px;
+  }
+  .main__acts {
+    display: flex;
+    gap: 8px;
+  }
+  .pillbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .pillbtn--dark {
+    background: var(--b-800);
+    border-color: var(--b-800);
+    color: #fff;
+  }
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .kpi {
+    position: relative;
+    display: grid;
+    gap: 2px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .kpi small {
+    font-size: 12px;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .kpi b {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .kpi__sub {
+    font-size: 11.5px;
+    color: var(--ink-4);
+  }
+  .kpi--bad b {
+    color: var(--bad);
+  }
+  .spark {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    width: 64px;
+    height: 24px;
+    color: var(--bad);
+    opacity: 0.8;
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 250px;
+    gap: 14px;
+  }
+  .tbl {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .tbl__bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tbl__bar b {
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .prog {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .prog.done {
+    color: var(--ok);
+    font-weight: 500;
+  }
+  .spin {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--line-2);
+    border-top-color: var(--b-600);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .tr {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr) 56px 56px 50px 84px;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--line);
+    transition: background-color 0.35s;
+  }
+  .tr:last-child {
+    border-bottom: 0;
+  }
+  .th {
+    padding-block: 7px;
+    background: var(--bg-soft);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+    text-transform: uppercase;
+  }
+  .c-ndc {
+    font-size: 11.5px;
+    color: var(--ink-3);
+  }
+  .drug {
+    display: grid;
+    min-width: 0;
+    font-weight: 500;
+  }
+  .drug,
+  .drug small {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .drug small {
+    font-size: 11.5px;
+    font-weight: 400;
+    color: var(--ink-4);
+  }
+  .n {
+    text-align: right;
+  }
+  .neg {
+    color: var(--bad);
+    font-weight: 600;
+  }
+  .st {
+    display: grid;
+    justify-items: end;
+  }
+  .st > * {
+    grid-area: 1 / 1;
+    transition:
+      opacity 0.25s,
+      transform 0.3s var(--ease);
+  }
+  .row .wait,
+  .row .res {
+    opacity: 0;
+  }
+  .row .res {
+    transform: scale(0.9);
+  }
+  .row.run:not(.done) {
+    background: var(--bg-soft);
+  }
+  .row.run:not(.done) .wait {
+    opacity: 1;
+  }
+  .row.done .res {
+    opacity: 1;
+    transform: none;
+  }
+  .row.done[data-d^='-'] {
+    background: #fff8f6;
+  }
+
+  .bycard {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .bycard > b {
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .bycard ul {
+    display: grid;
+    gap: 12px;
+  }
+  .bycard li {
+    display: grid;
+    grid-template-columns: 1fr 22px;
+    gap: 6px 8px;
+    align-items: center;
+  }
+  .by__n {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .by__t {
+    height: 6px;
+    border-radius: 4px;
+    background: var(--bg-mute);
+    overflow: hidden;
+  }
+  .by__t span {
+    display: block;
+    height: 100%;
+    width: var(--w);
+    border-radius: inherit;
+    background: var(--b-700);
+  }
+  .by__v {
+    font-size: 12px;
+    text-align: right;
+    color: var(--ink-3);
+  }
+  .by__note {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--b-50);
+    color: var(--b-800);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .by__note svg {
+    flex: none;
+    margin-top: 1px;
+  }
+
+  /* Floating notes */
+  .note {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    width: 290px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: var(--sh-lg);
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.5s var(--ease),
+      transform 0.5s var(--ease);
+  }
+  .note.show {
+    opacity: 1;
+    transform: none;
+  }
+  .note b {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .note p {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink-3);
+    margin-top: 2px;
+  }
+  .note--l {
+    left: calc(var(--pad) - 44px);
+    top: 46%;
+  }
+  .note--r {
+    right: calc(var(--pad) - 44px);
+    bottom: 10%;
+    background: var(--b-900);
+  }
+  .note--r b {
+    color: #fff;
+  }
+  .note--r p {
+    color: var(--b-200);
+  }
+  .note__ic {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+  }
+  .note__ic--bad {
+    background: var(--bad-bg);
+    color: var(--bad);
+  }
+  .note__av {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--b-100);
+    color: var(--b-900);
+    font-size: 11.5px;
+    font-weight: 700;
+  }
+  .shot__cap {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-4);
+  }
+
+  @media (max-width: 1320px) {
+    .note--l {
+      left: calc(var(--pad) + 16px);
+      top: auto;
+      bottom: -28px;
+    }
+    .note--r {
+      right: calc(var(--pad) + 16px);
+      bottom: -28px;
+    }
+    .shot__cap {
+      margin-top: 48px;
+    }
+  }
+  @media (max-width: 1080px) {
+    .split {
+      grid-template-columns: 1fr;
+    }
+    .bycard {
+      display: none;
+    }
+    .shot__body {
+      grid-template-columns: 1fr;
+    }
+    .side {
+      display: none;
+    }
+  }
+  @media (max-width: 520px) {
+    .badge__more {
+      display: none;
+    }
+  }
+  @media (max-width: 760px) {
+    .search,
+    .tb-ic,
+    .crumb > span:not(:last-child),
+    .sep {
+      display: none;
+    }
+    .kpis {
+      grid-template-columns: 1fr 1fr;
+    }
+    .main {
+      padding: 14px;
+    }
+    .main__head {
+      flex-direction: column;
+    }
+    .tr {
+      grid-template-columns: minmax(0, 1fr) 40px 76px;
+      padding-inline: 10px;
+    }
+    .c-ndc,
+    .tr > :nth-child(3),
+    .tr > :nth-child(4) {
+      display: none;
+    }
+    .note--l {
+      display: none;
+    }
+    .note--r {
+      position: relative;
+      left: auto;
+      right: auto;
+      bottom: auto;
+      width: auto;
+      margin: -20px 12px 0;
+    }
+    .shot__cap {
+      margin-top: 14px;
+    }
+  }
+</style>

@@ -1,0 +1,306 @@
+---
+import { pmsSystems, wholesalers } from '../site';
+
+const uploads = [
+  { name: 'AXIA', status: 'Completed', tone: 'green' },
+  { name: 'TopRx', status: 'Completed', tone: 'green' },
+  { name: 'Alpine Health', status: 'Completed', tone: 'green' },
+  { name: 'Kinray', status: 'Processing', tone: 'amber' },
+  { name: 'McKesson', status: 'Upload file', tone: 'ghost' },
+];
+---
+
+<section class="section integrations" id="integrations" aria-labelledby="int-title">
+  <div class="container grid">
+    <div class="copy reveal">
+      <span class="eyebrow">Seamless integration</span>
+      <h2 id="int-title" class="h2">Works with your PMS. <span class="serif">And</span> every wholesaler you buy from.</h2>
+      <p class="lead">
+        No new workflow to learn. Upload the files you already have from your pharmacy system and your primary and
+        secondary wholesalers, and BatchRx does the reconciliation.
+      </p>
+
+      <div class="group">
+        <h3 class="group__title mono">Pharmacy management systems</h3>
+        <ul class="chips">
+          {pmsSystems.map((p) => <li class="chip chip--strong">{p}</li>)}
+        </ul>
+      </div>
+
+      <div class="group">
+        <h3 class="group__title mono">Primary & secondary wholesalers</h3>
+        <ul class="chips">
+          {wholesalers.map((w) => <li class="chip">{w}</li>)}
+          <li class="chip chip--more">+ many more</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="visual reveal" aria-hidden="true">
+      <div class="flow">
+        <div class="flow__card">
+          <div class="stepper">
+            {[1, 2, 3, 4, 5].map((n) => <span class:list={['dot', { 'is-done': n < 3, 'is-on': n === 3 }]}>{n}</span>)}
+          </div>
+          <div class="flow__title">Upload your wholesaler files</div>
+          <ul class="uploads">
+            {
+              uploads.map((u) => (
+                <li>
+                  <span class:list={['u__icon', `u__icon--${u.tone}`]}>{u.tone === 'ghost' ? '↑' : u.tone === 'amber' ? '◌' : '✓'}</span>
+                  <span class="u__name">{u.name}</span>
+                  <span class:list={['pill', u.tone === 'ghost' ? 'pill--ghost' : `pill--${u.tone}`]}>{u.status}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <div class="flow__foot">
+            <span class="add">+ Add supplier</span>
+            <span class="next">Next →</span>
+          </div>
+        </div>
+
+        <div class="pms">
+          <span class="pms__logo">Rx</span>
+          <div>
+            <div class="pms__name">PrimeRx</div>
+            <div class="pms__state">Connected · last sync 2 min ago</div>
+          </div>
+          <span class="pms__ok">✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(40px, 7vw, 96px);
+    align-items: center;
+  }
+  .copy {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .group {
+    width: 100%;
+    margin-top: 8px;
+  }
+  .group__title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 12px;
+  }
+  .chips {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+  .chip--strong {
+    border-color: transparent;
+    background: var(--green-800);
+    color: var(--white);
+    font-weight: 500;
+  }
+  .chip--more {
+    border-style: dashed;
+    color: var(--ink-3);
+  }
+
+  .visual {
+    position: relative;
+    padding: clamp(24px, 4vw, 48px);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(circle at 20% 10%, rgba(150, 180, 168, 0.4), transparent 50%),
+      var(--green-900);
+    transition-delay: 0.1s;
+  }
+  .flow {
+    position: relative;
+  }
+  .flow__card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+  }
+  .stepper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .stepper::before {
+    content: '';
+    position: absolute;
+    inset: 50% 12px auto;
+    height: 2px;
+    background: linear-gradient(90deg, var(--green-800) 50%, var(--line) 50%);
+    transform: translateY(-50%);
+  }
+  .dot {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 11px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    color: var(--ink-3);
+  }
+  .dot.is-done,
+  .dot.is-on {
+    background: var(--green-800);
+    border-color: var(--green-800);
+    color: var(--white);
+  }
+  .dot.is-on {
+    box-shadow: 0 0 0 4px var(--mint-200);
+  }
+  .flow__title {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+  .uploads {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .uploads li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 14px;
+  }
+  .u__name {
+    flex: 1;
+    font-weight: 500;
+  }
+  .u__icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    font-size: 12px;
+  }
+  .u__icon--green {
+    background: var(--mint-100);
+    color: var(--green-800);
+  }
+  .u__icon--amber {
+    background: var(--amber-bg);
+    color: var(--amber-ink);
+    animation: spin 1.6s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .u__icon--ghost {
+    background: var(--mint-50);
+    color: var(--ink-3);
+  }
+  .pill--ghost {
+    border: 1px solid var(--line);
+    color: var(--ink-3);
+  }
+  .flow__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+  .add {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  .next {
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--green-800);
+    color: var(--white);
+  }
+  .pms {
+    position: absolute;
+    left: -28px;
+    bottom: -28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px 12px 12px;
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--line);
+  }
+  .pms__logo {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--mint-100);
+    color: var(--green-800);
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .pms__name {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .pms__state {
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .pms__ok {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--green-800);
+    color: var(--white);
+    font-size: 11px;
+  }
+
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .pms {
+      position: static;
+      margin-top: 12px;
+    }
+  }
+</style>

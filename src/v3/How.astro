@@ -1,0 +1,134 @@
+---
+import Icon from './Icon.astro';
+const steps = [
+  {
+    i: 'upload',
+    t: 'Connect your data',
+    b: 'Upload files from your pharmacy system and your primary and secondary wholesalers. It takes minutes, not an IT project.',
+  },
+  {
+    i: 'search',
+    t: 'See every discrepancy',
+    b: 'BatchRx reconciles purchases against claims and flags shortages, aberrant claims and missing records before an auditor does.',
+  },
+  {
+    i: 'users',
+    t: 'Get one-on-one audit help',
+    b: 'When an audit arrives, a dedicated specialist works through it with you, from the first document to the final response.',
+  },
+] as const;
+---
+
+<section class="sec how" id="how" aria-labelledby="how-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="sec-head">
+        <span class="eyebrow rv"><Icon name="sparkle" /> How it works</span>
+        <h2 id="how-h" class="h2 rv" style="--d:.05s">Software that finds the problems. People who help you fix them.</h2>
+      </div>
+      <p class="lead rv" style="--d:.1s">
+        Audit tools tell you what's wrong. Audit services help after the fact. BatchRx does both, so you're prepared before
+        the letter arrives and supported after it does.
+      </p>
+    </div>
+
+    <ol class="steps">
+      {
+        steps.map((s, i) => (
+          <li class="step rv" style={`--d:${i * 0.08}s`}>
+            <div class="step__top">
+              <span class="step__ic">
+                <Icon name={s.i} size={20} />
+              </span>
+              <span class="step__n mono">0{i + 1}</span>
+            </div>
+            <h3>{s.t}</h3>
+            <p>{s.b}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .how {
+    padding-top: clamp(56px, 7vw, 96px);
+  }
+  .head {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 24px 64px;
+    align-items: end;
+    margin-bottom: clamp(40px, 5vw, 64px);
+  }
+  .head .sec-head {
+    margin: 0;
+  }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    counter-reset: s;
+  }
+  .step {
+    position: relative;
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    padding: 28px;
+    border-radius: var(--r-lg);
+    background: #fff;
+    box-shadow:
+      0 0 0 1px var(--line),
+      var(--sh-xs);
+    transition:
+      box-shadow 0.3s var(--ease),
+      transform 0.3s var(--ease),
+      opacity 0.8s var(--ease);
+  }
+  .step:hover {
+    box-shadow:
+      0 0 0 1px var(--line-2),
+      var(--sh-md);
+    transform: translateY(-2px);
+  }
+  .step__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .step__ic {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--b-50);
+    color: var(--b-800);
+    box-shadow: inset 0 0 0 1px rgba(29, 80, 67, 0.08);
+  }
+  .step__n {
+    font-size: 13px;
+    color: var(--ink-4);
+  }
+  h3 {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.022em;
+  }
+  p {
+    font-size: 15px;
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+  @media (max-width: 900px) {
+    .head {
+      grid-template-columns: 1fr;
+    }
+    .steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

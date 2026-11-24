@@ -1,0 +1,145 @@
+---
+const files = [
+  { name: 'PrimeRx_claims_oct.csv', src: 'Pharmacy system', pct: 100, state: 'ok' },
+  { name: 'Kinray_invoices_oct.xlsx', src: 'Primary wholesaler', pct: 100, state: 'ok' },
+  { name: 'McKesson_oct.csv', src: 'Secondary wholesaler', pct: 100, state: 'ok' },
+  { name: 'RealValue_oct.pdf', src: 'Secondary wholesaler', pct: 64, state: 'run' },
+];
+---
+
+<div class="scr" aria-hidden="true">
+  <div class="scr__head">
+    <b>Connect your data</b>
+    <span class="chip chip--lime">Step 1 of 3</span>
+  </div>
+  <div class="drop">
+    <span class="drop__ic">↑</span>
+    <span>Drop PMS & wholesaler files here</span>
+    <small>CSV, XLSX or PDF</small>
+  </div>
+  <ul class="files">
+    {
+      files.map((f) => (
+        <li>
+          <span class="f__ic mono">{f.name.split('.').pop()}</span>
+          <span class="f__meta">
+            <b>{f.name}</b>
+            <small>{f.src}</small>
+            <span class="f__bar">
+              <span style={`width:${f.pct}%`} class:list={{ run: f.state === 'run' }} />
+            </span>
+          </span>
+          {f.state === 'ok' ? <span class="chip chip--ok">✓</span> : <span class="chip chip--warn">{f.pct}%</span>}
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .scr {
+    display: grid;
+    gap: 14px;
+  }
+  .scr__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+  }
+  .scr__head b {
+    font-weight: 600;
+  }
+  .drop {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 22px;
+    border: 1.5px dashed var(--g-300);
+    border-radius: 14px;
+    background: var(--mint-2);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--g-800);
+  }
+  .drop small {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+  .drop__ic {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--g-900);
+    color: var(--lime);
+    margin-bottom: 4px;
+  }
+  .files {
+    display: grid;
+    gap: 8px;
+  }
+  .files li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #fff;
+  }
+  .f__ic {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #f4f2eb;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .f__meta {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .f__meta b {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .f__meta small {
+    font-size: 11.5px;
+    color: var(--ink-3);
+  }
+  .f__bar {
+    height: 4px;
+    border-radius: 9px;
+    background: #efede6;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  .f__bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--g-700);
+  }
+  .f__bar .run {
+    background: linear-gradient(90deg, var(--g-700), var(--g-500), var(--g-700));
+    background-size: 200% 100%;
+    animation: shimmer 1.2s linear infinite;
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+</style>

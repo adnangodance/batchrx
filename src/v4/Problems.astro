@@ -1,0 +1,488 @@
+---
+import Arrow from './Arrow.astro';
+
+const tabs = [
+  {
+    id: 'invoice',
+    tab: 'Invoice audits',
+    title: 'Shortages cost the most when a PBM finds them first.',
+    body: 'PBMs compare what you billed against what your wholesalers say you bought. BatchRx runs that comparison for you every month, NDC by NDC, so gaps are fixed before they turn into recoupments.',
+    link: 'Inventory report',
+  },
+  {
+    id: 'desktop',
+    tab: 'Desktop audits',
+    title: 'Dozens of prescriptions, one deadline, no time.',
+    body: 'We turn the audit letter into a checklist, pull every claim from your billed report, and help you collect signatures, hard copies and copay records before the due date.',
+    link: 'Audit assistance',
+  },
+  {
+    id: 'onsite',
+    tab: 'Onsite audits',
+    title: 'Know what the auditor will ask before they walk in.',
+    body: 'Your specialist prepares you for the visit: which records they will look for, where they are, and what your purchase and dispensing numbers say.',
+    link: 'Audit assistance',
+  },
+  {
+    id: 'aberrant',
+    tab: 'Aberrant claims',
+    title: 'Outlier claims are what put pharmacies on an audit list.',
+    body: 'The aberrant report surfaces unusual claims and lets you search any BIN number in seconds, so you can review risk on your terms instead of an auditor’s.',
+    link: 'Aberrant report',
+  },
+  {
+    id: 'controlled',
+    tab: 'Controlled substances',
+    title: 'Counts that don’t reconcile invite deeper reviews.',
+    body: 'Track controlled substances end to end, including purchases, dispensing and returns to reverse distributors, so your records hold up when someone checks.',
+    link: 'Controlled substance reports',
+  },
+];
+---
+
+<section class="probs" id="problems" aria-labelledby="probs-h">
+  <div class="wrap">
+    <span class="kick rv">Five audit problems</span>
+    <h2 id="probs-h" class="d2 rv" style="--d:.05s">Five audit problems pharmacies hire us to fix</h2>
+
+    <div class="tabs rv" data-tabs>
+      <div class="tabs__bar" role="tablist" aria-label="Audit problems">
+        {
+          tabs.map((t, i) => (
+            <button role="tab" id={`pt-${t.id}`} aria-controls={`pp-${t.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>
+              {t.tab}
+            </button>
+          ))
+        }
+      </div>
+      <div class="tabs__panels">
+        {
+          tabs.map((t, i) => (
+            <div class="panel" role="tabpanel" id={`pp-${t.id}`} aria-labelledby={`pt-${t.id}`} hidden={i !== 0}>
+              <div class="panel__copy">
+                <div class="panel__n">
+                  <span class="mono">0{i + 1}</span>
+                  <span class="bar">
+                    <span />
+                  </span>
+                </div>
+                <h3 class="d3">{t.title}</h3>
+                <p class="body">{t.body}</p>
+                <a href="#approach" class="panel__link">
+                  {t.link} <Arrow />
+                </a>
+              </div>
+              <div class:list={['panel__vis', `v-${t.id}`]} aria-hidden="true">
+                {t.id === 'invoice' && (
+                  <div class="ui">
+                    <div class="ui__h">
+                      <span>Purchased vs. billed</span>
+                      <span class="chip chip--bad">3 shortages</span>
+                    </div>
+                    {[
+                      ['Lisinopril 10 MG', 120, 150],
+                      ['Gabapentin 300 MG', 140, 170],
+                      ['Omeprazole 20 MG', 90, 110],
+                      ['Atorvastatin 20 MG', 240, 240],
+                    ].map(([d, a, b]) => (
+                      <div class="ui__r">
+                        <span>{d}</span>
+                        <span class="pair">
+                          <i style={`width:${((a as number) / 250) * 100}%`} />
+                          <i class="b" style={`width:${((b as number) / 250) * 100}%`} />
+                        </span>
+                        <span class:list={['mono', { neg: (a as number) < (b as number) }]}>{(a as number) - (b as number) || '0'}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {t.id === 'desktop' && (
+                  <div class="ui">
+                    <div class="ui__h">
+                      <span>Desktop audit · 26 Rx</span>
+                      <span class="chip chip--warn">Due in 9 days</span>
+                    </div>
+                    {['Audit letter reviewed', 'Claims pulled', 'Signatures uploaded', 'Invoices matched', 'Response submitted'].map((x, j) => (
+                      <div class:list={['ui__t', { done: j < 3, now: j === 3 }]}>
+                        <span class="box">{j < 3 ? '✓' : ''}</span>
+                        {x}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {t.id === 'onsite' && (
+                  <div class="ui">
+                    <div class="ui__h">
+                      <span>Onsite visit prep</span>
+                      <span class="chip chip--ok">Ready</span>
+                    </div>
+                    <div class="grid4">
+                      {[
+                        ['Purchase records', '12 months'],
+                        ['Dispensing log', 'Reconciled'],
+                        ['Rx hard copies', '1,284 filed'],
+                        ['C-II counts', 'Balanced'],
+                      ].map(([a, b]) => (
+                        <div>
+                          <small>{a}</small>
+                          <b>{b}</b>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {t.id === 'aberrant' && (
+                  <div class="ui">
+                    <div class="search mono">⌕ BIN 610014</div>
+                    {[
+                      ['Early refill pattern', 'Review', 'bad'],
+                      ['Quantity above typical', 'Review', 'bad'],
+                      ['High-cost brand', 'In review', 'warn'],
+                      ['Days supply mismatch', 'Cleared', 'ok'],
+                    ].map(([a, b, c]) => (
+                      <div class="ui__r ui__r--2">
+                        <span>{a}</span>
+                        <span class={`chip chip--${c}`}>{b}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {t.id === 'controlled' && (
+                  <div class="ui mono">
+                    <div class="ui__h">
+                      <span>C-II ledger</span>
+                      <span class="chip chip--ok">Balanced</span>
+                    </div>
+                    {[
+                      ['Opening count', '1,240'],
+                      ['+ Purchased', '600'],
+                      ['− Dispensed', '1,410'],
+                      ['− Reverse distributor', '30'],
+                    ].map(([a, b]) => (
+                      <div class="ui__r ui__r--2">
+                        <span>{a}</span>
+                        <span>{b}</span>
+                      </div>
+                    ))}
+                    <div class="ui__tot">
+                      <span>Expected on hand</span>
+                      <span>400</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let i = 0;
+    let timer = 0;
+    let user = false;
+    const select = (n: number, focus = false) => {
+      i = (n + tabs.length) % tabs.length;
+      tabs.forEach((t, j) => {
+        const on = j === i;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        root.querySelector<HTMLElement>('#' + t.getAttribute('aria-controls'))!.hidden = !on;
+      });
+      if (focus) tabs[i].focus();
+      clearTimeout(timer);
+      if (!user && !reduce) timer = window.setTimeout(() => select(i + 1), 7000);
+    };
+    tabs.forEach((t, j) => {
+      t.addEventListener('click', () => {
+        user = true;
+        select(j);
+      });
+      t.addEventListener('keydown', (e) => {
+        const k = e.key;
+        if (k === 'ArrowRight') select(i + 1, true);
+        else if (k === 'ArrowLeft') select(i - 1, true);
+        else return;
+        user = true;
+        e.preventDefault();
+      });
+    });
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        select(0);
+        io.disconnect();
+      }
+    });
+    io.observe(root);
+  });
+</script>
+
+<style>
+  .probs {
+    padding-block: clamp(72px, 9vw, 112px) clamp(56px, 7vw, 96px);
+  }
+  .probs h2 {
+    max-width: 17ch;
+    margin: 24px 0 clamp(40px, 5vw, 64px);
+  }
+  .tabs {
+    background: var(--card);
+    border: 1px solid var(--line);
+  }
+  .tabs__bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-bottom: 1px solid var(--line);
+  }
+  [role='tab'] {
+    position: relative;
+    height: 56px;
+    padding: 0 20px;
+    border: 0;
+    border-left: 1px solid var(--line);
+    background: none;
+    text-align: left;
+    font-size: 15px;
+    color: var(--ink-4);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  [role='tab']:first-child {
+    border-left: 0;
+  }
+  [role='tab']:hover {
+    color: var(--ink);
+  }
+  [role='tab'][aria-selected='true'] {
+    color: var(--ink);
+  }
+  [role='tab'][aria-selected='true']::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1px;
+    height: 2px;
+    background: var(--glow);
+  }
+  .panel {
+    display: grid;
+    grid-template-columns: 1fr 1.42fr;
+    min-height: 460px;
+  }
+  .panel[hidden] {
+    display: none;
+  }
+  .panel__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 24px;
+  }
+  .panel__n {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-bottom: auto;
+  }
+  .bar {
+    width: 72px;
+    height: 1px;
+    background: var(--line);
+  }
+  .bar span {
+    display: block;
+    height: 100%;
+    background: var(--ink);
+    animation: prog 7s linear both;
+  }
+  @keyframes prog {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+  .panel__copy .d3 {
+    margin-top: 48px;
+    max-width: 18ch;
+  }
+  .panel__copy .body {
+    max-width: 44ch;
+    font-size: 15px;
+  }
+  .panel__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 40px;
+    font-size: 13.5px;
+    color: var(--brand);
+  }
+  .panel__link :global(svg) {
+    width: 13px;
+    height: 13px;
+  }
+  .panel__vis {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: clamp(24px, 4vw, 56px);
+    background:
+      linear-gradient(rgba(232, 240, 236, 0.06) 1px, transparent 1px) 0 0 / 40px 40px,
+      linear-gradient(90deg, rgba(232, 240, 236, 0.06) 1px, transparent 1px) 0 0 / 40px 40px,
+      radial-gradient(500px 300px at 80% 100%, rgba(63, 214, 138, 0.22), transparent 70%),
+      var(--dk);
+    overflow: hidden;
+    animation: fade 0.5s ease both;
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+  .ui {
+    width: min(100%, 460px);
+    display: grid;
+    gap: 6px;
+    padding: 18px;
+    background: #fff;
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .ui__h {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+    font-weight: 500;
+    font-family: var(--sans);
+  }
+  .ui__r {
+    display: grid;
+    grid-template-columns: 1fr 120px 40px;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #efefec;
+  }
+  .ui__r--2 {
+    grid-template-columns: 1fr auto;
+  }
+  .ui__r .mono {
+    text-align: right;
+    color: var(--ink-3);
+  }
+  .ui__r .neg {
+    color: var(--bad);
+    font-weight: 500;
+  }
+  .pair {
+    display: grid;
+    gap: 3px;
+  }
+  .pair i {
+    display: block;
+    height: 6px;
+    background: var(--line-2);
+  }
+  .pair i.b {
+    background: var(--dk);
+  }
+  .ui__t {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 8px;
+    color: var(--ink-4);
+  }
+  .ui__t.done {
+    color: var(--ink-2);
+  }
+  .ui__t.now {
+    background: var(--lt);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .box {
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--line-2);
+    font-size: 10px;
+  }
+  .done .box {
+    background: var(--dk);
+    border-color: var(--dk);
+    color: #fff;
+  }
+  .grid4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .grid4 div {
+    display: grid;
+    gap: 4px;
+    padding: 16px;
+    background: #fff;
+  }
+  .grid4 small {
+    font-size: 11.5px;
+    color: var(--ink-3);
+  }
+  .grid4 b {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .search {
+    padding: 10px 12px;
+    border: 1px solid var(--dk);
+    margin-bottom: 6px;
+  }
+  .ui__tot {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    padding: 10px 12px;
+    background: var(--dk);
+    color: var(--glow-2);
+  }
+
+  @media (max-width: 960px) {
+    .tabs__bar {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    [role='tab'] {
+      flex: none;
+    }
+    .panel {
+      grid-template-columns: 1fr;
+    }
+    .panel__copy .d3 {
+      margin-top: 24px;
+    }
+    .panel__link {
+      padding-top: 16px;
+    }
+  }
+</style>

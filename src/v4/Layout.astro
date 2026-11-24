@@ -1,0 +1,50 @@
+---
+import './v4.css';
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'BatchRx | Pharmacy audit software and one-on-one audit support',
+  description = 'BatchRx reconciles what your pharmacy bought against what it billed, flags shortages before PBMs do, and stays with you through every desktop, onsite, CMS and investigative audit. $350/month.',
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://batchrx.com');
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0d2b27" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BatchRx" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      document.documentElement.classList.remove('no-js');
+    </script>
+  </head>
+  <body>
+    <slot />
+    <script>
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          }),
+        { rootMargin: '0px 0px -6% 0px', threshold: 0.06 },
+      );
+      document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>

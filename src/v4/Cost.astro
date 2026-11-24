@@ -1,0 +1,287 @@
+---
+import Arrow from './Arrow.astro';
+const RATE = 0.035;
+const VALUE = 175;
+const START = 4450;
+const f = (n: number) => n.toLocaleString('en-US');
+const pains = [
+  {
+    t: 'Recoupments.',
+    b: 'Money already paid for legitimate prescriptions, clawed back because purchases and claims did not line up.',
+    d: 'M12 3v18M17 7.5c0-1.9-2.2-3.5-5-3.5S7 5.6 7 7.5 9.2 11 12 11s5 1.6 5 3.5S14.8 18 12 18s-5-1.6-5-3.5',
+  },
+  {
+    t: 'Lost hours.',
+    b: 'Owners and pharmacists pulling invoices, hard copies and signatures by hand instead of serving patients.',
+    d: 'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',
+  },
+  {
+    t: 'Network risk.',
+    b: 'Repeated findings can lead to deeper audits and put your standing with a PBM network at risk.',
+    d: 'M12 3 2 20h20zM12 10v4M12 17h.01',
+  },
+];
+---
+
+<section class="cost" id="savings" aria-labelledby="cost-h">
+  <div class="wrap">
+    <div class="frame">
+      <div class="head">
+        <h2 id="cost-h" class="d3 rv">The cost of an audit rarely shows up until it's too late</h2>
+        <p class="body rv" style="--d:.08s">It shows up elsewhere in the business:</p>
+      </div>
+      <ul class="pains">
+        {
+          pains.map((p, i) => (
+            <li class="rv" style={`--d:${i * 0.06}s`}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d={p.d} />
+              </svg>
+              <h3>{p.t}</h3>
+              <p class="body">{p.b}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="calc rv" data-calc data-rate={RATE} data-value={VALUE}>
+        <div class="calc__copy">
+          <h3>What could BatchRx catch for your pharmacy?</h3>
+          <p class="body">
+            Move the slider to your monthly prescription volume. The estimate uses the industry-average 3.5% discrepancy
+            rate in PBM audits and an average of ${VALUE} at risk per discrepancy.
+          </p>
+          <a href="#demo" class="btn btn--dark">
+            <span class="btn__l">Book a demo</span><span class="btn__a"><Arrow /></span>
+          </a>
+        </div>
+        <div class="calc__ui">
+          <div class="row">
+            <label for="rx">Monthly prescriptions</label>
+            <output for="rx" class="tnum" data-o="rx">{f(START)}</output>
+          </div>
+          <input id="rx" type="range" min="100" max="10000" step="50" value={START} />
+          <div class="ticks tnum" aria-hidden="true"><span>100</span><span>5,000</span><span>10,000+</span></div>
+          <div class="out">
+            <div>
+              <small>Discrepancies caught / month</small>
+              <b class="tnum" data-o="d">{(START * RATE).toFixed(1)}</b>
+            </div>
+            <div class="hl">
+              <small>Estimated savings / month</small>
+              <b class="tnum" data-o="s">${f(Math.round(START * RATE * VALUE))}</b>
+            </div>
+          </div>
+          <p class="roi" data-o="roi"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-calc]').forEach((root) => {
+    const rate = Number(root.dataset.rate);
+    const val = Number(root.dataset.value);
+    const input = root.querySelector<HTMLInputElement>('input')!;
+    const o = (k: string) => root.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+    const f = (n: number) => n.toLocaleString('en-US');
+    const upd = () => {
+      const rx = Number(input.value);
+      const d = rx * rate;
+      const s = Math.round(d * val);
+      o('rx').textContent = rx >= 10000 ? '10,000+' : f(rx);
+      o('d').textContent = d.toFixed(1);
+      o('s').textContent = '$' + f(s);
+      o('roi').textContent = `Roughly ${Math.max(1, Math.round(s / 350))}× the cost of the $350/month plan. Your results will vary.`;
+      input.style.setProperty('--p', ((rx - 100) / 9900) * 100 + '%');
+    };
+    input.addEventListener('input', upd);
+    upd();
+  });
+</script>
+
+<style>
+  .cost {
+    background: var(--card);
+  }
+  .frame {
+    border-inline: 1px solid var(--line);
+    padding: clamp(56px, 7vw, 96px) clamp(20px, 3vw, 40px) clamp(56px, 7vw, 96px);
+  }
+  .head {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 16px 64px;
+    align-items: end;
+    margin-bottom: 40px;
+  }
+  .head h2 {
+    max-width: 22ch;
+  }
+  .pains {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .pains li {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    padding: 20px 20px 24px;
+    background: var(--lt);
+    min-height: 220px;
+  }
+  .pains svg {
+    color: var(--dk);
+    margin-bottom: auto;
+    padding: 4px;
+    width: 30px;
+    height: 30px;
+    background: #fff;
+  }
+  .pains h3 {
+    margin-top: 48px;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+  }
+  .pains .body {
+    font-size: 14px;
+  }
+
+  .calc {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+    margin-top: clamp(56px, 7vw, 88px);
+    padding-top: clamp(40px, 5vw, 56px);
+    border-top: 1px solid var(--line);
+  }
+  .calc__copy {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+  .calc__copy h3 {
+    font-size: clamp(22px, 2vw, 28px);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    max-width: 24ch;
+  }
+  .calc__copy .body {
+    font-size: 14.5px;
+    max-width: 50ch;
+    margin-bottom: 8px;
+  }
+  .calc__ui {
+    padding: clamp(20px, 3vw, 32px);
+    background: var(--dk);
+    color: #fff;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+  label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dk-txt);
+  }
+  output {
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  input[type='range'] {
+    --p: 44%;
+    appearance: none;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--glow) var(--p), rgba(232, 240, 236, 0.2) var(--p));
+    cursor: pointer;
+  }
+  input[type='range']::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border: 0;
+    box-shadow: 0 0 0 5px rgba(63, 214, 138, 0.25);
+  }
+  input[type='range']::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+  }
+  .ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 11.5px;
+    color: rgba(232, 240, 236, 0.5);
+  }
+  .out {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    margin-top: 28px;
+    background: var(--dk-line);
+    border: 1px solid var(--dk-line);
+  }
+  .out div {
+    display: grid;
+    gap: 10px;
+    padding: 18px;
+    background: var(--dk);
+  }
+  .out small {
+    font-size: 12.5px;
+    color: var(--dk-txt);
+  }
+  .out b {
+    font-size: clamp(34px, 3.4vw, 46px);
+    font-weight: 400;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+  .out .hl b {
+    color: var(--glow);
+  }
+  .roi {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--dk-txt);
+  }
+  @media (max-width: 960px) {
+    .head,
+    .calc {
+      grid-template-columns: 1fr;
+    }
+    .pains {
+      grid-template-columns: 1fr;
+    }
+    .pains li {
+      min-height: 0;
+    }
+    .pains h3 {
+      margin-top: 20px;
+    }
+    .frame {
+      border: 0;
+    }
+  }
+  @media (max-width: 420px) {
+    .out {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

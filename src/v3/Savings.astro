@@ -1,0 +1,233 @@
+---
+import Icon from './Icon.astro';
+const RATE = 0.035;
+const VALUE = 175;
+const START = 4450;
+const f = (n: number) => n.toLocaleString('en-US');
+---
+
+<section class="sec sav" aria-labelledby="sav-h">
+  <div class="wrap grid">
+    <div class="copy">
+      <span class="eyebrow rv"><Icon name="chart" /> Savings estimator</span>
+      <h2 id="sav-h" class="h2 rv" style="--d:.05s">See what BatchRx could catch for your pharmacy.</h2>
+      <p class="lead rv" style="--d:.1s">
+        BatchRx flags prescription discrepancies before they trigger costly PBM audits. Proactive monitoring reduces
+        compliance risk and prevents revenue loss, every month.
+      </p>
+      <ul class="checks rv" style="--d:.15s">
+        <li>Catch shortages before an invoice audit does</li>
+        <li>Fewer recoupments and clawbacks</li>
+        <li>Hours of spreadsheet reconciliation, gone</li>
+      </ul>
+    </div>
+
+    <div class="calc rv" style="--d:.1s" data-calc data-rate={RATE} data-value={VALUE}>
+      <div class="calc__in">
+        <div class="calc__top">
+          <label for="rx">Monthly prescriptions</label>
+          <output for="rx" class="tnum" data-o="rx">{f(START)}</output>
+        </div>
+        <input id="rx" type="range" min="100" max="10000" step="50" value={START} />
+        <div class="ticks tnum" aria-hidden="true"><span>100</span><span>2,500</span><span>5,000</span><span>7,500</span><span>10,000+</span></div>
+
+        <div class="res">
+          <div>
+            <small>Discrepancies caught</small>
+            <b class="tnum" data-o="d">{(START * RATE).toFixed(1)}</b>
+            <span>per month</span>
+          </div>
+          <div class="res__hl">
+            <small>Estimated savings</small>
+            <b class="tnum" data-o="s">${f(Math.round(START * RATE * VALUE))}</b>
+            <span>per month</span>
+          </div>
+        </div>
+        <div class="roi">
+          <Icon name="sparkle" size={16} />
+          <span data-o="roi"></span>
+        </div>
+      </div>
+      <p class="note">
+        Estimate assumes the industry-average 3.5% discrepancy rate in PBM audits and an average of ${VALUE} at risk per
+        discrepancy. Your results will vary.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-calc]').forEach((root) => {
+    const rate = Number(root.dataset.rate);
+    const val = Number(root.dataset.value);
+    const input = root.querySelector<HTMLInputElement>('input')!;
+    const o = (k: string) => root.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+    const f = (n: number) => n.toLocaleString('en-US');
+    const upd = () => {
+      const rx = Number(input.value);
+      const d = rx * rate;
+      const s = Math.round(d * val);
+      o('rx').textContent = rx >= 10000 ? '10,000+' : f(rx);
+      o('d').textContent = d.toFixed(1);
+      o('s').textContent = '$' + f(s);
+      o('roi').innerHTML = `That's roughly <b>${Math.max(1, Math.round(s / 350))}×</b> the cost of the $350/month plan.`;
+      input.style.setProperty('--p', ((rx - 100) / 9900) * 100 + '%');
+    };
+    input.addEventListener('input', upd);
+    upd();
+  });
+</script>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(40px, 6vw, 96px);
+    align-items: center;
+  }
+  .copy {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+  .checks {
+    margin-top: 8px;
+  }
+  .calc {
+    padding: 8px;
+    border-radius: 22px;
+    background: var(--bg-soft);
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  .calc__in {
+    padding: clamp(22px, 3vw, 32px);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: var(--sh-md);
+  }
+  .calc__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 18px;
+  }
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+  output {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+  }
+  input[type='range'] {
+    --p: 44%;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--b-700) var(--p), var(--bg-mute) var(--p));
+    cursor: pointer;
+  }
+  input[type='range']::-webkit-slider-thumb {
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 0;
+    box-shadow:
+      0 0 0 1px var(--line-2),
+      0 2px 6px rgba(10, 26, 21, 0.2);
+    transition: transform 0.15s;
+  }
+  input[type='range']::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+  input[type='range']::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--line-2);
+  }
+  .ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--ink-4);
+  }
+  .res {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 10px;
+    margin-top: 26px;
+  }
+  .res div {
+    display: grid;
+    gap: 4px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: var(--bg-soft);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .res small {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-3);
+  }
+  .res b {
+    font-size: clamp(30px, 3vw, 38px);
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 1.1;
+  }
+  .res span {
+    font-size: 12.5px;
+    color: var(--ink-4);
+  }
+  .res .res__hl {
+    background: var(--b-900);
+    box-shadow: none;
+    color: #fff;
+  }
+  .res__hl small,
+  .res__hl span {
+    color: var(--b-200) !important;
+  }
+  .roi {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--b-50);
+    color: var(--b-800);
+    font-size: 14px;
+  }
+  .roi :global(b) {
+    font-weight: 700;
+  }
+  .note {
+    padding: 12px 14px 6px;
+    font-size: 12.5px;
+    color: var(--ink-4);
+    line-height: 1.5;
+  }
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 440px) {
+    .res {
+      grid-template-columns: 1fr;
+    }
+    .ticks span:nth-child(2n) {
+      display: none;
+    }
+  }
+</style>

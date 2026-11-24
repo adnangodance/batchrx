@@ -1,0 +1,663 @@
+---
+import Arrow from './Arrow.astro';
+import { testimonials } from '../site';
+
+const meta = [
+  { tag: 'Multi-store', where: 'New York State', head: '12 pharmacies, one screen', scene: 'stores' },
+  { tag: 'Independent', where: 'Brooklyn, NY', head: 'Less time on audits, fewer costly errors', scene: 'checklist' },
+  { tag: 'Independent', where: 'Queens, NY', head: 'Recoupments prevented before they start', scene: 'chart' },
+  { tag: 'Independent', where: 'Manhattan, NY', head: 'Peace of mind at every audit', scene: 'shield' },
+];
+const total = testimonials.length;
+const logo =
+  'M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z';
+---
+
+<section class="stories" id="stories" aria-labelledby="st-h">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <span class="kick rv">Pharmacy stories</span>
+        <h2 id="st-h" class="d2 rv" style="--d:.05s">Pharmacies that stopped dreading audits</h2>
+      </div>
+      <p class="lede rv" style="--d:.1s">
+        Independent and multi-store owners use BatchRx to stay audit-ready, and to get through every audit with a
+        specialist beside them.
+      </p>
+    </div>
+  </div>
+
+  <div class="track" data-track tabindex="0" aria-label="Pharmacy stories" role="region">
+    {
+      testimonials.map((t, i) => {
+        const m = meta[i];
+        return (
+          <figure class:list={['card', { 'is-on': i === 0 }]} data-card aria-label={`Story ${i + 1} of ${total}`}>
+            <div class="art" aria-hidden="true">
+              <span class="art__tag">{m.tag}</span>
+              <div class="iso">
+                {m.scene === 'stores' && (
+                  <>
+                    <div class="layer l0 stores">
+                      {Array.from({ length: 12 }).map((_, k) => (
+                        <span class:list={['store', { hot: k === 5 }]}>
+                          <i />
+                        </span>
+                      ))}
+                    </div>
+                    <div class="layer hub">
+                      <svg viewBox="0 0 27.7279 27.7279" width="30" height="30">
+                        <path fill="#0d2b27" d={logo} />
+                      </svg>
+                    </div>
+                  </>
+                )}
+
+                {m.scene === 'checklist' && (
+                  <>
+                    <div class="layer l0 sheet sheet--ghost" />
+                    <div class="layer l1 sheet sheet--ghost" />
+                    <div class="layer l2 sheet">
+                      <div class="sheet__h">
+                        <b>Desktop audit</b>
+                        <em>Complete</em>
+                      </div>
+                      {['Letter reviewed', 'Claims pulled', 'Signatures uploaded', 'Invoices matched', 'Response sent'].map((x) => (
+                        <div class="row">
+                          <span class="tick" />
+                          {x}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {m.scene === 'chart' && (
+                  <>
+                    <div class="layer l0 plate">
+                      <div class="plate__h">Recoupment risk</div>
+                      <div class="bars">
+                        {[92, 80, 74, 58, 46, 30, 22, 14].map((h, k) => (
+                          <span style={`--h:${h}`} class:list={{ low: k > 4 }} />
+                        ))}
+                      </div>
+                    </div>
+                    <div class="layer l2 pill">
+                      <i />
+                      Trending down
+                    </div>
+                  </>
+                )}
+
+                {m.scene === 'shield' && (
+                  <>
+                    <div class="layer l0 doc" />
+                    <div class="layer l1 doc" />
+                    <div class="layer l2 doc doc--top">
+                      <span />
+                      <span />
+                      <span />
+                      <span class="s" />
+                    </div>
+                    <div class="layer badge">
+                      <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="#0d2b27" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z" fill="#8ff0bd" />
+                        <path d="m8.5 12 2.5 2.5 4.5-5" stroke-width="2" />
+                      </svg>
+                    </div>
+                  </>
+                )}
+              </div>
+              <span class="art__where">{m.where}</span>
+            </div>
+
+            <div class="body">
+              <div class="body__top">
+                <span class="mono">Case {String(i + 1).padStart(2, '0')}</span>
+                <span class="stars" aria-label="Rated 5 out of 5">★★★★★</span>
+              </div>
+              <h3>{m.head}</h3>
+              <blockquote>“{t.quote}”</blockquote>
+              <figcaption>
+                <span class="av">{t.name[0]}</span>
+                <span>
+                  <b>{t.name}</b>
+                  <small>{t.place}</small>
+                </span>
+              </figcaption>
+            </div>
+          </figure>
+        );
+      })
+    }
+  </div>
+
+  <div class="wrap nav">
+    <div class="ctrl">
+      <button aria-label="Previous story" data-prev><Arrow /></button>
+      <button aria-label="Next story" data-next><Arrow /></button>
+      <span class="count mono" aria-live="polite"><b data-cur>01</b> / {String(total).padStart(2, '0')}</span>
+      <span class="prog"><span data-prog></span></span>
+    </div>
+    <a href="#demo" class="btn btn--dark btn--sm">
+      <span class="btn__l">Join them</span><span class="btn__a"><Arrow /></span>
+    </a>
+  </div>
+</section>
+
+<script>
+  const track = document.querySelector<HTMLElement>('[data-track]');
+  if (track) {
+    const cards = [...track.querySelectorAll<HTMLElement>('[data-card]')];
+    const cur = document.querySelector<HTMLElement>('[data-cur]')!;
+    const prog = document.querySelector<HTMLElement>('[data-prog]')!;
+    const step = () => (cards[0]?.offsetWidth ?? 600) + 16;
+    const update = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      const p = max > 0 ? track.scrollLeft / max : 0;
+      const idx = max > 0 && track.scrollLeft >= max - 4 ? cards.length - 1 : Math.min(cards.length - 1, Math.round(track.scrollLeft / step()));
+      cur.textContent = String(idx + 1).padStart(2, '0');
+      prog.style.width = `${Math.max(1 / cards.length, p) * 100}%`;
+      cards.forEach((c, j) => c.classList.toggle('is-on', j === idx));
+    };
+    document.querySelector('[data-prev]')!.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+    document.querySelector('[data-next]')!.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+    track.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+    addEventListener('resize', update);
+    update();
+  }
+</script>
+
+<style>
+  .stories {
+    padding-block: clamp(72px, 9vw, 112px);
+  }
+  .head {
+    display: grid;
+    grid-template-columns: 1fr minmax(320px, 420px);
+    gap: 24px 64px;
+    align-items: end;
+    margin-bottom: clamp(36px, 4vw, 56px);
+  }
+  .head h2 {
+    margin-top: 24px;
+    max-width: 18ch;
+    color: var(--dk);
+  }
+  .lede {
+    font-size: 16px;
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+
+  .track {
+    --edge: max(var(--pad), calc((100vw - var(--wrap)) / 2));
+    display: flex;
+    gap: 16px;
+    padding-inline: var(--edge);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--edge);
+    scrollbar-width: none;
+    outline: none;
+  }
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .card {
+    flex: none;
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    width: min(800px, 88vw);
+    min-height: 380px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    scroll-snap-align: start;
+    transition: border-color 0.3s;
+  }
+  .card:hover {
+    border-color: var(--line-2);
+  }
+
+  /* ---------- Art panel ---------- */
+  .art {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    margin: 8px 0 8px 8px;
+    background:
+      linear-gradient(rgba(232, 240, 236, 0.05) 1px, transparent 1px) -1px -1px / 34px 34px,
+      linear-gradient(90deg, rgba(232, 240, 236, 0.05) 1px, transparent 1px) -1px -1px / 34px 34px,
+      radial-gradient(260px 200px at 50% 70%, rgba(63, 214, 138, 0.26), transparent 70%),
+      var(--dk);
+  }
+  .art__tag,
+  .art__where {
+    position: absolute;
+    z-index: 2;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .art__tag {
+    left: 10px;
+    top: 10px;
+    padding: 4px 8px;
+    background: #fff;
+    color: var(--ink-2);
+  }
+  .art__where {
+    left: 12px;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(232, 240, 236, 0.72);
+  }
+  .art__where::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--glow);
+    box-shadow: 0 0 8px var(--glow);
+  }
+
+  /* Isometric stage — tilted into the same iso plane as the hero scene */
+  .iso {
+    position: relative;
+    width: 210px;
+    height: 210px;
+    transform: rotateX(56deg) rotateZ(-42deg);
+    transform-style: preserve-3d;
+  }
+  .layer {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.8s var(--ease);
+  }
+  .l0 {
+    transform: translateZ(0);
+  }
+  .l1 {
+    transform: translateZ(16px);
+  }
+  .l2 {
+    transform: translateZ(32px);
+  }
+  .card:hover .l1,
+  .card.is-on .l1 {
+    transform: translateZ(24px);
+  }
+  .card:hover .l2,
+  .card.is-on .l2 {
+    transform: translateZ(48px);
+  }
+
+  /* stores: 12 storefront tiles + floating BatchRx hub */
+  .stores {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 6px;
+  }
+  .store {
+    position: relative;
+    background: #e9ece6;
+    box-shadow:
+      4px 4px 0 #8f9c92,
+      8px 8px 16px rgba(0, 0, 0, 0.35);
+  }
+  .store i {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 34%;
+    background: repeating-linear-gradient(90deg, #3fd68a 0 5px, #c9f7de 5px 10px);
+  }
+  .store.hot {
+    background: #8ff0bd;
+    box-shadow:
+      4px 4px 0 #22a96a,
+      0 0 22px rgba(63, 214, 138, 0.85);
+  }
+  .hub {
+    inset: 76px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #ffffff, #c9f7de);
+    box-shadow:
+      5px 5px 0 #3fd68a,
+      0 0 40px rgba(63, 214, 138, 0.7);
+    transform: translateZ(58px);
+  }
+  .card:hover .hub,
+  .card.is-on .hub {
+    transform: translateZ(78px);
+  }
+  .hub,
+  .badge {
+    transform-style: preserve-3d;
+  }
+  .hub svg {
+    transform: rotateZ(42deg);
+  }
+
+  /* checklist */
+  .sheet {
+    inset: 12px;
+    padding: 14px;
+    background: #fff;
+    box-shadow: 6px 6px 0 #a9b3ab;
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .sheet--ghost {
+    background: rgba(232, 240, 236, 0.1);
+    border: 1px solid rgba(232, 240, 236, 0.28);
+    box-shadow: none;
+  }
+  .sheet__h {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .sheet__h b {
+    font-weight: 600;
+  }
+  .sheet__h em {
+    font-style: normal;
+    font-size: 9.5px;
+    padding: 2px 6px;
+    background: var(--ok-bg);
+    color: var(--ok);
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    color: var(--ink-2);
+  }
+  .tick {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    background: var(--dk)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%238ff0bd' stroke-width='1.8'%3E%3Cpath d='m3 6.2 2 2 4-4.4'/%3E%3C/svg%3E")
+      center / 12px no-repeat;
+  }
+
+  /* chart */
+  .plate {
+    inset: 8px;
+    display: flex;
+    flex-direction: column;
+    padding: 14px;
+    background: #fff;
+    box-shadow: 6px 6px 0 #a9b3ab;
+  }
+  .plate__h {
+    margin-bottom: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .plate,
+  .bars {
+    transform-style: preserve-3d;
+  }
+  .bars {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 7px;
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 25%;
+  }
+  .bars span {
+    flex: 1;
+    height: 8px;
+    position: relative;
+    transform-style: preserve-3d;
+    background: #c8705c;
+  }
+  /* each bar stands up out of the chart plane */
+  .bars span::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(var(--h) * 0.55px);
+    transform-origin: bottom;
+    transform: rotateX(-90deg);
+    background: linear-gradient(to top, #c8705c, #f0b3a2);
+  }
+  .bars span.low {
+    background: #22a96a;
+  }
+  .bars span.low::before {
+    background: linear-gradient(to top, #22a96a, #8ff0bd);
+    box-shadow: 0 0 14px rgba(63, 214, 138, 0.6);
+  }
+  .pill {
+    inset: auto;
+    top: 4px;
+    right: -26px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--dk);
+    color: #fff;
+    font-size: 11px;
+    white-space: nowrap;
+    box-shadow: 4px 4px 0 #3fd68a;
+  }
+  .pill i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--glow);
+  }
+
+  /* shield over records */
+  .doc {
+    inset: 22px 34px;
+    background: rgba(232, 240, 236, 0.1);
+    border: 1px solid rgba(232, 240, 236, 0.28);
+  }
+  .doc--top {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 18px 16px;
+    background: #fff;
+    border: 0;
+    box-shadow: 6px 6px 0 #a9b3ab;
+  }
+  .doc--top span {
+    height: 6px;
+    background: #e3e7e3;
+  }
+  .doc--top span.s {
+    width: 60%;
+  }
+  .badge {
+    inset: 50px;
+    display: grid;
+    place-items: center;
+    transform: translateZ(70px);
+  }
+  .card:hover .badge,
+  .card.is-on .badge {
+    transform: translateZ(92px);
+  }
+  .badge svg {
+    transform: rotateZ(42deg) rotateX(-56deg);
+    filter: drop-shadow(0 0 16px rgba(63, 214, 138, 0.85));
+  }
+
+  /* ---------- Text panel ---------- */
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px 28px;
+  }
+  .body__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+    color: var(--ink-3);
+  }
+  .stars {
+    color: #e3a514;
+    letter-spacing: 2px;
+    font-size: 13px;
+  }
+  .body h3 {
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+    color: var(--dk);
+    max-width: 18ch;
+  }
+  blockquote {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+  figcaption {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  figcaption b {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+  figcaption small {
+    display: block;
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .av {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    background: var(--dk);
+    color: var(--glow-2);
+    font-weight: 500;
+  }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .ctrl {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ctrl button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      border-color 0.2s;
+  }
+  .ctrl button :global(svg) {
+    width: 15px;
+    height: 15px;
+  }
+  .ctrl button[data-prev] :global(svg) {
+    transform: scaleX(-1);
+  }
+  .ctrl button:hover {
+    background: var(--dk);
+    border-color: var(--dk);
+    color: #fff;
+  }
+  .count {
+    margin-left: 16px;
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+  .count b {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .prog {
+    position: relative;
+    width: 120px;
+    height: 1px;
+    margin-left: 12px;
+    background: var(--line-2);
+  }
+  .prog span {
+    position: absolute;
+    left: 0;
+    top: -0.5px;
+    width: 25%;
+    height: 2px;
+    background: var(--dk);
+    transition: width 0.3s var(--ease);
+  }
+
+  @media (max-width: 900px) {
+    .head {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 680px) {
+    .card {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .art {
+      height: 250px;
+      margin: 8px 8px 0;
+    }
+    .body {
+      padding: 20px;
+    }
+    .body h3 {
+      font-size: 24px;
+    }
+    .prog,
+    .count {
+      display: none;
+    }
+  }
+</style>

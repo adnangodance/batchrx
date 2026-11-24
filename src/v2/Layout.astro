@@ -1,0 +1,76 @@
+---
+import './v2.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'BatchRx — Pharmacy audit software, with an expert for every audit',
+  description = 'BatchRx reconciles what your pharmacy bought against what it billed, flags shortages before PBMs do, and gives you one-on-one support through every desktop, onsite, CMS and investigative audit. $350/month.',
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://batchrx.com');
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'BatchRx',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  description,
+  offers: { '@type': 'Offer', price: '350', priceCurrency: 'USD' },
+};
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#f4f2eb" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      document.documentElement.classList.remove('no-js');
+    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(org)} />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <slot />
+    <script>
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          }),
+        { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+      );
+      document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+    </script>
+    <style>
+      .skip {
+        position: absolute;
+        left: 16px;
+        top: -64px;
+        z-index: 200;
+        padding: 10px 16px;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: var(--sh-2);
+      }
+      .skip:focus {
+        top: 16px;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,132 @@
+---
+import Logo from './Logo.astro';
+import { site } from '../site';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="top">
+      <div class="brand">
+        <Logo />
+        <p>Streamline your audit process with the all-in-one tool designed specifically for pharmacies.</p>
+        <div class="badges">
+          <span class="badge"><span aria-hidden="true">●</span> HIPAA compliant</span>
+          <span class="badge"><span aria-hidden="true">●</span> Serving all 50 states</span>
+        </div>
+      </div>
+      <nav class="cols" aria-label="Footer">
+        <div>
+          <h3 class="mono">Product</h3>
+          <a href="#platform">Platform</a>
+          <a href="#audit-support">Audit support</a>
+          <a href="#integrations">Integrations</a>
+          <a href="#pricing">Pricing</a>
+        </div>
+        <div>
+          <h3 class="mono">Company</h3>
+          <a href="#demo">Request a demo</a>
+          <a href="#faq">FAQ</a>
+          <a href={site.loginUrl}>Log in</a>
+        </div>
+        <div>
+          <h3 class="mono">Legal</h3>
+          <a href={`${site.appUrl}/privacy-policy`}>Privacy Policy</a>
+          <a href={`${site.appUrl}/terms-of-service`}>Terms of Service</a>
+        </div>
+      </nav>
+    </div>
+    <div class="bottom">
+      <span>© {year} BatchRx. All rights reserved.</span>
+      <span class="mono">Pharmacy audits, simplified.</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--paper);
+    padding-block: 72px 32px;
+  }
+  .top {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 48px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    max-width: 360px;
+  }
+  .brand p {
+    font-size: 14.5px;
+    color: var(--ink-3);
+  }
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    font-size: 12px;
+    color: var(--green-800);
+  }
+  .badge span {
+    font-size: 8px;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .cols div {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .cols h3 {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 4px;
+  }
+  .cols a {
+    font-size: 14.5px;
+    color: var(--ink-2);
+    width: fit-content;
+  }
+  .cols a:hover {
+    color: var(--green-800);
+  }
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 24px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  @media (max-width: 760px) {
+    .top {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 420px) {
+    .cols {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

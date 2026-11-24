@@ -1,0 +1,187 @@
+---
+import Arrow from './Arrow.astro';
+import HeroProduct from './HeroProduct.astro';
+import { pmsSystems } from '../site';
+---
+
+<section class="hero on-dk" aria-labelledby="hero-h">
+  <!-- Full-bleed 3D stage: right half of the hero, running under the frosted strip -->
+  <div class="stage" aria-hidden="true">
+    <HeroProduct />
+  </div>
+
+  <div class="hero__grid">
+    <div class="hero__copy">
+      <h1 id="hero-h" class="d1 rv">Your claims should get paid. Not clawed&nbsp;back.</h1>
+      <p class="hero__sub rv" style="--d:.08s">
+        Audit software and one-on-one audit support for independent pharmacies. BatchRx reconciles every unit you buy
+        against every claim you bill, flags shortages before PBMs do, and stays with you through every audit.
+      </p>
+      <div class="hero__ctas rv" style="--d:.14s">
+        <a href="#savings" class="btn">
+          <span class="btn__l">Calculate your savings</span><span class="btn__a"><Arrow /></span>
+        </a>
+        <a href="#approach" class="link">See how it works</a>
+      </div>
+    </div>
+    <div class="hero__spacer"></div>
+  </div>
+
+  <div class="hero__strip">
+    <div class="strip__in">
+      <p class="strip__claim">
+        BatchRx pharmacies have saved more than <b>$50,000,000</b> in audit recoupments across <b>13,500+</b> audits,
+        with a dedicated specialist on every one.
+      </p>
+      <ul class="strip__logos" aria-label="Works with">
+        {pmsSystems.slice(0, 4).map((p) => <li>{p}</li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* ---------- Product stage ---------- */
+  .stage {
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    right: 0;
+    border-left: 1px solid var(--dk-line);
+    background:
+      radial-gradient(520px 380px at 55% 55%, rgba(63, 214, 138, 0.16), transparent 70%),
+      linear-gradient(rgba(232, 240, 236, 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
+      linear-gradient(90deg, rgba(232, 240, 236, 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
+      var(--dk-2);
+    overflow: hidden;
+  }
+  .stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(13, 43, 39, 0.5), transparent 18%);
+  }
+
+  /* ---------- Copy ---------- */
+  .hero__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1440px;
+    margin-inline: auto;
+    min-height: clamp(540px, 68vh, 680px);
+    pointer-events: none;
+  }
+  .hero__copy {
+    display: grid;
+    align-content: start;
+    gap: 40px;
+    padding: clamp(40px, 5vw, 56px) 40px 72px;
+    pointer-events: auto;
+  }
+  h1 {
+    color: #f2f5f3;
+    max-width: 13ch;
+  }
+  .hero__sub {
+    max-width: 560px;
+    font-size: clamp(16px, 1.3vw, 18px);
+    line-height: 1.55;
+    color: rgba(242, 245, 243, 0.92);
+  }
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 36px;
+  }
+
+  /* ---------- Frosted strip over the sculpture ---------- */
+  .hero__strip {
+    position: relative;
+    z-index: 2;
+    border-top: 1px solid var(--dk-line);
+    background: rgba(13, 43, 39, 0.55);
+    backdrop-filter: blur(22px) saturate(1.3);
+    -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  }
+  .strip__in {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1440px;
+    margin-inline: auto;
+    min-height: 120px;
+    align-items: center;
+  }
+  .strip__claim {
+    padding: 22px 40px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--dk-txt);
+    max-width: 640px;
+  }
+  .strip__claim b {
+    color: #fff;
+    font-weight: 500;
+  }
+  .strip__logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 44px;
+    padding: 0 40px;
+  }
+  .strip__logos li {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    color: rgba(242, 245, 243, 0.92);
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  @media (max-width: 960px) {
+    .hero__grid {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .hero__spacer {
+      height: 400px;
+    }
+    .hero__copy {
+      padding: 40px var(--pad) 32px;
+    }
+    .stage {
+      top: auto;
+      left: 0;
+      height: calc(400px + 150px);
+      border-left: 0;
+    }
+    .stage::after {
+      background: linear-gradient(var(--dk), transparent 18%);
+    }
+    .strip__in {
+      grid-template-columns: 1fr;
+    }
+    .strip__claim {
+      padding: 20px var(--pad) 8px;
+    }
+    .strip__logos {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 12px 28px;
+      padding: 0 var(--pad) 22px;
+    }
+  }
+</style>

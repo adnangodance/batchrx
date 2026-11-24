@@ -1,0 +1,68 @@
+---
+// Stepped "pixel block" transition between two section colors.
+interface Props {
+  from: string;
+  to: string;
+  flip?: boolean;
+}
+const { from, to, flip = false } = Astro.props;
+// [left %, width %, height px] blocks of the "to" color rising from the bottom
+const blocks = [
+  [0, 7, 10],
+  [7, 21.5, 34],
+  [14, 7, 0],
+  [28.5, 7, 46],
+  [21.5, 7, 58],
+  [35.5, 14.5, 58],
+  [50, 7.2, 22],
+  [57.2, 7, 58],
+  [64.2, 21, 30],
+  [71, 14, 58],
+  [85.2, 7.4, 16],
+  [92.6, 7.4, 40],
+];
+const floats = [
+  [28.5, 7.2, 22],
+  [42.8, 7.2, 34],
+  [85.8, 7.2, 22],
+];
+---
+
+<div class:list={['steps', { flip }]} style={`--from:${from};--to:${to}`} aria-hidden="true">
+  {blocks.map(([l, w, h]) => <span class="b" style={`left:${l}%;width:${w}%;height:${h}px`} />)}
+  {floats.map(([l, w, b]) => <span class="f" style={`left:${l}%;width:${w}%;bottom:${b}px`} />)}
+</div>
+
+<style>
+  .steps {
+    position: relative;
+    height: 64px;
+    background: var(--from);
+    overflow: hidden;
+  }
+  .b {
+    position: absolute;
+    bottom: 0;
+    background: var(--to);
+  }
+  .b:first-child {
+    height: 6px !important;
+  }
+  .f {
+    position: absolute;
+    height: 8px;
+    background: var(--to);
+  }
+  .steps::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 6px;
+    background: var(--to);
+  }
+  .flip {
+    transform: scaleX(-1);
+  }
+</style>

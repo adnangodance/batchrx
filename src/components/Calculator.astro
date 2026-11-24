@@ -1,0 +1,201 @@
+---
+// Same model as the current batchrx.com calculator: scripts × 3.5% × $175 — now disclosed.
+const RATE = 0.035;
+const VALUE = 175;
+const initial = 4450;
+---
+
+<section class="section calc" aria-labelledby="calc-title">
+  <div class="container grid">
+    <div class="copy reveal">
+      <span class="eyebrow">Benefits of using BatchRx</span>
+      <h2 id="calc-title" class="h2">See how much you could <span class="serif">save</span> from audits</h2>
+      <p class="lead">
+        BatchRx flags prescription discrepancies before they trigger costly PBM audits. By monitoring your pharmacy's
+        data continuously, it reduces compliance risk and prevents revenue loss, month after month.
+      </p>
+      <ul class="check-list">
+        <li>Catch shortages before an invoice audit does</li>
+        <li>Fewer recoupments, fewer clawbacks</li>
+        <li>Hours of spreadsheet reconciliation, gone</li>
+      </ul>
+    </div>
+
+    <div class="card calc__card reveal" data-calc data-rate={RATE} data-value={VALUE}>
+      <div class="calc__top">
+        <label for="rx" class="calc__label mono">Monthly prescriptions</label>
+        <output for="rx" class="calc__rx" data-out="rx">{initial.toLocaleString('en-US')}</output>
+      </div>
+      <input id="rx" type="range" min="100" max="10000" step="50" value={initial} />
+      <div class="calc__scale mono" aria-hidden="true"><span>100</span><span>5,000</span><span>10,000+</span></div>
+
+      <div class="calc__results">
+        <div class="res">
+          <span class="res__value" data-out="disc">{(initial * RATE).toFixed(1)}</span>
+          <span class="res__label">Discrepancies caught / month</span>
+        </div>
+        <div class="res res--strong">
+          <span class="res__value" data-out="save">${Math.round(initial * RATE * VALUE).toLocaleString('en-US')}</span>
+          <span class="res__label">Estimated monthly savings</span>
+        </div>
+      </div>
+      <div class="calc__roi" data-out="roi"></div>
+      <p class="calc__note">
+        Estimate assumes the industry-average 3.5% discrepancy rate in PBM audits and an average of ${VALUE} at risk per
+        discrepancy. Your results will vary.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-calc]').forEach((root) => {
+    const rate = Number(root.dataset.rate);
+    const value = Number(root.dataset.value);
+    const input = root.querySelector<HTMLInputElement>('input[type=range]')!;
+    const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+    const fmt = (n: number) => n.toLocaleString('en-US');
+    const update = () => {
+      const rx = Number(input.value);
+      const disc = rx * rate;
+      const save = Math.round(disc * value);
+      out('rx').textContent = rx >= 10000 ? '10,000+' : fmt(rx);
+      out('disc').textContent = disc.toFixed(1);
+      out('save').textContent = '$' + fmt(save);
+      out('roi').innerHTML = `That's about <b>${Math.max(1, Math.round(save / 350))}×</b> the cost of the $350/mo plan.`;
+      const pct = ((rx - Number(input.min)) / (Number(input.max) - Number(input.min))) * 100;
+      input.style.setProperty('--p', pct + '%');
+    };
+    input.addEventListener('input', update);
+    update();
+  });
+</script>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(40px, 7vw, 96px);
+    align-items: center;
+  }
+  .copy {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .calc__card {
+    padding: clamp(24px, 3vw, 36px);
+    box-shadow: var(--shadow);
+    transition-delay: 0.1s;
+  }
+  .calc__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 18px;
+  }
+  .calc__label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .calc__rx {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--green-800);
+    font-variant-numeric: tabular-nums;
+  }
+  input[type='range'] {
+    --p: 44%;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--green-800) var(--p), var(--mint-100) var(--p));
+    cursor: pointer;
+  }
+  input[type='range']::-webkit-slider-thumb {
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 2px solid var(--green-800);
+    box-shadow: var(--shadow);
+    transition: transform 0.15s;
+  }
+  input[type='range']::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+  input[type='range']::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 2px solid var(--green-800);
+  }
+  .calc__scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-top: 10px;
+  }
+  .calc__results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .res {
+    display: grid;
+    gap: 4px;
+    padding: 18px;
+    border-radius: 12px;
+    background: var(--mint-50);
+  }
+  .res--strong {
+    background: var(--green-800);
+    color: var(--white);
+  }
+  .res__value {
+    font-size: clamp(28px, 3vw, 36px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .res__label {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  .res--strong .res__label {
+    color: var(--mint-200);
+  }
+  .calc__roi {
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+  .calc__roi :global(b) {
+    color: var(--green-800);
+  }
+  .calc__note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 420px) {
+    .calc__results {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

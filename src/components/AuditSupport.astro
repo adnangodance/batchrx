@@ -1,0 +1,267 @@
+---
+const types = [
+  {
+    name: 'Desktop audits',
+    body: 'We help you pull the right claims, collect every document, and submit a complete response on time.',
+    icon: 'M4 5h16v10H4zM8 19h8M12 15v4',
+  },
+  {
+    name: 'Onsite audits',
+    body: 'Prepare before the auditor walks in: what they’ll ask for, where it is, and what your numbers say.',
+    icon: 'M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6',
+  },
+  {
+    name: 'CMS audits',
+    body: 'Medicare-related reviews have their own rules. We guide you through each requirement step by step.',
+    icon: 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z',
+  },
+  {
+    name: 'Investigative audits',
+    body: 'When the stakes are highest, you get focused one-on-one support and records you can stand behind.',
+    icon: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5',
+  },
+];
+
+const checklist = [
+  { label: 'Audit letter reviewed with your specialist', done: true },
+  { label: 'Claims list pulled from Billed report', done: true },
+  { label: 'Prescription images & signatures uploaded', done: true },
+  { label: 'Invoices matched to dispensed quantities', done: false, active: true },
+  { label: 'Response submitted to PBM', done: false },
+];
+---
+
+<section class="section support" id="audit-support" aria-labelledby="support-title">
+  <div class="container">
+    <div class="head">
+      <div class="section-head reveal">
+        <span class="eyebrow eyebrow--dark">Audit assistance</span>
+        <h2 id="support-title" class="h2">
+          Dedicated support.<br />Every client. <span class="serif">Every time.</span>
+        </h2>
+        <p class="lead">
+          Software can flag a discrepancy. It can't sit with you when the audit clock starts. Every BatchRx pharmacy
+          gets one-on-one assistance with every audit, included in the plan, not billed by the hour.
+        </p>
+      </div>
+
+      <div class="case reveal" aria-hidden="true">
+        <div class="case__head">
+          <div>
+            <div class="case__kicker mono">Desktop audit · Express Scripts</div>
+            <div class="case__title">26 prescriptions requested</div>
+          </div>
+          <span class="pill pill--amber">Due in 9 days</span>
+        </div>
+        <ol class="todo">
+          {
+            checklist.map((c) => (
+              <li class:list={{ 'is-done': c.done, 'is-active': c.active }}>
+                <span class="box">{c.done ? '✓' : ''}</span>
+                {c.label}
+              </li>
+            ))
+          }
+        </ol>
+        <div class="case__chat">
+          <span class="avatar">JS</span>
+          <p>“Invoices for Kinray and McKesson are matched. I'll review the last two items with you tomorrow at 10.”</p>
+        </div>
+      </div>
+    </div>
+
+    <ul class="types">
+      {
+        types.map((t, i) => (
+          <li class="type reveal" style={`transition-delay:${i * 0.08}s`}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d={t.icon} />
+            </svg>
+            <h3>{t.name}</h3>
+            <p>{t.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .support {
+    background: var(--green-900);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+  .support::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(216, 229, 224, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(216, 229, 224, 0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 60% 70% at 80% 20%, #000, transparent 75%);
+    pointer-events: none;
+  }
+  .container {
+    position: relative;
+  }
+  .head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+    margin-bottom: clamp(48px, 6vw, 72px);
+  }
+  .head .section-head {
+    margin: 0;
+  }
+  .serif {
+    color: var(--mint-200);
+  }
+  .lead {
+    color: rgba(216, 229, 224, 0.8);
+  }
+
+  .case {
+    background: var(--white);
+    color: var(--ink);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    transition-delay: 0.1s;
+  }
+  .case__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .case__kicker {
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+  .case__title {
+    font-weight: 600;
+    font-size: 18px;
+  }
+  .todo {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 18px;
+    display: grid;
+    gap: 6px;
+  }
+  .todo li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+  .todo li.is-done {
+    color: var(--ink-2);
+  }
+  .todo li.is-active {
+    background: var(--mint-50);
+    color: var(--ink);
+    font-weight: 500;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .box {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--line);
+    font-size: 11px;
+  }
+  .is-done .box {
+    background: var(--green-800);
+    border-color: var(--green-800);
+    color: var(--white);
+  }
+  .is-active .box {
+    border-color: var(--green-700);
+  }
+  .case__chat {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--mint-100);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+  .avatar {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--green-800);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .types {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(216, 229, 224, 0.14);
+    border: 1px solid rgba(216, 229, 224, 0.14);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .type {
+    background: var(--green-900);
+    padding: 28px;
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    transition:
+      background-color 0.25s,
+      opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .type:hover {
+    background: #163f34;
+  }
+  .type svg {
+    color: var(--mint-200);
+    margin-bottom: 8px;
+  }
+  .type h3 {
+    font-size: 18px;
+  }
+  .type p {
+    font-size: 14.5px;
+    color: rgba(216, 229, 224, 0.72);
+  }
+
+  @media (max-width: 960px) {
+    .head {
+      grid-template-columns: 1fr;
+    }
+    .types {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .types {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

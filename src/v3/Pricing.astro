@@ -1,0 +1,185 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../site';
+const groups = [
+  {
+    t: 'Reports',
+    items: ['Inventory reports', 'PBM & billed reports', 'Aberrant reports', 'Controlled substance reports', 'BIN number search'],
+  },
+  {
+    t: 'Audit support',
+    items: ['Dedicated one-on-one audit assistance', 'Desktop & onsite audits', 'CMS & investigative audits', 'Document audits & storage'],
+  },
+  {
+    t: 'Data & integrations',
+    items: ['Works with all your PMS systems', 'All primary & secondary wholesalers', 'Supplier & tag management', 'Reverse distributor tracking'],
+  },
+];
+---
+
+<section class="sec price" id="pricing" aria-labelledby="price-h">
+  <div class="wrap">
+    <div class="sec-head sec-head--c">
+      <span class="eyebrow rv"><Icon name="tag" /> Pricing</span>
+      <h2 id="price-h" class="h2 rv" style="--d:.05s">One simple plan. Everything included.</h2>
+      <p class="lead rv" style="--d:.1s">No tiers, no setup fees, no per-audit charges. Just one predictable monthly price.</p>
+    </div>
+
+    <div class="plan rv">
+      <div class="plan__l">
+        <span class="chip chip--brand">All-in-One Plan</span>
+        <div class="amt">
+          <span class="amt__n tnum">${site.price}</span>
+          <span class="amt__p">/ month</span>
+        </div>
+        <p>Every BatchRx report and audit tool, plus a dedicated specialist for every audit you face.</p>
+        <a href="#demo" class="btn btn--primary btn--lg">Book a demo <Icon name="arrow" /></a>
+        <ul class="terms">
+          <li><Icon name="check" size={15} stroke={2.2} /> Billed monthly</li>
+          <li><Icon name="check" size={15} stroke={2.2} /> No setup fees</li>
+          <li><Icon name="check" size={15} stroke={2.2} /> Cancel anytime</li>
+        </ul>
+      </div>
+      <div class="plan__r">
+        <div class="groups">
+          {
+            groups.map((g) => (
+              <div>
+                <h3>{g.t}</h3>
+                <ul class="checks">
+                  {g.items.map((it) => (
+                    <li>{it}</li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+        <div class="foot">
+          <span><Icon name="lock" size={16} /> HIPAA compliant</span>
+          <span><Icon name="map" size={16} /> Serving all 50 states</span>
+          <span><Icon name="store" size={16} /> Multi-store? <a href="#demo">Talk to us</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .plan {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    max-width: 1080px;
+    margin-inline: auto;
+    border-radius: var(--r-xl);
+    background: #fff;
+    box-shadow: var(--sh-lg);
+    overflow: hidden;
+  }
+  .plan__l {
+    display: grid;
+    gap: 20px;
+    align-content: start;
+    justify-items: start;
+    padding: clamp(28px, 4vw, 44px);
+    background: var(--bg-soft);
+    border-right: 1px solid var(--line);
+  }
+  .amt {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .amt__n {
+    font-size: clamp(56px, 6vw, 72px);
+    font-weight: 600;
+    letter-spacing: -0.055em;
+    line-height: 1;
+  }
+  .amt__p {
+    font-size: 16px;
+    color: var(--ink-3);
+  }
+  .plan__l p {
+    font-size: 15px;
+    color: var(--ink-3);
+  }
+  .plan__l .btn {
+    width: 100%;
+  }
+  .terms {
+    display: grid;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+  .terms li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .terms svg {
+    color: var(--b-600);
+  }
+  .plan__r {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding: clamp(28px, 4vw, 44px);
+    gap: 32px;
+  }
+  .groups {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .groups h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .groups .checks li {
+    font-size: 14.5px;
+  }
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+  .foot span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .foot svg {
+    color: var(--b-600);
+  }
+  .foot a {
+    color: var(--b-700);
+    font-weight: 500;
+  }
+  .foot a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  @media (max-width: 1040px) {
+    .plan {
+      grid-template-columns: 1fr;
+    }
+    .plan__l {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+  }
+  @media (max-width: 720px) {
+    .groups {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

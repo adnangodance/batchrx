@@ -1,0 +1,132 @@
+---
+const todo = [
+  { t: 'Audit letter reviewed with your specialist', s: 'done' },
+  { t: '26 claims pulled from Billed report', s: 'done' },
+  { t: 'Prescription images & signatures uploaded', s: 'done' },
+  { t: 'Invoices matched to dispensed quantities', s: 'now' },
+  { t: 'Response submitted to PBM', s: 'next' },
+];
+---
+
+<div class="scr" aria-hidden="true">
+  <div class="scr__head">
+    <div>
+      <small class="mono">Desktop audit · Express Scripts</small>
+      <b>26 prescriptions requested</b>
+    </div>
+    <span class="chip chip--warn">Due in 9 days</span>
+  </div>
+  <ol class="todo">
+    {
+      todo.map((x) => (
+        <li class={x.s}>
+          <span class="box">{x.s === 'done' ? '✓' : ''}</span>
+          {x.t}
+        </li>
+      ))
+    }
+  </ol>
+  <div class="msg">
+    <span class="av">AS</span>
+    <div>
+      <b>Your audit specialist</b>
+      <p>Kinray and McKesson invoices are matched. Let's review the last two items together tomorrow at 10.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .scr {
+    display: grid;
+    gap: 14px;
+  }
+  .scr__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .scr__head div {
+    display: grid;
+  }
+  .scr__head small {
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .scr__head b {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .todo {
+    display: grid;
+    gap: 4px;
+  }
+  .todo li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    color: var(--ink-3);
+  }
+  .todo .done {
+    color: var(--ink-2);
+  }
+  .todo .now {
+    background: #fff;
+    color: var(--ink);
+    font-weight: 500;
+    box-shadow:
+      0 0 0 1px var(--line),
+      var(--sh-1);
+  }
+  .box {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--line-2);
+    font-size: 11px;
+  }
+  .done .box {
+    background: var(--g-800);
+    border-color: var(--g-800);
+    color: #fff;
+  }
+  .now .box {
+    border-color: var(--g-700);
+    box-shadow: 0 0 0 3px var(--mint);
+  }
+  .msg {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 14px;
+    background: var(--g-900);
+    color: #fff;
+  }
+  .msg b {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .msg p {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--mint);
+  }
+  .av {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--lime);
+    color: var(--g-950);
+    font-size: 12px;
+    font-weight: 600;
+  }
+</style>

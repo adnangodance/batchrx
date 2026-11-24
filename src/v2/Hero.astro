@@ -1,0 +1,503 @@
+---
+import { site } from '../site';
+
+// Sample data that drives the animated reconciliation engine.
+const lines = [
+  { drug: 'Atorvastatin 20 MG Tab', ndc: '00000-0101-01', from: 'Kinray', bought: 24, payer: 'Express Scripts', billed: 24 },
+  { drug: 'Lisinopril 10 MG Tab', ndc: '00000-0103-10', from: 'McKesson', bought: 12, payer: 'CVS Caremark', billed: 15 },
+  { drug: 'Metformin HCl 500 MG', ndc: '00000-0102-05', from: 'Real Value', bought: 18, payer: 'OptumRx', billed: 18 },
+  { drug: 'Gabapentin 300 MG Cap', ndc: '00000-0107-01', from: 'Kinray', bought: 14, payer: 'Express Scripts', billed: 17 },
+  { drug: 'Amlodipine 5 MG Tab', ndc: '00000-0104-02', from: 'TopRx', bought: 16, payer: 'Prime Therapeutics', billed: 16 },
+  { drug: 'Omeprazole 20 MG Cap', ndc: '00000-0105-30', from: 'AXIA', bought: 10, payer: 'CVS Caremark', billed: 12 },
+];
+---
+
+<section class="hero" aria-labelledby="hero-h">
+  <div class="wrap hero__grid">
+    <div class="hero__copy">
+      <span class="kicker rv">Audit software + audit experts</span>
+      <h1 id="hero-h" class="display h-xl rv" style="--d:.06s">
+        Every pill accounted&nbsp;for. <em>Every audit, supported.</em>
+      </h1>
+      <p class="lede rv" style="--d:.12s">
+        BatchRx matches what your pharmacy bought against what it billed, flags shortages before a PBM does, and gives you
+        a dedicated specialist for every audit that lands on your desk.
+      </p>
+      <div class="hero__ctas rv" style="--d:.18s">
+        <a href="#demo" class="btn btn--dark">Book a demo <i aria-hidden="true">→</i></a>
+        <a href="#how" class="btn btn--line">See how it works</a>
+      </div>
+      <ul class="hero__trust rv" style="--d:.24s">
+        <li><b>400+</b> pharmacies</li>
+        <li><b>$50M+</b> in recoupments saved</li>
+        <li><b>All 50</b> states</li>
+      </ul>
+    </div>
+
+    <div class="engine-wrap rv" style="--d:.15s">
+      <div class="engine" data-engine aria-label="Animated example: BatchRx reconciling wholesaler purchases against PBM claims" role="img">
+        <div class="engine__top">
+          <div class="engine__title">
+            <span class="dot-live" aria-hidden="true"></span>
+            Reconciling October
+          </div>
+          <span class="mono engine__store">Main St. Pharmacy</span>
+        </div>
+
+        <div class="engine__cols mono" aria-hidden="true">
+          <span>Purchased</span>
+          <span></span>
+          <span>Billed</span>
+          <span class="r">Result</span>
+        </div>
+
+        <ol class="engine__rows" aria-hidden="true">
+          {
+            lines.map((l, i) => {
+              const diff = l.bought - l.billed;
+              return (
+                <li class="line" data-i={i} data-diff={diff}>
+                  <div class="line__a">
+                    <b>{l.drug}</b>
+                    <small>
+                      {l.from} · <span class="mono">{l.bought}</span>
+                    </small>
+                  </div>
+                  <span class="line__wire">
+                    <span />
+                  </span>
+                  <div class="line__b">
+                    <small>{l.payer}</small>
+                    <span class="mono">{l.billed}</span>
+                  </div>
+                  <div class="line__r">
+                    <span class="chip chip--wait">Checking</span>
+                    {diff < 0 ? <span class="chip chip--bad">{diff} short</span> : <span class="chip chip--ok">✓ Matched</span>}
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ol>
+
+        <div class="engine__foot" aria-hidden="true">
+          <div>
+            <small>Lines checked</small>
+            <b class="mono" data-k="checked">0</b>
+          </div>
+          <div>
+            <small>Shortages found</small>
+            <b class="mono" data-k="short">0</b>
+          </div>
+          <div class="is-risk">
+            <small>Recoupment risk caught</small>
+            <b class="mono" data-k="risk">$0</b>
+          </div>
+        </div>
+      </div>
+
+      <div class="toast" data-toast aria-hidden="true">
+        <span class="toast__av">AS</span>
+        <div>
+          <b>Your audit specialist</b>
+          <p>“I see 3 shortages on CVS & ESI. Let's pull the invoices together before your next audit.”</p>
+        </div>
+      </div>
+      <p class="engine__note mono">Illustrative sample data</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-engine]');
+  if (root) {
+    const rows = [...root.querySelectorAll<HTMLElement>('.line')];
+    const toast = document.querySelector<HTMLElement>('[data-toast]')!;
+    const k = (n: string) => root.querySelector<HTMLElement>(`[data-k="${n}"]`)!;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const PER_UNIT = 245; // illustrative $ per unit at risk
+    let timers: number[] = [];
+
+    const tally = (n: number) => {
+      const done = rows.slice(0, n);
+      const shorts = done.filter((r) => Number(r.dataset.diff) < 0);
+      const units = shorts.reduce((s, r) => s - Number(r.dataset.diff), 0);
+      k('checked').textContent = String(n * 214);
+      k('short').textContent = String(shorts.length);
+      k('risk').textContent = '$' + (units * PER_UNIT).toLocaleString('en-US');
+    };
+
+    const run = () => {
+      timers.forEach(clearTimeout);
+      timers = [];
+      rows.forEach((r) => r.classList.remove('is-run', 'is-done'));
+      toast.classList.remove('show');
+      tally(0);
+      if (reduce) {
+        rows.forEach((r) => r.classList.add('is-done'));
+        tally(rows.length);
+        toast.classList.add('show');
+        return;
+      }
+      rows.forEach((r, i) => {
+        timers.push(window.setTimeout(() => r.classList.add('is-run'), 600 + i * 750));
+        timers.push(
+          window.setTimeout(() => {
+            r.classList.add('is-done');
+            tally(i + 1);
+          }, 1250 + i * 750),
+        );
+      });
+      const end = 1250 + rows.length * 750;
+      timers.push(window.setTimeout(() => toast.classList.add('show'), end));
+      timers.push(window.setTimeout(run, end + 6000));
+    };
+
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          run();
+          io.disconnect();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    io.observe(root);
+  }
+</script>
+
+<style>
+  .hero {
+    padding-block: clamp(40px, 6vw, 80px) clamp(64px, 8vw, 112px);
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: -140px 0 auto;
+    height: 900px;
+    background:
+      radial-gradient(600px 400px at 85% 30%, rgba(214, 240, 122, 0.35), transparent 70%),
+      radial-gradient(700px 500px at 70% 60%, rgba(157, 189, 176, 0.35), transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1.02fr 1fr;
+    gap: clamp(40px, 5vw, 72px);
+    align-items: center;
+  }
+  .hero__copy {
+    display: grid;
+    gap: 28px;
+    justify-items: start;
+  }
+  h1 {
+    font-size: clamp(54px, 7.2vw, 108px);
+  }
+  h1 em {
+    color: var(--g-800);
+  }
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .hero__trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line-2);
+    font-size: 14px;
+    color: var(--ink-3);
+    width: 100%;
+  }
+  .hero__trust b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .engine-wrap {
+    position: relative;
+  }
+  .engine {
+    background: var(--surface);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-3);
+    border: 1px solid rgba(15, 33, 27, 0.06);
+    padding: 22px;
+    overflow: hidden;
+  }
+  .engine__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .engine__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .engine__store {
+    font-size: 11.5px;
+    color: var(--ink-3);
+  }
+  .engine__cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) 44px minmax(0, 1fr) 96px;
+    gap: 12px;
+    padding: 14px 12px 8px;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .r {
+    text-align: right;
+  }
+  .engine__rows {
+    display: grid;
+    gap: 6px;
+  }
+  .line {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) 44px minmax(0, 1fr) 96px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #fafaf7;
+    border: 1px solid transparent;
+    transition:
+      background-color 0.4s,
+      border-color 0.4s,
+      opacity 0.4s;
+    opacity: 0.55;
+  }
+  .line.is-run,
+  .line.is-done {
+    opacity: 1;
+  }
+  .line.is-run:not(.is-done) {
+    background: #fff;
+    border-color: var(--line);
+    box-shadow: var(--sh-1);
+  }
+  .line.is-done[data-diff^='-'] {
+    background: #fff7f4;
+    border-color: #f3d4cb;
+  }
+  .line__a,
+  .line__b {
+    display: grid;
+    min-width: 0;
+    line-height: 1.35;
+  }
+  .line__a b {
+    font-weight: 500;
+    font-size: 13.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  small {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .line__b {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+  }
+  .line__b .mono {
+    font-size: 13.5px;
+  }
+  .line__wire {
+    position: relative;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--line-2) 0 3px, transparent 3px 7px);
+    overflow: hidden;
+  }
+  .line__wire span {
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, var(--g-500), transparent);
+    transform: translateX(-100%);
+  }
+  .line.is-run:not(.is-done) .line__wire span {
+    animation: flow 0.7s linear infinite;
+  }
+  @keyframes flow {
+    to {
+      transform: translateX(260%);
+    }
+  }
+  .line__r {
+    display: grid;
+    justify-items: end;
+  }
+  .line__r > * {
+    grid-area: 1 / 1;
+    transition:
+      opacity 0.3s,
+      transform 0.3s var(--ease);
+  }
+  .chip--wait {
+    background: #f1f0ea;
+    color: var(--ink-3);
+    opacity: 0;
+  }
+  .line.is-run:not(.is-done) .chip--wait {
+    opacity: 1;
+  }
+  .line__r .chip--ok,
+  .line__r .chip--bad {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  .line.is-done .chip--ok,
+  .line.is-done .chip--bad {
+    opacity: 1;
+    transform: none;
+  }
+
+  .engine__foot {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.3fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .engine__foot div {
+    display: grid;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fafaf7;
+    border: 1px solid var(--line);
+  }
+  .engine__foot b {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .engine__foot .is-risk {
+    background: var(--g-900);
+    border-color: var(--g-900);
+    color: #fff;
+  }
+  .engine__foot .is-risk small {
+    color: var(--mint);
+  }
+  .engine__foot .is-risk b {
+    color: var(--lime);
+  }
+  .engine__note {
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--ink-3);
+    text-align: right;
+  }
+
+  .toast {
+    position: absolute;
+    left: -56px;
+    bottom: -28px;
+    display: flex;
+    gap: 12px;
+    max-width: 330px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: var(--g-900);
+    color: #fff;
+    box-shadow: var(--sh-3);
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+    transition:
+      opacity 0.5s var(--ease),
+      transform 0.5s var(--ease);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: none;
+  }
+  .toast__av {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--lime);
+    color: var(--g-950);
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .toast b {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .toast p {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--mint);
+  }
+
+  @media (max-width: 1080px) {
+    .hero__grid {
+      grid-template-columns: 1fr;
+    }
+    .engine-wrap {
+      max-width: 640px;
+      width: 100%;
+      justify-self: center;
+    }
+    .toast {
+      left: auto;
+      right: -12px;
+      bottom: -28px;
+    }
+  }
+  @media (max-width: 560px) {
+    .engine {
+      padding: 14px;
+    }
+    .engine__cols,
+    .line {
+      grid-template-columns: minmax(0, 1fr) 32px 88px;
+      gap: 10px;
+    }
+    .engine__cols span:nth-child(2),
+    .line__wire,
+    .line__b small {
+      display: none;
+    }
+    .line__b {
+      grid-template-columns: 1fr;
+      justify-items: end;
+    }
+    .engine__foot {
+      grid-template-columns: 1fr 1fr;
+    }
+    .engine__foot .is-risk {
+      grid-column: 1 / -1;
+    }
+    .toast {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      margin: -12px 8px 0;
+      max-width: none;
+    }
+  }
+</style>

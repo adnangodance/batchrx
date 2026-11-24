@@ -1,0 +1,286 @@
+---
+const types = [
+  { t: 'Desktop', b: 'Pull the right claims, gather every document, and submit a complete response on time.' },
+  { t: 'Onsite', b: 'Know what the auditor will ask for, where it is, and what your numbers say before they arrive.' },
+  { t: 'CMS', b: 'Medicare-related reviews have their own rules. We walk you through each requirement.' },
+  { t: 'Investigative', b: 'Focused, one-on-one support with records you can stand behind when the stakes are highest.' },
+];
+
+type Cell = 'yes' | 'no' | 'part';
+const cols = ['Spreadsheets', 'Audit-only services', 'Software-only tools', 'BatchRx'];
+const rows: { label: string; v: Cell[] }[] = [
+  { label: 'Finds shortages before an audit', v: ['part', 'no', 'yes', 'yes'] },
+  { label: 'One-on-one help during the audit', v: ['no', 'yes', 'no', 'yes'] },
+  { label: 'Works with your PMS & wholesalers', v: ['part', 'no', 'yes', 'yes'] },
+  { label: 'Documents stored & organized by audit', v: ['no', 'part', 'part', 'yes'] },
+  { label: 'Desktop, onsite, CMS & investigative', v: ['no', 'yes', 'no', 'yes'] },
+  { label: 'One flat monthly price', v: ['yes', 'part', 'yes', 'yes'] },
+];
+const label: Record<Cell, string> = { yes: 'Yes', no: 'No', part: 'Partly' };
+---
+
+<section class="sup" id="support" aria-labelledby="sup-h">
+  <div class="wrap">
+    <div class="sup__top">
+      <div class="sup__copy">
+        <span class="kicker kicker--light rv">Audit assistance</span>
+        <h2 id="sup-h" class="display h-lg rv" style="--d:.06s">
+          Dedicated support.<br />Every client. <em>Every time.</em>
+        </h2>
+        <p class="lede rv" style="--d:.12s">
+          Software can flag a discrepancy. It can't sit with you when the audit clock starts. Every BatchRx pharmacy gets
+          one-on-one assistance with every audit, included in the plan, never billed by the hour.
+        </p>
+        <a href="#demo" class="btn btn--lime rv" style="--d:.18s">Talk to a specialist <i aria-hidden="true">→</i></a>
+      </div>
+
+      <ul class="types">
+        {
+          types.map((x, i) => (
+            <li class="rv" style={`--d:${0.06 * i}s`}>
+              <span class="mono">0{i + 1}</span>
+              <h3>{x.t} audits</h3>
+              <p>{x.b}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="cmp rv">
+      <div class="cmp__head">
+        <h3 class="display">Why pharmacies switch to BatchRx</h3>
+        <p>Most options solve half the problem. BatchRx is built to solve all of it.</p>
+      </div>
+      <div class="cmp__scroll">
+        <table>
+          <caption class="sr-only">How BatchRx compares with spreadsheets, audit-only services and software-only tools</caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="sr-only">Capability</span></th>
+              {cols.map((c, i) => <th scope="col" class:list={{ us: i === 3 }}>{c}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {
+              rows.map((r) => (
+                <tr>
+                  <th scope="row">{r.label}</th>
+                  {r.v.map((v, i) => (
+                    <td class:list={{ us: i === 3 }}>
+                      <span class:list={['mk', v]} aria-label={label[v]} role="img" />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sup {
+    background: var(--g-950);
+    color: #fff;
+    padding-block: clamp(88px, 11vw, 160px);
+    position: relative;
+    overflow: hidden;
+  }
+  .sup::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(216, 229, 224, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(216, 229, 224, 0.045) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse 70% 50% at 30% 10%, #000, transparent 80%);
+    pointer-events: none;
+  }
+  .wrap {
+    position: relative;
+  }
+  .sup__top {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(48px, 7vw, 112px);
+    align-items: start;
+  }
+  .sup__copy {
+    display: grid;
+    gap: 28px;
+    justify-items: start;
+    position: sticky;
+    top: 120px;
+  }
+  .sup em {
+    color: var(--lime);
+  }
+  .sup .lede {
+    color: rgba(216, 229, 224, 0.78);
+  }
+  .types {
+    display: grid;
+  }
+  .types li {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 6px 16px;
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(216, 229, 224, 0.14);
+  }
+  .types li:first-child {
+    padding-top: 8px;
+  }
+  .types .mono {
+    grid-row: span 2;
+    font-size: 12px;
+    color: var(--lime);
+    padding-top: 10px;
+  }
+  .types h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 1.1;
+  }
+  .types p {
+    color: rgba(216, 229, 224, 0.7);
+    font-size: 15px;
+  }
+
+  .cmp {
+    margin-top: clamp(72px, 9vw, 128px);
+    border-radius: var(--r-xl);
+    background: rgba(216, 229, 224, 0.04);
+    border: 1px solid rgba(216, 229, 224, 0.12);
+    padding: clamp(24px, 4vw, 48px);
+  }
+  .cmp__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    margin-bottom: 28px;
+  }
+  .cmp__head h3 {
+    font-size: clamp(32px, 3.4vw, 48px);
+  }
+  .cmp__head p {
+    color: rgba(216, 229, 224, 0.7);
+    max-width: 40ch;
+  }
+  .cmp__scroll {
+    overflow-x: auto;
+    margin-inline: calc(var(--pad) * -0.5);
+    padding-inline: calc(var(--pad) * 0.5);
+  }
+  table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 15px;
+  }
+  th,
+  td {
+    padding: 16px 14px;
+    border-bottom: 1px solid rgba(216, 229, 224, 0.1);
+    text-align: center;
+  }
+  thead th {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(216, 229, 224, 0.7);
+    vertical-align: bottom;
+  }
+  tbody th {
+    text-align: left;
+    font-weight: 400;
+    color: #fff;
+  }
+  .us {
+    background: rgba(214, 240, 122, 0.08);
+  }
+  thead .us {
+    color: var(--g-950);
+    background: var(--lime);
+    border-radius: 14px 14px 0 0;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  tbody tr:last-child .us {
+    border-radius: 0 0 14px 14px;
+  }
+  .mk {
+    display: inline-grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+  }
+  .mk.yes {
+    background: var(--lime);
+  }
+  .mk.yes::before {
+    content: '';
+    width: 10px;
+    height: 6px;
+    border-left: 2px solid var(--g-950);
+    border-bottom: 2px solid var(--g-950);
+    transform: translateY(-1px) rotate(-45deg);
+  }
+  .mk.no::before {
+    content: '';
+    width: 12px;
+    height: 1.5px;
+    background: rgba(216, 229, 224, 0.35);
+  }
+  .mk.part {
+    border: 1.5px solid rgba(216, 229, 224, 0.4);
+    background: linear-gradient(90deg, rgba(216, 229, 224, 0.4) 50%, transparent 50%);
+    width: 18px;
+    height: 18px;
+  }
+  td:not(.us) .mk.yes {
+    background: rgba(216, 229, 224, 0.18);
+  }
+  td:not(.us) .mk.yes::before {
+    border-color: #fff;
+  }
+
+  @media (max-width: 760px) {
+    table {
+      min-width: 640px;
+      font-size: 14px;
+    }
+    tbody th,
+    thead th:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      min-width: 170px;
+      background: #0f2620;
+    }
+    .cmp__scroll::after {
+      content: 'Swipe to compare →';
+      display: block;
+      margin-top: 12px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: rgba(216, 229, 224, 0.5);
+    }
+  }
+  @media (max-width: 960px) {
+    .sup__top {
+      grid-template-columns: 1fr;
+    }
+    .sup__copy {
+      position: static;
+    }
+  }
+</style>

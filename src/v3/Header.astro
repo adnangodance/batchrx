@@ -1,0 +1,184 @@
+---
+import Logo from '../components/Logo.astro';
+import Icon from './Icon.astro';
+import { site } from '../site';
+const links = [
+  { href: '#product', label: 'Product' },
+  { href: '#how', label: 'How it works' },
+  { href: '#support', label: 'Audit support' },
+  { href: '#pricing', label: 'Pricing' },
+  { href: '#faq', label: 'FAQ' },
+];
+---
+
+<header class="hd" data-hd>
+  <div class="wrap hd__in">
+    <a href="/" class="hd__logo" aria-label="BatchRx home"><Logo /></a>
+    <nav class="hd__nav" aria-label="Primary">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+    <div class="hd__cta">
+      <a href={site.loginUrl} class="hd__login">Log in</a>
+      <a href="#demo" class="btn btn--primary hd__btn">Book a demo <Icon name="arrow" /></a>
+      <button class="hd__burger" aria-label="Open menu" aria-expanded="false" aria-controls="m-menu" data-burger>
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="hd__menu" id="m-menu" hidden>
+    <div class="wrap">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+      <a href={site.loginUrl}>Log in</a>
+      <a href="#demo" class="btn btn--primary btn--lg">Book a demo</a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const hd = document.querySelector<HTMLElement>('[data-hd]')!;
+  const b = hd.querySelector<HTMLButtonElement>('[data-burger]')!;
+  const m = hd.querySelector<HTMLElement>('#m-menu')!;
+  const onScroll = () => hd.classList.toggle('is-stuck', scrollY > 8);
+  onScroll();
+  addEventListener('scroll', onScroll, { passive: true });
+  const set = (open: boolean) => {
+    m.hidden = !open;
+    b.setAttribute('aria-expanded', String(open));
+    b.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    hd.classList.toggle('is-open', open);
+  };
+  b.addEventListener('click', () => set(m.hasAttribute('hidden')));
+  m.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)));
+</script>
+
+<style>
+  .hd {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(1.8) blur(14px);
+    -webkit-backdrop-filter: saturate(1.8) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.25s;
+  }
+  .hd.is-stuck,
+  .hd.is-open {
+    border-color: var(--line);
+  }
+  .hd__in {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 68px;
+  }
+  .hd__logo :global(.word) {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.04em;
+  }
+  .hd__nav {
+    display: flex;
+    gap: 4px;
+  }
+  .hd__nav a {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14.5px;
+    font-weight: 500;
+    letter-spacing: -0.011em;
+    color: var(--ink-3);
+    transition:
+      color 0.15s,
+      background-color 0.15s;
+  }
+  .hd__nav a:hover {
+    color: var(--ink);
+    background: var(--bg-soft);
+  }
+  .hd__cta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-left: auto;
+  }
+  .hd__login {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+  .hd__login:hover {
+    color: var(--ink);
+  }
+  .hd__btn {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 14px;
+    border-radius: 9px;
+  }
+  .hd__burger {
+    display: none;
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--line-2);
+    background: #fff;
+    cursor: pointer;
+  }
+  .hd__burger span {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    height: 1.5px;
+    border-radius: 2px;
+    background: var(--ink);
+    transition: transform 0.25s var(--ease);
+  }
+  .hd__burger span:first-child {
+    top: 16px;
+  }
+  .hd__burger span:last-child {
+    top: 22px;
+  }
+  .is-open .hd__burger span:first-child {
+    transform: translateY(3px) rotate(45deg);
+  }
+  .is-open .hd__burger span:last-child {
+    transform: translateY(-3px) rotate(-45deg);
+  }
+  .hd__menu {
+    background: #fff;
+  }
+  .hd__menu .wrap {
+    display: grid;
+    padding-block: 4px 24px;
+  }
+  .hd__menu a:not(.btn) {
+    padding: 14px 0;
+    font-size: 17px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--line);
+  }
+  .hd__menu .btn {
+    margin-top: 20px;
+  }
+  @media (max-width: 960px) {
+    .hd__nav,
+    .hd__login {
+      display: none;
+    }
+    .hd__cta {
+      gap: 10px;
+    }
+    .hd__burger {
+      display: block;
+    }
+  }
+  @media (max-width: 480px) {
+    .hd__btn {
+      display: none;
+    }
+  }
+</style>

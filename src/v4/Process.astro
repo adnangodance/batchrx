@@ -1,0 +1,261 @@
+---
+const items = [
+  {
+    t: 'The letter arrives',
+    b: 'Send it to your specialist. Together you review what the PBM is asking for, the deadline and the claims in scope.',
+  },
+  {
+    t: 'We build the response with you',
+    b: 'Claims are pulled from your billed report, documents are uploaded and organized, and invoices are matched to what was dispensed.',
+  },
+  {
+    t: 'You submit with confidence',
+    b: 'A complete, on-time response, with your records stored in BatchRx for the next time anyone asks.',
+  },
+];
+---
+
+<section class="proc" aria-labelledby="proc-h">
+  <div class="wrap">
+    <div class="frame">
+      <div class="top">
+        <span class="kick rv">When an audit arrives</span>
+        <h2 id="proc-h" class="d2 rv" style="--d:.05s">You're never on your own. We designed it that way.</h2>
+        <p class="body rv" style="--d:.1s">One-on-one assistance is included with every audit, not billed by the hour.</p>
+      </div>
+
+      <div class="grid" data-proc>
+        <ol class="list">
+          {
+            items.map((x, i) => (
+              <li class:list={{ on: i === 0 }} data-i={i}>
+                <span class="n mono">0{i + 1}</span>
+                <div>
+                  <h3>{x.t}</h3>
+                  <p class="body">{x.b}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+
+        <div class="vis on-dk" aria-hidden="true">
+          <svg viewBox="0 0 560 360" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="beam" x1="0" x2="1">
+                <stop offset="0" stop-color="#3fd68a" stop-opacity="0"></stop>
+                <stop offset="1" stop-color="#3fd68a"></stop>
+              </linearGradient>
+              <linearGradient id="fan" x1="0" x2="1">
+                <stop offset="0" stop-color="#3fd68a" stop-opacity="0.05"></stop>
+                <stop offset="1" stop-color="#3fd68a" stop-opacity="0.32"></stop>
+              </linearGradient>
+            </defs>
+            <path d="M300 180 C 400 180, 420 40, 560 0 L 560 360 C 420 320, 400 180, 300 180 Z" fill="url(#fan)"></path>
+            <line x1="0" y1="180" x2="300" y2="180" stroke="rgba(232,240,236,.18)"></line>
+            <line x1="90" y1="180" x2="280" y2="180" stroke="url(#beam)" stroke-width="2" class="beam"></line>
+            <path d="M300 180 C 400 180, 420 90, 480 90" fill="none" stroke="rgba(232,240,236,.25)"></path>
+            <path d="M300 180 C 400 180, 420 270, 480 270" fill="none" stroke="rgba(232,240,236,.25)"></path>
+
+            <g class="nd" data-n="0">
+              <circle cx="90" cy="180" r="22"></circle>
+              <path d="M80 172h20v16H80zM80 172l10 8 10-8" class="ic"></path>
+            </g>
+            <g class="nd" data-n="1">
+              <circle cx="300" cy="180" r="30" class="ring2"></circle>
+              <circle cx="300" cy="180" r="22"></circle>
+              <path d="M300 176a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM290 192a10 10 0 0 1 20 0" class="ic"></path>
+            </g>
+            <g class="nd" data-n="2">
+              <circle cx="480" cy="270" r="20"></circle>
+              <path d="M472 270l6 6 10-11" class="ic"></path>
+              <circle cx="480" cy="90" r="20" class="dim"></circle>
+              <path d="M474 84h12v12h-12z" class="ic dimic"></path>
+            </g>
+            <text x="90" y="236" text-anchor="middle">Audit letter</text>
+            <text x="300" y="236" text-anchor="middle">Your specialist</text>
+            <text x="480" y="320" text-anchor="middle">Response submitted</text>
+            <text x="480" y="48" text-anchor="middle" class="muted">Records stored</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-proc]');
+  if (root) {
+    const lis = [...root.querySelectorAll<HTMLElement>('.list li')];
+    const nds = [...root.querySelectorAll<SVGGElement>('.nd')];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let i = 0;
+    let t = 0;
+    const set = (n: number) => {
+      i = n % lis.length;
+      lis.forEach((l, j) => l.classList.toggle('on', j === i));
+      nds.forEach((g, j) => g.classList.toggle('on', j <= i));
+    };
+    lis.forEach((l, j) => l.addEventListener('mouseenter', () => set(j)));
+    const loop = () => {
+      set(i + 1);
+      t = window.setTimeout(loop, 3200);
+    };
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        set(0);
+        if (!reduce) t = window.setTimeout(loop, 3200);
+        else set(2);
+      } else clearTimeout(t);
+    });
+    io.observe(root);
+  }
+</script>
+
+<style>
+  .proc {
+    background: var(--card);
+    padding-block: 0 clamp(72px, 9vw, 112px);
+  }
+  .frame {
+    border-inline: 1px solid var(--line);
+  }
+  .top {
+    display: grid;
+    gap: 24px;
+    padding: clamp(56px, 7vw, 96px) clamp(20px, 3vw, 40px) clamp(40px, 5vw, 64px);
+  }
+  .top h2 {
+    max-width: 18ch;
+  }
+  .top .body {
+    font-size: 15px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .list {
+    display: grid;
+  }
+  .list li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 12px;
+    padding: 28px clamp(20px, 3vw, 40px);
+    border-bottom: 1px solid var(--line);
+    cursor: default;
+    transition: background-color 0.3s;
+  }
+  .list li:last-child {
+    border-bottom: 0;
+  }
+  .list li::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--glow);
+    transform: scaleY(0);
+    transition: transform 0.4s var(--ease);
+  }
+  .list li.on::before {
+    transform: none;
+  }
+  .list li.on {
+    background: #fafaf8;
+  }
+  .n {
+    font-size: 12px;
+    color: var(--ink-4);
+    padding-top: 6px;
+  }
+  .list h3 {
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    margin-bottom: 6px;
+  }
+  .list .body {
+    font-size: 14.5px;
+    max-width: 46ch;
+  }
+  .vis {
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background:
+      linear-gradient(rgba(232, 240, 236, 0.05) 1px, transparent 1px) 0 0 / 32px 32px,
+      linear-gradient(90deg, rgba(232, 240, 236, 0.05) 1px, transparent 1px) 0 0 / 32px 32px,
+      var(--dk);
+    min-height: 380px;
+  }
+  .vis svg {
+    width: 100%;
+    height: auto;
+  }
+  .nd circle {
+    fill: var(--dk-3);
+    stroke: rgba(232, 240, 236, 0.25);
+    transition:
+      fill 0.4s,
+      stroke 0.4s;
+  }
+  .nd .ring2 {
+    fill: none;
+    stroke: rgba(232, 240, 236, 0.15);
+  }
+  .nd .ic {
+    fill: none;
+    stroke: rgba(232, 240, 236, 0.85);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .nd.on circle:not(.ring2):not(.dim) {
+    fill: #1f5a4a;
+    stroke: var(--glow);
+  }
+  .nd.on .ring2 {
+    stroke: rgba(63, 214, 138, 0.4);
+  }
+  .nd .dim {
+    fill: transparent;
+  }
+  .beam {
+    stroke-dasharray: 60 200;
+    animation: beam 2.4s linear infinite;
+  }
+  @keyframes beam {
+    from {
+      stroke-dashoffset: 260;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  text {
+    fill: rgba(232, 240, 236, 0.85);
+    font-family: var(--sans);
+    font-size: 14px;
+  }
+  text.muted {
+    fill: rgba(232, 240, 236, 0.45);
+  }
+  @media (max-width: 960px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .vis {
+      min-height: 280px;
+    }
+    .frame {
+      border: 0;
+    }
+  }
+</style>

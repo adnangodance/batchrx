@@ -1,0 +1,477 @@
+---
+/**
+ * Isometric pharmacy scene, rendered as SVG.
+ *  - A counter slab holding medicine boxes and amber prescription bottles (the inventory)
+ *  - A scan beam sweeps across it; matched stock glows green, one shortage is flagged red
+ *  - The BatchRx diamond mark floats above as four extruded tiles
+ */
+const S = 46; // px per world unit
+const C = Math.cos(Math.PI / 6);
+const N = Math.sin(Math.PI / 6);
+type V = readonly [number, number];
+const P = (x: number, y: number, z: number): V => [(x - y) * C * S, (x + y) * N * S - z * S];
+const f = (n: number) => n.toFixed(1);
+const pts = (a: V[]) => a.map(([x, y]) => `${f(x)},${f(y)}`).join(' ');
+
+const all: V[] = [];
+const track = (...v: V[]) => {
+  all.push(...v);
+  return v;
+};
+
+// ---------- Primitives ----------
+type Kind = 'white' | 'green' | 'red' | 'slab';
+type Box = { t: 'box'; x: number; y: number; z: number; w: number; d: number; h: number; k: Kind; label?: boolean; id?: string };
+type Bottle = { t: 'bottle'; x: number; y: number; r: number; h: number };
+type Item = Box | Bottle;
+
+const box = (b: Omit<Box, 't'>) => {
+  const { x, y, z, w, d, h } = b;
+  const x1 = x + w;
+  const y1 = y + d;
+  const top = track(P(x, y, z + h), P(x1, y, z + h), P(x1, y1, z + h), P(x, y1, z + h));
+  const left = track(P(x, y1, z), P(x1, y1, z), P(x1, y1, z + h), P(x, y1, z + h));
+  const right = track(P(x1, y, z), P(x1, y1, z), P(x1, y1, z + h), P(x1, y, z + h));
+  // label band on the left face (front-left), middle third of height
+  let band = '';
+  let mark = '';
+  if (b.label && h > 0.7) {
+    const z0 = z + h * 0.34;
+    const z1 = z + h * 0.66;
+    const i0 = x + w * 0.12;
+    const i1 = x + w * 0.88;
+    band = pts([P(i0, y1, z0), P(i1, y1, z0), P(i1, y1, z1), P(i0, y1, z1)]);
+    // small cross mark on the right face
+    const mz = z + h * 0.72;
+    const my = y + d * 0.5;
+    const a = 0.12;
+    const [cx, cy] = P(x1, my, mz);
+    const [hx, hy] = [P(x1, my + a, mz)[0] - cx, P(x1, my + a, mz)[1] - cy];
+    mark = `M${f(cx - hx)} ${f(cy - hy)} L${f(cx + hx)} ${f(cy + hy)} M${f(cx)} ${f(cy - a * S)} L${f(cx)} ${f(cy + a * S)}`;
+  }
+  return { top: pts(top), left: pts(left), right: pts(right), band, mark };
+};
+
+const bottle = (b: Omit<Bottle, 't'>) => {
+  const { x, y, r, h } = b;
+  const rx = r * S * Math.SQRT2 * C;
+  const ry = r * S * Math.SQRT2 * N;
+  const body = (z0: number, z1: number, rr = 1) => {
+    const [cx0, cy0] = P(x, y, z0);
+    const [, cy1] = P(x, y, z1);
+    const a = rx * rr;
+    const e = ry * rr;
+    track([cx0 - a, cy1 - e], [cx0 + a, cy0 + e]);
+    return {
+      side: `M${f(cx0 - a)} ${f(cy0)} L${f(cx0 - a)} ${f(cy1)} L${f(cx0 + a)} ${f(cy1)} L${f(cx0 + a)} ${f(cy0)} A${f(a)} ${f(e)} 0 0 1 ${f(cx0 - a)} ${f(cy0)} Z`,
+      top: { cx: f(cx0), cy: f(cy1), rx: f(a), ry: f(e) },
+    };
+  };
+  const capH = Math.min(0.42, h * 0.28);
+  const main = body(0, h - capH);
+  const cap = body(h - capH, h, 1.08);
+  // label band
+  const [lcx, lcy0] = P(x, y, (h - capH) * 0.28);
+  const [, lcy1] = P(x, y, (h - capH) * 0.72);
+  const label = `M${f(lcx - rx)} ${f(lcy1)} A${f(rx)} ${f(ry)} 0 0 0 ${f(lcx + rx)} ${f(lcy1)} L${f(lcx + rx)} ${f(lcy0)} A${f(rx)} ${f(ry)} 0 0 1 ${f(lcx - rx)} ${f(lcy0)} Z`;
+  return { main, cap, label };
+};
+
+// ---------- Scene ----------
+const slab = { x: -0.4, y: -0.4, z: -0.45, w: 10.2, d: 9.4, h: 0.45 };
+const items: Item[] = [
+  // back row
+  { t: 'box', x: 0.4, y: 0.4, z: 0, w: 1.3, d: 1.5, h: 1.7, k: 'white', label: true },
+  { t: 'box', x: 2.1, y: 0.4, z: 0, w: 1.1, d: 1.5, h: 2.4, k: 'green', label: true },
+  { t: 'box', x: 3.6, y: 0.4, z: 0, w: 1.5, d: 1.5, h: 1.3, k: 'white', label: true },
+  { t: 'box', x: 5.5, y: 0.4, z: 0, w: 1.1, d: 1.5, h: 2.8, k: 'white', label: true },
+  { t: 'box', x: 7.0, y: 0.4, z: 0, w: 1.2, d: 1.5, h: 1.9, k: 'green', label: true },
+  { t: 'box', x: 8.6, y: 0.4, z: 0, w: 0.9, d: 1.5, h: 1.2, k: 'white', label: true },
+  // middle row
+  { t: 'bottle', x: 1.0, y: 3.4, r: 0.48, h: 1.5 },
+  { t: 'bottle', x: 2.2, y: 3.5, r: 0.42, h: 1.2 },
+  { t: 'box', x: 3.2, y: 2.8, z: 0, w: 1.3, d: 1.4, h: 2.0, k: 'red', label: true, id: 'short' },
+  { t: 'box', x: 4.9, y: 2.8, z: 0, w: 1.2, d: 1.4, h: 1.5, k: 'white', label: true },
+  { t: 'box', x: 6.5, y: 2.8, z: 0, w: 1.5, d: 1.4, h: 2.3, k: 'green', label: true, id: 'match' },
+  { t: 'bottle', x: 8.9, y: 3.5, r: 0.44, h: 1.4 },
+  // front row
+  { t: 'box', x: 0.4, y: 5.4, z: 0, w: 1.6, d: 1.3, h: 1.1, k: 'white', label: true },
+  { t: 'box', x: 2.4, y: 5.4, z: 0, w: 1.0, d: 1.3, h: 1.6, k: 'green', label: true },
+  { t: 'bottle', x: 4.3, y: 6.0, r: 0.46, h: 1.3 },
+  { t: 'bottle', x: 5.5, y: 6.1, r: 0.4, h: 1.0 },
+  { t: 'box', x: 6.4, y: 5.4, z: 0, w: 1.3, d: 1.3, h: 1.7, k: 'white', label: true },
+  { t: 'box', x: 8.1, y: 5.4, z: 0, w: 1.3, d: 1.3, h: 1.2, k: 'green', label: true },
+  // front edge
+  { t: 'box', x: 0.4, y: 7.4, z: 0, w: 2.2, d: 1.2, h: 0.6, k: 'white' },
+  { t: 'box', x: 3.0, y: 7.4, z: 0, w: 1.0, d: 1.2, h: 0.9, k: 'white', label: true },
+  { t: 'bottle', x: 5.0, y: 8.0, r: 0.4, h: 1.1 },
+  { t: 'box', x: 6.2, y: 7.4, z: 0, w: 1.8, d: 1.2, h: 0.7, k: 'white' },
+];
+
+const depth = (it: Item) => (it.t === 'box' ? it.x + it.w / 2 + it.y + it.d / 2 : it.x + it.y);
+const sorted = [...items].sort((a, b) => depth(a) - depth(b));
+
+const slabG = box({ ...slab, k: 'slab' });
+// grid lines on the slab top
+const grid: string[] = [];
+for (let gx = 0; gx <= 9; gx += 1.5) grid.push(pts([P(gx, -0.4, 0), P(gx, 9, 0)]));
+for (let gy = 0; gy <= 9; gy += 1.5) grid.push(pts([P(-0.4, gy, 0), P(9.8, gy, 0)]));
+
+// Scan beam (vertical plane at x = 0, translated along x via CSS)
+const beam = pts([P(0, -0.4, 0), P(0, 9, 0), P(0, 9, 4.2), P(0, -0.4, 4.2)]);
+const beamEdge = pts([P(0, -0.4, 0), P(0, 9, 0)]);
+const unit = { x: C * S, y: N * S }; // screen shift per +1 world x
+const SWEEP_FROM = -0.6;
+const SWEEP_TO = 10.2;
+const CYCLE = 9; // seconds
+const SWEEP_FRAC = 0.72;
+const crossAt = (x: number) => ((x - SWEEP_FROM) / (SWEEP_TO - SWEEP_FROM)) * SWEEP_FRAC * CYCLE;
+
+// Floating BatchRx mark: 4 axis-aligned extruded tiles arranged as a diamond
+const L = { cx: 4.2, cy: 0.9, z: 6.1, s: 1.32, u: 0.98, h: 0.6 };
+const logoTiles = [
+  { cx: L.cx - L.u, cy: L.cy - L.u }, // top
+  { cx: L.cx - L.u, cy: L.cy + L.u }, // left
+  { cx: L.cx + L.u, cy: L.cy - L.u }, // right
+  { cx: L.cx + L.u, cy: L.cy + L.u }, // bottom
+]
+  .sort((a, b) => a.cx + a.cy - (b.cx + b.cy))
+  .map((t) => box({ x: t.cx - L.s / 2, y: t.cy - L.s / 2, z: L.z, w: L.s, d: L.s, h: L.h, k: 'green' }));
+// light cone from the mark down to the counter
+const cone = pts([P(L.cx - 1.6, L.cy + 1.9, 0), P(L.cx + 1.9, L.cy - 1.6, 0), P(L.cx + 0.6, L.cy - 0.6, L.z), P(L.cx - 0.6, L.cy + 0.6, L.z)]);
+const shadow = { c: P(L.cx, L.cy, 0) };
+
+// viewBox
+const xs = all.map((p) => p[0]);
+const ys = all.map((p) => p[1]);
+const minX = Math.min(...xs) - 12;
+const minY = Math.min(...ys) - 24;
+const W = Math.max(...xs) + 12 - minX;
+const H = Math.max(...ys) + 12 - minY;
+const pct = (p: V) => ({ l: (((p[0] - minX) / W) * 100).toFixed(2), t: (((p[1] - minY) / H) * 100).toFixed(2) });
+
+const shortItem = items.find((i) => i.t === 'box' && i.id === 'short') as Box;
+const matchItem = items.find((i) => i.t === 'box' && i.id === 'match') as Box;
+const shortAnchor = pct(P(shortItem.x + shortItem.w / 2, shortItem.y, shortItem.h + 0.1));
+const matchAnchor = pct(P(matchItem.x + matchItem.w, matchItem.y + matchItem.d / 2, matchItem.h));
+
+const pal = {
+  white: ['url(#wT)', 'url(#wL)', 'url(#wR)'],
+  green: ['url(#gT)', 'url(#gL)', 'url(#gR)'],
+  red: ['url(#rT)', 'url(#rL)', 'url(#rR)'],
+  slab: ['#143a33', '#0f2f29', '#0b2520'],
+};
+---
+
+<div class="scene" style={`--ux:${f(unit.x)}px;--uy:${f(unit.y)}px;--cycle:${CYCLE}s`}>
+  <svg viewBox={`${f(minX)} ${f(minY)} ${f(W)} ${f(H)}`} aria-hidden="true">
+    <defs>
+      <linearGradient id="wT" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"></stop><stop offset="1" stop-color="#e6e8e1"></stop></linearGradient>
+      <linearGradient id="wL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eceee8"></stop><stop offset="1" stop-color="#c3c9c0"></stop></linearGradient>
+      <linearGradient id="wR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cdd3ca"></stop><stop offset="1" stop-color="#97a399"></stop></linearGradient>
+      <linearGradient id="gT" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ddffec"></stop><stop offset="1" stop-color="#93f0bf"></stop></linearGradient>
+      <linearGradient id="gL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#62eba5"></stop><stop offset="1" stop-color="#22b470"></stop></linearGradient>
+      <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2dc480"></stop><stop offset="1" stop-color="#11744a"></stop></linearGradient>
+      <linearGradient id="rT" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe6df"></stop><stop offset="1" stop-color="#ffb9a6"></stop></linearGradient>
+      <linearGradient id="rL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8f73"></stop><stop offset="1" stop-color="#d9583c"></stop></linearGradient>
+      <linearGradient id="rR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3664a"></stop><stop offset="1" stop-color="#9c3624"></stop></linearGradient>
+      <linearGradient id="amb" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#b8681a"></stop>
+        <stop offset="0.28" stop-color="#f2a948"></stop>
+        <stop offset="0.6" stop-color="#d0801f"></stop>
+        <stop offset="1" stop-color="#7d420d"></stop>
+      </linearGradient>
+      <linearGradient id="capG" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#d9ddd6"></stop>
+        <stop offset="0.35" stop-color="#ffffff"></stop>
+        <stop offset="1" stop-color="#a9b2aa"></stop>
+      </linearGradient>
+      <linearGradient id="beamG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#3fd68a" stop-opacity="0"></stop>
+        <stop offset="0.7" stop-color="#3fd68a" stop-opacity="0.16"></stop>
+        <stop offset="1" stop-color="#3fd68a" stop-opacity="0.38"></stop>
+      </linearGradient>
+      <linearGradient id="coneG" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0" stop-color="#3fd68a" stop-opacity="0.16"></stop>
+        <stop offset="1" stop-color="#3fd68a" stop-opacity="0"></stop>
+      </linearGradient>
+      <radialGradient id="glow">
+        <stop offset="0" stop-color="#3fd68a" stop-opacity="0.45"></stop>
+        <stop offset="1" stop-color="#3fd68a" stop-opacity="0"></stop>
+      </radialGradient>
+    </defs>
+
+    <!-- counter slab -->
+    <g class="slab">
+      <polygon points={slabG.left} fill={pal.slab[1]}></polygon>
+      <polygon points={slabG.right} fill={pal.slab[2]}></polygon>
+      <polygon points={slabG.top} fill={pal.slab[0]}></polygon>
+      {grid.map((g) => <polyline points={g} class="grid" />)}
+      <ellipse cx={f(shadow.c[0])} cy={f(shadow.c[1])} rx="150" ry="80" fill="url(#glow)" class="pool"></ellipse>
+    </g>
+
+    <!-- inventory -->
+    {
+      sorted.map((it) => {
+        if (it.t === 'box') {
+          const g = box(it);
+          const [t, l, r] = pal[it.k];
+          return (
+            <g class:list={['item', `k-${it.k}`]} style={`--at:${crossAt(it.x + it.w / 2).toFixed(2)}s`}>
+              <polygon points={g.left} fill={l} />
+              <polygon points={g.right} fill={r} />
+              <polygon points={g.top} fill={t} />
+              {g.band && <polygon points={g.band} class="band" />}
+              {g.mark && <path d={g.mark} class="mark" />}
+              <polygon points={g.top} class="flash" />
+            </g>
+          );
+        }
+        const g = bottle(it);
+        return (
+          <g class="item bottle" style={`--at:${crossAt(it.x).toFixed(2)}s`}>
+            <path d={g.main.side} fill="url(#amb)" />
+            <ellipse {...g.main.top} fill="#f5b65c" />
+            <path d={g.label} class="blabel" />
+            <path d={g.cap.side} fill="url(#capG)" />
+            <ellipse {...g.cap.top} fill="#ffffff" />
+            <ellipse {...g.cap.top} class="flash" />
+          </g>
+        );
+      })
+    }
+
+    <!-- scan beam -->
+    <g class="beam">
+      <polygon points={beam} fill="url(#beamG)"></polygon>
+      <polyline points={beamEdge} class="beam__edge"></polyline>
+    </g>
+
+    <!-- light cone + floating mark -->
+    <polygon points={cone} fill="url(#coneG)" class="cone"></polygon>
+    <g class="logo">
+      {
+        logoTiles.map((g) => (
+          <g>
+            <polygon points={g.left} fill="url(#gL)" class="rnd rnd--l" />
+            <polygon points={g.right} fill="url(#gR)" class="rnd rnd--r" />
+            <polygon points={g.top} fill="url(#gT)" class="rnd rnd--t" />
+          </g>
+        ))
+      }
+    </g>
+  </svg>
+
+  <div class="tag tag--bad" style={`left:${shortAnchor.l}%;top:${shortAnchor.t}%`} aria-hidden="true">
+    <span class="tag__dot"></span>
+    <span><b>Shortage</b> Lisinopril 10 MG · −30</span>
+  </div>
+  <div class="tag tag--ok" style={`left:${matchAnchor.l}%;top:${matchAnchor.t}%`} aria-hidden="true">
+    <span class="tag__dot"></span>
+    <span><b>Matched</b> 1,254 NDCs</span>
+  </div>
+</div>
+
+<style>
+  .scene {
+    position: relative;
+    width: 100%;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .grid {
+    fill: none;
+    stroke: rgba(232, 240, 236, 0.07);
+    stroke-width: 1;
+  }
+  .pool {
+    animation: pool 4s ease-in-out infinite;
+  }
+  @keyframes pool {
+    50% {
+      opacity: 0.6;
+    }
+  }
+  .band {
+    fill: rgba(255, 255, 255, 0.82);
+  }
+  .k-white .band {
+    fill: rgba(29, 80, 67, 0.12);
+  }
+  .k-green .band {
+    fill: rgba(255, 255, 255, 0.38);
+  }
+  .k-red .band {
+    fill: rgba(255, 255, 255, 0.4);
+  }
+  .mark {
+    fill: none;
+    stroke: rgba(13, 43, 39, 0.35);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .k-green .mark,
+  .k-red .mark {
+    stroke: rgba(255, 255, 255, 0.75);
+  }
+  .blabel {
+    fill: rgba(255, 255, 255, 0.92);
+  }
+  .k-green {
+    filter: drop-shadow(0 0 14px rgba(63, 214, 138, 0.28));
+  }
+  .k-red {
+    animation: alarm 2.4s ease-in-out infinite;
+  }
+  @keyframes alarm {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 6px rgba(240, 120, 90, 0.25));
+    }
+    50% {
+      filter: drop-shadow(0 0 20px rgba(240, 120, 90, 0.7));
+    }
+  }
+
+  /* scan: beam sweeps along +x; each item flashes as the beam crosses it */
+  .beam {
+    animation: sweep var(--cycle) linear infinite;
+  }
+  @keyframes sweep {
+    0% {
+      transform: translate(calc(var(--ux) * -0.6), calc(var(--uy) * -0.6));
+      opacity: 0;
+    }
+    4% {
+      opacity: 1;
+    }
+    68% {
+      opacity: 1;
+    }
+    72% {
+      transform: translate(calc(var(--ux) * 10.2), calc(var(--uy) * 10.2));
+      opacity: 0;
+    }
+    100% {
+      transform: translate(calc(var(--ux) * 10.2), calc(var(--uy) * 10.2));
+      opacity: 0;
+    }
+  }
+  .beam__edge {
+    fill: none;
+    stroke: #8ff0bd;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 6px #3fd68a);
+  }
+  .flash {
+    fill: #c9ffe1;
+    opacity: 0;
+    animation: flash var(--cycle) linear infinite;
+    animation-delay: var(--at);
+  }
+  @keyframes flash {
+    0% {
+      opacity: 0;
+    }
+    2% {
+      opacity: 0.85;
+    }
+    9% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .cone {
+    animation: pool 4s ease-in-out infinite;
+  }
+  .logo {
+    animation: bob 6s ease-in-out infinite;
+    filter: drop-shadow(0 0 22px rgba(63, 214, 138, 0.45));
+  }
+  .rnd {
+    stroke-linejoin: round;
+    stroke-width: 7;
+  }
+  .rnd--t {
+    stroke: #c4f9db;
+  }
+  .rnd--l {
+    stroke: #3fcf8a;
+  }
+  .rnd--r {
+    stroke: #1d9a61;
+  }
+  @keyframes bob {
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+
+  /* callouts */
+  .tag {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 12px;
+    white-space: nowrap;
+    box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+    transform: translate(-50%, calc(-100% - 22px));
+    animation: tagIn 0.6s 1.4s var(--ease) both;
+  }
+  .tag::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 1px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.6);
+  }
+  .tag b {
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .tag__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+  .tag--bad .tag__dot {
+    background: var(--bad);
+    box-shadow: 0 0 0 3px var(--bad-bg);
+  }
+  .tag--ok {
+    transform: translate(10px, calc(-100% - 22px));
+    animation-delay: 2s;
+  }
+  .tag--ok::after {
+    left: 0;
+  }
+  .tag--ok .tag__dot {
+    background: var(--ok);
+    box-shadow: 0 0 0 3px var(--ok-bg);
+  }
+  @keyframes tagIn {
+    from {
+      opacity: 0;
+      margin-top: 8px;
+    }
+  }
+  @media (max-width: 600px) {
+    .tag {
+      font-size: 10.5px;
+      padding: 4px 8px;
+    }
+  }
+</style>

@@ -1,0 +1,258 @@
+---
+import Upload from './screens/Upload.astro';
+import Reconcile from './screens/Reconcile.astro';
+import Defend from './screens/Defend.astro';
+import { pmsSystems } from '../site';
+---
+
+<section class="how" id="how" aria-labelledby="how-h">
+  <div class="wrap">
+    <div class="how__head">
+      <span class="kicker rv">How it works</span>
+      <h2 id="how-h" class="display h-lg rv" style="--d:.06s">
+        Find it. Fix it. <em>Defend it.</em>
+      </h2>
+    </div>
+
+    <div class="how__grid" data-story>
+      <ol class="steps">
+        <li class="step" data-step="0">
+          <span class="step__n mono">01 — Connect</span>
+          <h3>Bring the files you already have.</h3>
+          <p>
+            Upload exports from your pharmacy management system and invoices from your primary and secondary
+            wholesalers. No new software to learn, no IT project.
+          </p>
+          <ul class="tags">{pmsSystems.map((p) => <li>{p}</li>)}</ul>
+          <div class="step__screen"><Upload /></div>
+        </li>
+        <li class="step" data-step="1">
+          <span class="step__n mono">02 — Reconcile</span>
+          <h3>See every gap before the PBM does.</h3>
+          <p>
+            BatchRx matches purchases to claims, NDC by NDC and payer by payer. Shortages, aberrant claims and missing
+            records surface in plain red, while there's still time to fix them.
+          </p>
+          <div class="step__screen"><Reconcile /></div>
+        </li>
+        <li class="step" data-step="2">
+          <span class="step__n mono">03 — Defend</span>
+          <h3>Never face an audit alone.</h3>
+          <p>
+            When a letter arrives, your dedicated specialist works through it with you, from pulling claims and
+            collecting signatures to submitting a complete response on time.
+          </p>
+          <div class="step__screen"><Defend /></div>
+        </li>
+      </ol>
+
+      <div class="stage" aria-hidden="true">
+        <div class="stage__card">
+          <div class="stage__bar">
+            <span class="dots"><i></i><i></i><i></i></span>
+            <span class="mono">BatchRx</span>
+            <span class="stage__prog"><span data-prog></span></span>
+          </div>
+          <div class="stage__body">
+            <div class="screen is-on" data-screen="0"><Upload /></div>
+            <div class="screen" data-screen="1"><Reconcile /></div>
+            <div class="screen" data-screen="2"><Defend /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-story]');
+  if (root) {
+    const steps = [...root.querySelectorAll<HTMLElement>('.step')];
+    const screens = [...root.querySelectorAll<HTMLElement>('[data-screen]')];
+    const prog = root.querySelector<HTMLElement>('[data-prog]')!;
+    const setActive = (i: number) => {
+      steps.forEach((s, j) => s.classList.toggle('is-on', j === i));
+      screens.forEach((s, j) => s.classList.toggle('is-on', j === i));
+      prog.style.width = `${((i + 1) / steps.length) * 100}%`;
+    };
+    setActive(0);
+    const io = new IntersectionObserver(
+      (es) => {
+        es.forEach((e) => {
+          if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.step));
+        });
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    steps.forEach((s) => io.observe(s));
+  }
+</script>
+
+<style>
+  .how {
+    padding-block: clamp(88px, 11vw, 160px) clamp(40px, 6vw, 80px);
+  }
+  .how__head {
+    display: grid;
+    gap: 22px;
+    justify-items: start;
+    margin-bottom: clamp(32px, 5vw, 64px);
+  }
+  .how__head em {
+    color: var(--g-800);
+  }
+  .how__grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(40px, 6vw, 96px);
+  }
+  .steps {
+    display: grid;
+  }
+  .step {
+    min-height: min(72vh, 680px);
+    display: grid;
+    align-content: center;
+    gap: 18px;
+    padding-block: 40px;
+    opacity: 0.28;
+    transition: opacity 0.5s var(--ease);
+  }
+  .step.is-on {
+    opacity: 1;
+  }
+  .step__n {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g-800);
+  }
+  .step h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(34px, 3.6vw, 52px);
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+  .step p {
+    font-size: 17px;
+    color: var(--ink-2);
+    max-width: 46ch;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tags li {
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    font-size: 13px;
+    color: var(--ink-2);
+    background: rgba(255, 255, 255, 0.5);
+  }
+  .step__screen {
+    display: none;
+  }
+
+  .stage {
+    position: relative;
+  }
+  .stage__card {
+    position: sticky;
+    top: max(110px, calc(50vh - 280px));
+    border-radius: var(--r-xl);
+    padding: 10px;
+    background: linear-gradient(160deg, var(--g-800), var(--g-950));
+    box-shadow: var(--sh-3);
+  }
+  .stage__card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(400px 300px at 90% 0%, rgba(214, 240, 122, 0.25), transparent 70%);
+    pointer-events: none;
+  }
+  .stage__bar {
+    position: relative;
+    display: grid;
+    grid-template-columns: 60px 1fr 60px;
+    align-items: center;
+    padding: 8px 14px 14px;
+    font-size: 11.5px;
+    color: var(--mint);
+  }
+  .stage__bar .mono {
+    justify-self: center;
+    opacity: 0.8;
+  }
+  .dots {
+    display: flex;
+    gap: 6px;
+  }
+  .dots i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(216, 229, 224, 0.3);
+  }
+  .stage__prog {
+    height: 3px;
+    border-radius: 9px;
+    background: rgba(216, 229, 224, 0.2);
+    overflow: hidden;
+  }
+  .stage__prog span {
+    display: block;
+    height: 100%;
+    background: var(--lime);
+    transition: width 0.6s var(--ease);
+  }
+  .stage__body {
+    position: relative;
+    display: grid;
+    padding: 22px;
+    min-height: 470px;
+    border-radius: 22px;
+    background: #f7f6f1;
+  }
+  .screen {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+    transition:
+      opacity 0.5s var(--ease),
+      transform 0.6s var(--ease);
+    pointer-events: none;
+  }
+  .screen.is-on {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 960px) {
+    .how__grid {
+      grid-template-columns: 1fr;
+    }
+    .stage {
+      display: none;
+    }
+    .step {
+      min-height: 0;
+      opacity: 1;
+      padding-block: 32px;
+      border-top: 1px solid var(--line);
+    }
+    .step__screen {
+      display: block;
+      margin-top: 8px;
+      padding: 16px;
+      border-radius: var(--r-lg);
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--sh-2);
+    }
+  }
+</style>

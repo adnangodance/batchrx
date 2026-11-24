@@ -1,0 +1,296 @@
+---
+const RATE = 0.035;
+const VALUE = 175;
+const START = 4450;
+const fmt = (n: number) => n.toLocaleString('en-US');
+---
+
+<section class="num" aria-labelledby="num-h">
+  <div class="wrap">
+    <h2 id="num-h" class="sr-only">BatchRx by the numbers</h2>
+    <dl class="big">
+      <div class="rv">
+        <dt>Audit recoupments saved</dt>
+        <dd><span class="u">$</span><span data-cnt="50">50</span><span class="u">M+</span></dd>
+      </div>
+      <div class="rv" style="--d:.08s">
+        <dt>Audits generated</dt>
+        <dd><span data-cnt="13500">13,500</span><span class="u">+</span></dd>
+      </div>
+      <div class="rv" style="--d:.16s">
+        <dt>Active pharmacies</dt>
+        <dd><span data-cnt="400">400</span><span class="u">+</span></dd>
+      </div>
+    </dl>
+
+    <div class="calc rv" data-calc data-rate={RATE} data-value={VALUE}>
+      <div class="calc__copy">
+        <span class="kicker">Savings estimator</span>
+        <h3 class="display">What could BatchRx catch for <em>you?</em></h3>
+        <p>
+          Drag to your monthly prescription volume. The estimate uses the industry-average 3.5% discrepancy rate in PBM
+          audits and an average of ${VALUE} at risk per discrepancy.
+        </p>
+      </div>
+
+      <div class="calc__panel">
+        <div class="calc__row">
+          <label for="rx" class="mono">Monthly prescriptions</label>
+          <output for="rx" data-o="rx">{fmt(START)}</output>
+        </div>
+        <input id="rx" type="range" min="100" max="10000" step="50" value={START} />
+        <div class="calc__ticks mono" aria-hidden="true"><span>100</span><span>2,500</span><span>5,000</span><span>7,500</span><span>10,000+</span></div>
+
+        <div class="calc__out">
+          <div>
+            <small>Discrepancies caught / mo</small>
+            <b data-o="d">{(START * RATE).toFixed(1)}</b>
+          </div>
+          <div class="hl">
+            <small>Estimated savings / mo</small>
+            <b data-o="s">${fmt(Math.round(START * RATE * VALUE))}</b>
+          </div>
+        </div>
+        <p class="calc__roi" data-o="roi"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Count-up for big numbers
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const io = new IntersectionObserver(
+    (es) =>
+      es.forEach((e) => {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        const el = e.target as HTMLElement;
+        const end = Number(el.dataset.cnt);
+        if (reduce) return;
+        const t0 = performance.now();
+        const step = (t: number) => {
+          const p = Math.min(1, (t - t0) / 1600);
+          el.textContent = Math.round(end * (1 - Math.pow(1 - p, 4))).toLocaleString('en-US');
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }),
+    { threshold: 0.5 },
+  );
+  document.querySelectorAll('[data-cnt]').forEach((el) => io.observe(el));
+
+  // Calculator
+  document.querySelectorAll<HTMLElement>('[data-calc]').forEach((root) => {
+    const rate = Number(root.dataset.rate);
+    const val = Number(root.dataset.value);
+    const input = root.querySelector<HTMLInputElement>('input')!;
+    const o = (k: string) => root.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+    const f = (n: number) => n.toLocaleString('en-US');
+    const upd = () => {
+      const rx = Number(input.value);
+      const d = rx * rate;
+      const s = Math.round(d * val);
+      o('rx').textContent = rx >= 10000 ? '10,000+' : f(rx);
+      o('d').textContent = d.toFixed(1);
+      o('s').textContent = '$' + f(s);
+      o('roi').innerHTML = `≈ <b>${Math.max(1, Math.round(s / 350))}×</b> the $350/mo plan. Your results will vary.`;
+      input.style.setProperty('--p', ((rx - 100) / 9900) * 100 + '%');
+    };
+    input.addEventListener('input', upd);
+    upd();
+  });
+</script>
+
+<style>
+  .num {
+    padding-block: clamp(88px, 11vw, 160px);
+  }
+  .big {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 0 0 clamp(64px, 8vw, 112px);
+    border-top: 1px solid var(--ink);
+  }
+  .big div {
+    padding: 24px 24px 0 0;
+  }
+  .big div + div {
+    padding-left: 24px;
+    border-left: 1px solid var(--line-2);
+  }
+  dt {
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+  dd {
+    margin: 8px 0 0;
+    font-family: var(--serif);
+    font-size: clamp(72px, 10vw, 152px);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    color: var(--g-900);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .u {
+    color: var(--g-500);
+    font-size: 0.6em;
+    vertical-align: 0.38em;
+    margin-inline: 2px;
+  }
+
+  .calc {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(32px, 5vw, 80px);
+    align-items: center;
+    padding: clamp(24px, 4vw, 56px);
+    border-radius: var(--r-xl);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-2);
+  }
+  .calc__copy {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+  .calc__copy h3 {
+    font-size: clamp(36px, 4vw, 56px);
+  }
+  .calc__copy em {
+    color: var(--g-800);
+  }
+  .calc__copy p {
+    color: var(--ink-2);
+    font-size: 15px;
+  }
+  .calc__panel {
+    padding: clamp(20px, 3vw, 32px);
+    border-radius: var(--r-lg);
+    background: var(--g-900);
+    color: #fff;
+  }
+  .calc__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+  .calc__row label {
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mint);
+  }
+  output {
+    font-family: var(--serif);
+    font-size: 44px;
+    line-height: 1;
+    color: var(--lime);
+    font-variant-numeric: tabular-nums;
+  }
+  input[type='range'] {
+    --p: 44%;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 9px;
+    background: linear-gradient(90deg, var(--lime) var(--p), rgba(216, 229, 224, 0.2) var(--p));
+    cursor: pointer;
+  }
+  input[type='range']::-webkit-slider-thumb {
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--lime);
+    border: 5px solid var(--g-900);
+    box-shadow: 0 0 0 1.5px var(--lime);
+    transition: transform 0.15s;
+  }
+  input[type='range']::-webkit-slider-thumb:hover {
+    transform: scale(1.12);
+  }
+  input[type='range']::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--lime);
+    border: 4px solid var(--g-900);
+  }
+  .calc__ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 10.5px;
+    color: rgba(216, 229, 224, 0.55);
+  }
+  .calc__out {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 10px;
+    margin-top: 28px;
+  }
+  .calc__out div {
+    display: grid;
+    gap: 6px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgba(216, 229, 224, 0.07);
+    border: 1px solid rgba(216, 229, 224, 0.12);
+  }
+  .calc__out small {
+    font-size: 12px;
+    color: var(--mint);
+  }
+  .calc__out b {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(36px, 3.6vw, 48px);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .calc__out .hl {
+    background: var(--lime);
+    border-color: var(--lime);
+    color: var(--g-950);
+  }
+  .calc__out .hl small {
+    color: var(--g-800);
+  }
+  .calc__roi {
+    margin-top: 14px;
+    font-size: 13px;
+    color: rgba(216, 229, 224, 0.7);
+  }
+  .calc__roi :global(b) {
+    color: var(--lime);
+  }
+
+  @media (max-width: 900px) {
+    .calc {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 720px) {
+    .big {
+      grid-template-columns: 1fr;
+    }
+    .big div,
+    .big div + div {
+      padding: 20px 0;
+      border-left: 0;
+      border-bottom: 1px solid var(--line-2);
+    }
+  }
+  @media (max-width: 420px) {
+    .calc__out {
+      grid-template-columns: 1fr;
+    }
+    .calc__ticks span:nth-child(2n) {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,183 @@
+---
+import Icon from './Icon.astro';
+import { testimonials } from '../site';
+const [feat, ...rest] = testimonials;
+const Stars = '★★★★★';
+---
+
+<section class="sec tst" aria-labelledby="tst-h">
+  <div class="wrap">
+    <div class="sec-head sec-head--c">
+      <span class="eyebrow rv"><Icon name="message" /> Customer stories</span>
+      <h2 id="tst-h" class="h2 rv" style="--d:.05s">Pharmacy owners trust BatchRx with their audits.</h2>
+    </div>
+
+    <div class="grid">
+      <figure class="feat rv">
+        <div class="stars" aria-label="Rated 5 out of 5">{Stars}</div>
+        <blockquote>“{feat.quote}”</blockquote>
+        <figcaption>
+          <span class="av av--light">{feat.name[0]}</span>
+          <span>
+            <b>{feat.name}</b>
+            <small>{feat.place}</small>
+          </span>
+          <span class="feat__tag"><Icon name="store" size={14} /> Multi-store owner</span>
+        </figcaption>
+      </figure>
+
+      {
+        rest.map((t, i) => (
+          <figure class="q rv" style={`--d:${(i + 1) * 0.06}s`}>
+            <div class="stars" aria-label="Rated 5 out of 5">
+              {Stars}
+            </div>
+            <blockquote>“{t.quote}”</blockquote>
+            <figcaption>
+              <span class="av">{t.name[0]}</span>
+              <span>
+                <b>{t.name}</b>
+                <small>{t.place}</small>
+              </span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .tst {
+    background: var(--bg-soft);
+    border-block: 1px solid var(--line);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  figure {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 28px;
+    border-radius: var(--r-lg);
+    background: #fff;
+    box-shadow:
+      0 0 0 1px var(--line),
+      var(--sh-xs);
+  }
+  .feat {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 28px 48px;
+    padding: clamp(28px, 4vw, 48px);
+    background: var(--b-900);
+    color: #fff;
+    box-shadow: var(--sh-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  .feat::after {
+    content: '';
+    position: absolute;
+    right: -120px;
+    top: -160px;
+    width: 460px;
+    height: 460px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(95, 164, 139, 0.35), transparent);
+  }
+  .feat .stars {
+    grid-column: 1 / -1;
+  }
+  .feat blockquote {
+    position: relative;
+    z-index: 1;
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.25;
+    letter-spacing: -0.03em;
+    max-width: 30ch;
+  }
+  .feat figcaption {
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+  }
+  .feat small {
+    color: var(--b-200);
+  }
+  .feat__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--b-100);
+  }
+  .stars {
+    color: #e3a514;
+    letter-spacing: 2px;
+    font-size: 15px;
+  }
+  blockquote {
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    letter-spacing: -0.011em;
+  }
+  .q figcaption {
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  figcaption {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  figcaption b {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  figcaption small {
+    display: block;
+    font-size: 13.5px;
+    color: var(--ink-3);
+  }
+  .av {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--b-50);
+    color: var(--b-800);
+    font-weight: 600;
+  }
+  .av--light {
+    background: var(--b-100);
+    color: var(--b-900);
+  }
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .feat {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

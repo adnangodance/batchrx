@@ -1,0 +1,92 @@
+---
+import Icon from './Icon.astro';
+const items = [
+  { i: 'chart', t: 'PBM report', b: 'See billed quantities by payer so you know where your audit risk is concentrated.' },
+  { i: 'receipt', t: 'Billed report', b: 'Every claim in the period, searchable by drug, NDC, payer and date.' },
+  { i: 'alert', t: 'Aberrant report', b: 'Surface the outlier claims that put pharmacies on an audit list, and review them first.' },
+  { i: 'search', t: 'BIN number search', b: 'Look up any BIN in seconds and see every claim tied to it.' },
+  { i: 'pill', t: 'Controlled substances', b: 'Purchases, dispensing and reverse-distributor returns, reconciled end to end.' },
+  { i: 'tag', t: 'Supplier & tag management', b: 'Tag, prioritize and mark items “Need to review” or “Ordered” as you work.' },
+  { i: 'store', t: 'Multi-store view', b: 'Own several pharmacies? Oversee every location from one screen.' },
+  { i: 'lock', t: 'HIPAA compliant', b: 'Built to protect patient health information from day one.' },
+] as const;
+---
+
+<section class="sec caps" aria-labelledby="caps-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow rv"><Icon name="grid" /> Every report you need</span>
+      <h2 id="caps-h" class="h2 rv" style="--d:.05s">Built for the way pharmacy audits actually work.</h2>
+    </div>
+    <ul class="grid">
+      {
+        items.map((x, i) => (
+          <li class="rv" style={`--d:${(i % 4) * 0.05}s`}>
+            <span class="ic">
+              <Icon name={x.i} size={18} />
+            </span>
+            <h3>{x.t}</h3>
+            <p>{x.b}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  li {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    padding: 28px 24px 32px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    transition:
+      background-color 0.25s,
+      opacity 0.8s var(--ease),
+      transform 0.8s var(--ease);
+  }
+  li:hover {
+    background: var(--bg-soft);
+  }
+  .ic {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--b-700);
+    box-shadow:
+      0 0 0 1px var(--line),
+      var(--sh-xs);
+    margin-bottom: 8px;
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.018em;
+  }
+  p {
+    font-size: 14.5px;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+  @media (max-width: 960px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

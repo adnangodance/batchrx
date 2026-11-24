@@ -1,0 +1,327 @@
+---
+import Icon from './Icon.astro';
+const types = [
+  { i: 'monitor', t: 'Desktop audits', b: 'Pull the right claims, gather every document and submit a complete response on time.' },
+  { i: 'building', t: 'Onsite audits', b: 'Know what the auditor will ask for, where it is and what your numbers say before they arrive.' },
+  { i: 'shield', t: 'CMS audits', b: 'Medicare-related reviews have their own rules. We walk you through each requirement.' },
+  { i: 'scale', t: 'Investigative audits', b: 'Focused one-on-one support and records you can stand behind when stakes are highest.' },
+] as const;
+
+type C = 'y' | 'n' | 'p';
+const cols = ['Spreadsheets', 'Audit-only services', 'Software-only tools'];
+const rows: { l: string; v: C[] }[] = [
+  { l: 'Finds shortages before an audit', v: ['p', 'n', 'y'] },
+  { l: 'One-on-one help during the audit', v: ['n', 'y', 'n'] },
+  { l: 'Works with your PMS & wholesalers', v: ['p', 'n', 'y'] },
+  { l: 'Documents organized by audit', v: ['n', 'p', 'p'] },
+  { l: 'Desktop, onsite, CMS & investigative', v: ['n', 'y', 'n'] },
+  { l: 'One flat monthly price', v: ['y', 'p', 'y'] },
+];
+const lbl: Record<C, string> = { y: 'Yes', n: 'No', p: 'Partially' };
+---
+
+<section class="sup" id="support" aria-labelledby="sup-h">
+  <div class="wrap">
+    <div class="top">
+      <div class="copy">
+        <span class="eyebrow eyebrow--d rv"><Icon name="users" /> Audit assistance</span>
+        <h2 id="sup-h" class="h2 rv" style="--d:.05s">Dedicated support. Every client. Every time.</h2>
+        <p class="lead rv" style="--d:.1s">
+          Software can flag a discrepancy. It can't sit with you when the audit clock starts. Every BatchRx pharmacy gets
+          one-on-one assistance with every audit, included in the plan and never billed by the hour.
+        </p>
+        <a href="#demo" class="btn btn--white btn--lg rv" style="--d:.15s">Talk to a specialist <Icon name="arrow" /></a>
+      </div>
+      <ul class="types">
+        {
+          types.map((x, i) => (
+            <li class="rv" style={`--d:${i * 0.06}s`}>
+              <span class="ic">
+                <Icon name={x.i} size={18} />
+              </span>
+              <h3>{x.t}</h3>
+              <p>{x.b}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="cmp rv">
+      <div class="cmp__head">
+        <h3>Why pharmacies choose BatchRx</h3>
+        <p>Most options solve half the problem. BatchRx covers the whole audit.</p>
+      </div>
+      <div class="scroll">
+        <table>
+          <caption class="sr-only">BatchRx compared with spreadsheets, audit-only services and software-only tools</caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="sr-only">Capability</span></th>
+              {cols.map((c) => <th scope="col">{c}</th>)}
+              <th scope="col" class="us">
+                <span class="us__lbl">BatchRx</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              rows.map((r) => (
+                <tr>
+                  <th scope="row">{r.l}</th>
+                  {r.v.map((v) => (
+                    <td>
+                      <span class:list={['mk', v]} role="img" aria-label={lbl[v]} />
+                    </td>
+                  ))}
+                  <td class="us">
+                    <span class="mk y us__mk" role="img" aria-label="Yes" />
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sup {
+    position: relative;
+    background: var(--b-950);
+    color: #fff;
+    padding-block: clamp(88px, 11vw, 144px);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .sup::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(900px 500px at 15% 0%, rgba(43, 117, 96, 0.35), transparent 70%),
+      radial-gradient(700px 500px at 100% 100%, rgba(43, 117, 96, 0.18), transparent 70%);
+  }
+  .sup::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 60% 60% at 20% 10%, #000, transparent 80%);
+  }
+  .top {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(48px, 7vw, 96px);
+    align-items: center;
+  }
+  .copy {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .eyebrow--d {
+    color: var(--b-200);
+  }
+  .h2 {
+    color: #fff;
+  }
+  .lead {
+    color: rgba(216, 229, 224, 0.75);
+  }
+  .copy .btn {
+    margin-top: 8px;
+  }
+  .types {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .types li {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    padding: 24px;
+    border-radius: var(--r-lg);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    transition:
+      background-color 0.25s,
+      opacity 0.8s var(--ease),
+      transform 0.8s var(--ease);
+  }
+  .types li:hover {
+    background: rgba(255, 255, 255, 0.07);
+  }
+  .types .ic {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(216, 229, 224, 0.1);
+    color: var(--b-100);
+    margin-bottom: 6px;
+  }
+  .types h3 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .types p {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: rgba(216, 229, 224, 0.65);
+  }
+
+  .cmp {
+    margin-top: clamp(64px, 8vw, 104px);
+    padding: clamp(24px, 3.4vw, 40px);
+    border-radius: var(--r-xl);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+  .cmp__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 8px 32px;
+    margin-bottom: 24px;
+  }
+  .cmp__head h3 {
+    font-size: clamp(22px, 2.2vw, 28px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .cmp__head p {
+    font-size: 15px;
+    color: rgba(216, 229, 224, 0.65);
+  }
+  .scroll {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 15px;
+  }
+  th,
+  td {
+    padding: 15px 14px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+  thead th {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(216, 229, 224, 0.6);
+    padding-top: 6px;
+  }
+  tbody th {
+    text-align: left;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+  .us {
+    background: rgba(216, 229, 224, 0.06);
+    width: 150px;
+  }
+  thead .us {
+    border-radius: 12px 12px 0 0;
+    padding-top: 14px;
+  }
+  tbody tr:last-child .us {
+    border-radius: 0 0 12px 12px;
+  }
+  .us__lbl {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .mk {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    vertical-align: middle;
+  }
+  .mk.y {
+    background: rgba(216, 229, 224, 0.14);
+  }
+  .mk.y::before {
+    content: '';
+    width: 9px;
+    height: 5px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: translateY(-1px) rotate(-45deg);
+  }
+  .mk.y.us__mk {
+    background: #3ad08b;
+  }
+  .mk.y.us__mk::before {
+    border-color: var(--b-950);
+  }
+  .mk.n::before {
+    content: '';
+    width: 10px;
+    height: 1.5px;
+    background: rgba(216, 229, 224, 0.3);
+  }
+  .mk.p {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid rgba(216, 229, 224, 0.4);
+    background: linear-gradient(90deg, rgba(216, 229, 224, 0.4) 50%, transparent 50%);
+  }
+
+  @media (max-width: 960px) {
+    .top {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 760px) {
+    table {
+      min-width: 620px;
+      font-size: 14px;
+    }
+    tbody th,
+    thead th:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      min-width: 160px;
+      background: #0b1d18;
+    }
+    .scroll::after {
+      content: 'Swipe to compare →';
+      display: block;
+      margin-top: 12px;
+      font-size: 12px;
+      color: rgba(216, 229, 224, 0.45);
+    }
+  }
+  @media (max-width: 560px) {
+    .types {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

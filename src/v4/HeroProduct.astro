@@ -1,0 +1,827 @@
+---
+/**
+ * Hero product composition: the BatchRx app, live.
+ * Story (loops): data sources connect → rows reconcile → a shortage is flagged → a specialist steps in.
+ * Pure HTML/CSS (pixel-sharp), lightly tilted in 3D, with mouse parallax.
+ */
+const LOGO =
+  'M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z';
+
+const rows = [
+  { ndc: '0093-0150-01', drug: 'Atorvastatin 20 mg', from: 'Kinray', bought: 240, billed: 240 },
+  { ndc: '0071-0155-23', drug: 'Lisinopril 10 mg', from: 'Kinray', bought: 120, billed: 150 },
+  { ndc: '0093-1048-01', drug: 'Metformin 500 mg', from: 'McKesson', bought: 500, billed: 500 },
+  { ndc: '0228-2667-11', drug: 'Gabapentin 300 mg', from: 'Real Value', bought: 300, billed: 300 },
+  { ndc: '0378-0018-01', drug: 'Amlodipine 5 mg', from: 'McKesson', bought: 180, billed: 180 },
+  { ndc: '0093-5264-56', drug: 'Omeprazole 20 mg', from: 'Kinray', bought: 90, billed: 110 },
+  { ndc: '0378-1803-01', drug: 'Levothyroxine 50 mcg', from: 'Real Value', bought: 90, billed: 90 },
+];
+const sources = [
+  { n: 'PrimeRx', t: 'Pharmacy system', c: 'pms' },
+  { n: 'Kinray', t: 'Primary wholesaler', c: 'w' },
+  { n: 'McKesson', t: 'Secondary wholesaler', c: 'w' },
+  { n: 'Real Value', t: 'Secondary wholesaler', c: 'w' },
+];
+const nav = ['Overview', 'Reconciliation', 'PBM report', 'Billed report', 'Aberrant', 'Audits'];
+---
+
+<div class="pv" data-pv aria-hidden="true">
+  <div class="pv__scene" data-scene>
+    <!-- main app window -->
+    <div class="win layer" style="--z:0">
+      <div class="win__bar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="crumb">BatchRx <b>/</b> Reconciliation</span>
+        <span class="me">MS</span>
+      </div>
+      <div class="win__body">
+        <aside class="side">
+          <div class="side__logo">
+            <svg viewBox="0 0 27.7279 27.7279" width="20" height="20"><path d={LOGO} fill="#1D5043"></path></svg>
+            <span>BatchRx</span>
+          </div>
+          {nav.map((n, i) => <span class:list={['side__it', { on: i === 1 }]}>{n}</span>)}
+          <div class="side__store">
+            <small>Pharmacy</small>
+            <b>Main St. Pharmacy</b>
+          </div>
+        </aside>
+        <main class="main">
+          <div class="main__head">
+            <div>
+              <h4>Inventory reconciliation</h4>
+              <p>Purchased from wholesalers vs. billed to PBMs</p>
+            </div>
+            <span class="pill">Oct 1 – Oct 31</span>
+          </div>
+          <div class="kpis">
+            <div><small>Units purchased</small><b>12,840</b></div>
+            <div><small>Units billed</small><b>12,920</b></div>
+            <div class="kpi--bad"><small>Shortages</small><b data-short>0</b></div>
+            <div><small>Reconciled</small><b data-done>0/7</b></div>
+          </div>
+          <div class="tbl">
+            <div class="tr th"><span>NDC</span><span>Drug</span><span class="n">Bought</span><span class="n">Billed</span><span class="n">Diff</span><span class="st">Status</span></div>
+            {
+              rows.map((r, i) => {
+                const d = r.bought - r.billed;
+                return (
+                  <div class:list={['tr', 'row', { 'row--bad': d < 0, focus: i === 1 }]} data-row={i} data-bad={d < 0 ? '1' : '0'}>
+                    <span class="mono ndc">{r.ndc}</span>
+                    <span class="drug">
+                      {r.drug}
+                      <small>{r.from}</small>
+                    </span>
+                    <span class="n">{r.bought}</span>
+                    <span class="n">{r.billed}</span>
+                    <span class:list={['n', 'diff', { neg: d < 0 }]}>{d < 0 ? d : '0'}</span>
+                    <span class="st">
+                      <em class="s s--wait">
+                        <i class="spin"></i>Checking
+                      </em>
+                      {d < 0 ? <em class="s s--bad">Shortage</em> : <em class="s s--ok">Matched</em>}
+                    </span>
+                  </div>
+                );
+              })
+            }
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- data sources -->
+    <div class="card card--src layer" style="--z:60" data-card="src">
+      <div class="card__h"><span>Data sources</span><em>4 connected</em></div>
+      {
+        sources.map((s, i) => (
+          <div class="src" data-src={i}>
+            <span class:list={['src__ic', s.c]}>{s.n.slice(0, 2)}</span>
+            <span class="src__t">
+              <b>{s.n}</b>
+              <small>{s.t}</small>
+            </span>
+            <span class="src__ok">
+              <svg viewBox="0 0 16 16" width="12" height="12">
+                <path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- shortage found -->
+    <div class="card card--bad layer" style="--z:90" data-card="bad">
+      <div class="bad__h">
+        <span class="bad__dot"></span>
+        <b>Shortage found</b>
+        <em>Lisinopril 10 mg</em>
+      </div>
+      <div class="bars">
+        <div class="bar"><small>Purchased</small><span><i style="width:80%"></i></span><b>120</b></div>
+        <div class="bar bar--b"><small>Billed</small><span><i style="width:100%"></i></span><b>150</b></div>
+      </div>
+      <div class="bad__f">
+        <div><small>Units short</small><b>−30</b></div>
+        <div><small>At risk</small><b>$1,950</b></div>
+        <span class="btn-mini">Assign specialist →</span>
+      </div>
+    </div>
+
+    <!-- specialist -->
+    <div class="card card--msg layer" style="--z:120" data-card="msg">
+      <span class="av">AS<i></i></span>
+      <div>
+        <div class="msg__h"><b>Your audit specialist</b><small>now</small></div>
+        <p class="typing"><i></i><i></i><i></i></p>
+        <p class="msg__t">I'll pull the Kinray invoices for Lisinopril before your Express Scripts audit.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-pv]');
+  if (root) {
+    const scene = root.querySelector<HTMLElement>('[data-scene]')!;
+    const rowsEls = [...root.querySelectorAll<HTMLElement>('[data-row]')];
+    const srcEls = [...root.querySelectorAll<HTMLElement>('[data-src]')];
+    const card = (n: string) => root.querySelector<HTMLElement>(`[data-card="${n}"]`)!;
+    const shortEl = root.querySelector<HTMLElement>('[data-short]')!;
+    const doneEl = root.querySelector<HTMLElement>('[data-done]')!;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const freeze = new URLSearchParams(location.search).get('t');
+    let timers: number[] = [];
+    const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
+
+    // fit the fixed-size composition to the stage
+    const fit = () => {
+      const w = root.clientWidth;
+      const h = root.clientHeight;
+      const s = Math.min((w - 24) / 790, (h - 10) / 610, 1.2);
+      root.style.setProperty('--s', String(Math.max(0.45, s)));
+    };
+    new ResizeObserver(fit).observe(root);
+    fit();
+
+    const reset = () => {
+      timers.forEach(clearTimeout);
+      timers = [];
+      root.classList.remove('done');
+      rowsEls.forEach((r) => r.classList.remove('run', 'ok', 'hl'));
+      srcEls.forEach((s) => s.classList.remove('on'));
+      ['src', 'bad', 'msg'].forEach((n) => card(n).classList.remove('in', 'typed'));
+      shortEl.textContent = '0';
+      doneEl.textContent = `0/${rowsEls.length}`;
+    };
+    const finalState = () => {
+      srcEls.forEach((s) => s.classList.add('on'));
+      card('src').classList.add('in');
+      rowsEls.forEach((r) => r.classList.add('ok'));
+      rowsEls[1].classList.add('hl');
+      shortEl.textContent = String(rowsEls.filter((r) => r.dataset.bad === '1').length);
+      doneEl.textContent = `${rowsEls.length}/${rowsEls.length}`;
+      card('bad').classList.add('in');
+      card('msg').classList.add('in', 'typed');
+      root.classList.add('done');
+    };
+
+    const play = () => {
+      reset();
+      at(200, () => card('src').classList.add('in'));
+      srcEls.forEach((s, i) => at(600 + i * 280, () => s.classList.add('on')));
+      let shorts = 0;
+      rowsEls.forEach((r, i) => {
+        at(1900 + i * 420, () => r.classList.add('run'));
+        at(2250 + i * 420, () => {
+          r.classList.add('ok');
+          if (r.dataset.bad === '1') shorts++;
+          shortEl.textContent = String(shorts);
+          doneEl.textContent = `${i + 1}/${rowsEls.length}`;
+        });
+      });
+      const end = 2250 + rowsEls.length * 420;
+      at(end + 200, () => {
+        rowsEls[1].classList.add('hl');
+        card('bad').classList.add('in');
+      });
+      at(end + 1500, () => card('msg').classList.add('in'));
+      at(end + 2600, () => {
+        card('msg').classList.add('typed');
+        root.classList.add('done');
+      });
+      at(end + 7200, play);
+    };
+
+    if (reduced || freeze !== null) finalState();
+    else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) {
+          play();
+          io.disconnect();
+        }
+      });
+      io.observe(root);
+    }
+
+    // mouse parallax — the loop only runs while the pointer is moving, then sleeps
+    let tx = 0;
+    let ty = 0;
+    let x = 0;
+    let y = 0;
+    let running = false;
+    const loop = () => {
+      x += (tx - x) * 0.08;
+      y += (ty - y) * 0.08;
+      scene.style.setProperty('--px', x.toFixed(3));
+      scene.style.setProperty('--py', y.toFixed(3));
+      if (Math.abs(tx - x) + Math.abs(ty - y) > 0.002) requestAnimationFrame(loop);
+      else running = false;
+    };
+    if (!reduced)
+      addEventListener(
+        'pointermove',
+        (e) => {
+          tx = (e.clientX / innerWidth - 0.5) * 2;
+          ty = (e.clientY / innerHeight - 0.5) * 2;
+          if (!running) {
+            running = true;
+            requestAnimationFrame(loop);
+          }
+        },
+        { passive: true },
+      );
+  }
+</script>
+
+<style>
+  .pv {
+    --s: 1;
+    position: absolute;
+    inset: 0 0 96px 0; /* keep the composition above the frosted strip */
+    display: grid;
+    place-items: center;
+    perspective: 1800px;
+    overflow: hidden;
+  }
+  .pv__scene {
+    --px: 0;
+    --py: 0;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 760px;
+    height: 600px;
+    margin: -300px 0 0 -380px; /* centre before scaling, so it fits any stage width */
+    transform: translateX(-10px) scale(var(--s)) rotateX(calc(7deg - var(--py) * 2deg)) rotateY(calc(-12deg + var(--px) * 3deg)) rotateZ(0.6deg);
+    transform-style: preserve-3d;
+    font-family: var(--sans);
+    color: #0d2b27;
+  }
+  .layer {
+    position: absolute;
+    transform: translateZ(calc(var(--z) * 1px)) translate(calc(var(--px) * var(--z) * -0.06px), calc(var(--py) * var(--z) * -0.06px));
+  }
+
+  /* ---------- window ---------- */
+  .win {
+    left: 60px;
+    top: 40px;
+    width: 620px;
+    height: 470px;
+    background: #fff;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.4),
+      0 40px 80px -20px rgba(0, 0, 0, 0.55),
+      0 20px 40px -20px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    font-size: 11.5px;
+  }
+  .win__bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 34px;
+    padding: 0 12px;
+    border-bottom: 1px solid #e8ebe9;
+    background: #fbfcfb;
+  }
+  .dots {
+    display: flex;
+    gap: 5px;
+  }
+  .dots i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #e2e6e4;
+  }
+  .crumb {
+    color: #6b7773;
+  }
+  .crumb b {
+    margin: 0 4px;
+    font-weight: 400;
+    color: #b3bbb8;
+  }
+  .me {
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #1d5043;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 600;
+  }
+  .win__body {
+    display: grid;
+    grid-template-columns: 132px 1fr;
+    height: calc(100% - 34px);
+  }
+  .side {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 8px;
+    border-right: 1px solid #e8ebe9;
+    background: #fbfcfb;
+  }
+  .side__logo {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 2px 6px 10px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: -0.02em;
+  }
+  .side__it {
+    padding: 6px 8px;
+    color: #6b7773;
+    font-weight: 500;
+  }
+  .side__it.on {
+    background: #fff;
+    color: #0d2b27;
+    box-shadow:
+      0 0 0 1px #e4e9e7,
+      0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+  .side__store {
+    margin-top: auto;
+    padding: 8px;
+    background: #0d2b27;
+    color: #fff;
+  }
+  .side__store small {
+    display: block;
+    font-size: 9.5px;
+    color: #9fc4b8;
+  }
+  .side__store b {
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .main {
+    padding: 14px 16px;
+    min-width: 0;
+  }
+  .main__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .main__head h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .main__head p {
+    margin: 2px 0 0;
+    color: #6b7773;
+    font-size: 11px;
+  }
+  .pill {
+    padding: 4px 8px;
+    border: 1px solid #e4e9e7;
+    font-size: 10.5px;
+    color: #3d4d48;
+    white-space: nowrap;
+  }
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .kpis div {
+    padding: 8px 10px;
+    border: 1px solid #e8ebe9;
+  }
+  .kpis small {
+    display: block;
+    color: #6b7773;
+    font-size: 10px;
+  }
+  .kpis b {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi--bad b {
+    color: #c9432c;
+  }
+  .tbl {
+    border: 1px solid #e8ebe9;
+  }
+  .tr {
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr) 46px 42px 36px 70px;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 10px;
+    border-bottom: 1px solid #eef1ef;
+    transition: background-color 0.4s;
+  }
+  .tr:last-child {
+    border-bottom: 0;
+  }
+  .th {
+    padding-block: 5px;
+    background: #f6f8f7;
+    font-size: 9.5px;
+    font-weight: 500;
+    color: #6b7773;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .ndc {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #8a9692;
+  }
+  .drug {
+    display: grid;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .drug small {
+    font-weight: 400;
+    font-size: 9.5px;
+    color: #98a4a0;
+  }
+  .n {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .diff {
+    color: #98a4a0;
+  }
+  .diff.neg {
+    color: #c9432c;
+    font-weight: 600;
+  }
+  .st {
+    display: grid;
+    justify-items: end;
+  }
+  .s {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .s--wait {
+    color: #6b7773;
+    background: #f1f3f2;
+  }
+  .s--ok {
+    color: #17905e;
+    background: #e3f4ea;
+  }
+  .s--bad {
+    color: #c9432c;
+    background: #fbe9e5;
+  }
+  .spin {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid #c9d0cd;
+    border-top-color: #1d5043;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .row.run:not(.ok) {
+    background: #f7faf8;
+  }
+  .row.run:not(.ok) .s--wait,
+  .row.ok .s--ok,
+  .row.ok .s--bad {
+    opacity: 1;
+  }
+  .row--bad.ok {
+    background: #fff8f6;
+  }
+  .row.hl {
+    box-shadow: inset 2px 0 0 #c9432c;
+    background: #fff1ed;
+  }
+
+  /* ---------- floating cards ---------- */
+  .card {
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow:
+      0 0 0 1px rgba(13, 43, 39, 0.06),
+      0 30px 60px -18px rgba(0, 0, 0, 0.55);
+    font-size: 11.5px;
+    opacity: 0;
+    transition:
+      opacity 0.6s var(--ease),
+      translate 0.7s var(--ease);
+    translate: 0 14px;
+  }
+  .card.in {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .card--src {
+    left: 0;
+    top: 300px;
+    width: 214px;
+    padding: 12px;
+  }
+  .card__h {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .card__h em {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 10px;
+    color: #17905e;
+  }
+  .src {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-top: 1px solid #eef1ef;
+    opacity: 0.45;
+    transition: opacity 0.4s;
+  }
+  .src.on {
+    opacity: 1;
+  }
+  .src__ic {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #fff;
+    background: #2b6a5a;
+  }
+  .src__ic.pms {
+    background: #1d5043;
+  }
+  .src__t {
+    display: grid;
+    line-height: 1.25;
+  }
+  .src__t b {
+    font-weight: 600;
+  }
+  .src__t small {
+    color: #8a9692;
+    font-size: 10px;
+  }
+  .src__ok {
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #e3f4ea;
+    color: #17905e;
+    transform: scale(0);
+    transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .src.on .src__ok {
+    transform: scale(1);
+  }
+
+  .card--bad {
+    right: 0;
+    top: 232px;
+    width: 286px;
+    padding: 14px;
+    border-top: 2px solid #c9432c;
+  }
+  .bad__h {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .bad__h b {
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .bad__h em {
+    margin-left: auto;
+    font-style: normal;
+    color: #6b7773;
+  }
+  .bad__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #c9432c;
+    box-shadow: 0 0 0 4px #fbe9e5;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    50% {
+      box-shadow: 0 0 0 7px rgba(251, 233, 229, 0.4);
+    }
+  }
+  .bars {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .bar {
+    display: grid;
+    grid-template-columns: 56px 1fr 30px;
+    align-items: center;
+    gap: 8px;
+  }
+  .bar small {
+    color: #6b7773;
+    font-size: 10px;
+  }
+  .bar span {
+    height: 8px;
+    background: #f0f2f1;
+  }
+  .bar i {
+    display: block;
+    height: 100%;
+    background: #9fb4ad;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 0.9s 0.3s var(--ease);
+  }
+  .bar--b i {
+    background: #c9432c;
+  }
+  .card--bad.in .bar i {
+    transform: scaleX(1);
+  }
+  .bar b {
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .bad__f {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    padding-top: 10px;
+    border-top: 1px solid #eef1ef;
+  }
+  .bad__f small {
+    display: block;
+    white-space: nowrap;
+    color: #6b7773;
+    font-size: 10px;
+  }
+  .bad__f b {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #c9432c;
+  }
+  .btn-mini {
+    margin-left: auto;
+    padding: 6px 9px;
+    background: #0d2b27;
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .card--msg {
+    left: 300px;
+    top: 470px;
+    width: 340px;
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #0d2b27;
+    color: #fff;
+  }
+  .av {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #d8e5e0;
+    color: #0d2b27;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .av i {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3fd68a;
+    border: 2px solid #0d2b27;
+  }
+  .msg__h {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+  .msg__h b {
+    font-weight: 600;
+  }
+  .msg__h small {
+    color: #9fc4b8;
+    font-size: 10px;
+  }
+  .typing {
+    display: flex;
+    gap: 4px;
+    margin: 6px 0 0;
+  }
+  .typing i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #9fc4b8;
+    animation: bounce 1s ease-in-out infinite;
+  }
+  .typing i:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .typing i:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  @keyframes bounce {
+    50% {
+      transform: translateY(-3px);
+      opacity: 0.5;
+    }
+  }
+  .msg__t {
+    display: none;
+    margin: 3px 0 0;
+    line-height: 1.45;
+    color: #d8e5e0;
+  }
+  .card--msg.typed .typing {
+    display: none;
+  }
+  .card--msg.typed .msg__t {
+    display: block;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pv__scene {
+      transform: scale(var(--s)) rotateX(8deg) rotateY(-14deg) rotateZ(1deg);
+    }
+  }
+</style>

@@ -1,0 +1,308 @@
+---
+import { testimonials } from '../site';
+---
+
+<section class="voices" aria-labelledby="v-h">
+  <div class="wrap">
+    <div class="voices__head">
+      <span class="kicker rv">From pharmacy owners</span>
+      <h2 id="v-h" class="display h-md rv" style="--d:.06s">Here's what our pharmacies are <em>saying.</em></h2>
+    </div>
+
+    <div class="car rv" data-car>
+      <div class="car__track" aria-live="polite">
+        {
+          testimonials.map((t, i) => (
+            <figure class="slide" data-slide={i} aria-hidden={i === 0 ? 'false' : 'true'} class:list={{ 'is-on': i === 0 }}>
+              <span class="q" aria-hidden="true">“</span>
+              <blockquote class="display">{t.quote}</blockquote>
+              <figcaption>
+                <span class="av">{t.name[0]}</span>
+                <span>
+                  <b>{t.name}</b>
+                  <small>{t.place}</small>
+                </span>
+                <span class="stars" aria-label="Rated 5 out of 5">★★★★★</span>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+      <div class="car__side">
+        <p class="mono car__lbl">Pharmacy owners on BatchRx</p>
+        <div class="car__people" role="tablist" aria-label="Choose testimonial">
+          {
+            testimonials.map((t, i) => (
+              <button role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-go={i}>
+                <span class="pav">{t.name[0]}</span>
+                <span class="pmeta">
+                  <b>{t.name}</b>
+                  <small>{t.place}</small>
+                </span>
+                <span class="bar" />
+              </button>
+            ))
+          }
+        </div>
+        <div class="car__arrows">
+          <button aria-label="Previous testimonial" data-prev>←</button>
+          <button aria-label="Next testimonial" data-next>→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const car = document.querySelector<HTMLElement>('[data-car]');
+  if (car) {
+    const slides = [...car.querySelectorAll<HTMLElement>('[data-slide]')];
+    const dots = [...car.querySelectorAll<HTMLButtonElement>('[data-go]')];
+    let i = 0;
+    let timer = 0;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const go = (n: number) => {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, j) => {
+        s.classList.toggle('is-on', j === i);
+        s.setAttribute('aria-hidden', String(j !== i));
+      });
+      dots.forEach((d, j) => {
+        d.setAttribute('aria-selected', String(j === i));
+        d.classList.toggle('is-on', j === i);
+      });
+      restart();
+    };
+    const restart = () => {
+      clearTimeout(timer);
+      if (!reduce) timer = window.setTimeout(() => go(i + 1), 7000);
+      const d = dots[i];
+      d.classList.remove('is-on');
+      void d.offsetWidth;
+      d.classList.add('is-on');
+    };
+    dots.forEach((d) => d.addEventListener('click', () => go(Number(d.dataset.go))));
+    car.querySelector('[data-prev]')!.addEventListener('click', () => go(i - 1));
+    car.querySelector('[data-next]')!.addEventListener('click', () => go(i + 1));
+    car.addEventListener('mouseenter', () => clearTimeout(timer));
+    car.addEventListener('mouseleave', restart);
+    go(0);
+  }
+</script>
+
+<style>
+  .voices {
+    padding-block: clamp(88px, 11vw, 160px);
+    background: var(--bg-2);
+    border-block: 1px solid var(--line);
+  }
+  .voices__head {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+    margin-bottom: clamp(40px, 5vw, 64px);
+  }
+  .voices__head em {
+    color: var(--g-800);
+  }
+  .car {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
+    border-radius: var(--r-xl);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--sh-2);
+    overflow: hidden;
+  }
+  .car__track {
+    display: grid;
+    padding: clamp(28px, 5vw, 64px);
+  }
+  .slide {
+    grid-area: 1 / 1;
+    display: grid;
+    gap: 28px;
+    align-content: start;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.6s var(--ease),
+      transform 0.6s var(--ease);
+    pointer-events: none;
+  }
+  .slide.is-on {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  .q {
+    font-family: var(--serif);
+    font-size: 120px;
+    line-height: 0.6;
+    height: 48px;
+    color: var(--lime);
+    -webkit-text-stroke: 1.5px var(--g-800);
+  }
+  blockquote {
+    font-size: clamp(30px, 3.6vw, 52px);
+    line-height: 1.08;
+  }
+  figcaption {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  figcaption b {
+    display: block;
+    font-weight: 600;
+  }
+  figcaption small {
+    display: block;
+    color: var(--ink-3);
+    font-size: 14px;
+  }
+  .av {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--g-900);
+    color: var(--lime);
+    font-weight: 600;
+    font-size: 18px;
+  }
+  .stars {
+    margin-left: auto;
+    color: #d49a1b;
+    letter-spacing: 3px;
+  }
+
+  .car__side {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 16px;
+    padding: clamp(24px, 3vw, 40px);
+    background: var(--g-900);
+    color: #fff;
+  }
+  .car__lbl {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--lime);
+  }
+  .car__people {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+  }
+  .car__people button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    opacity: 0.6;
+    transition:
+      background-color 0.25s,
+      opacity 0.25s,
+      border-color 0.25s;
+  }
+  .car__people button:hover {
+    opacity: 1;
+  }
+  .car__people button.is-on {
+    opacity: 1;
+    background: rgba(216, 229, 224, 0.08);
+    border-color: rgba(216, 229, 224, 0.14);
+  }
+  .pav {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(216, 229, 224, 0.14);
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .is-on .pav {
+    background: var(--lime);
+    color: var(--g-950);
+  }
+  .pmeta b {
+    display: block;
+    font-weight: 500;
+    font-size: 14.5px;
+  }
+  .pmeta small {
+    display: block;
+    font-size: 12.5px;
+    color: rgba(216, 229, 224, 0.7);
+  }
+  .bar {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 0;
+    height: 2px;
+    background: var(--lime);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .is-on .bar {
+    animation: fill 7s linear forwards;
+  }
+  .car:hover .is-on .bar {
+    animation-play-state: paused;
+  }
+  @keyframes fill {
+    to {
+      transform: scaleX(1);
+    }
+  }
+  .car__arrows {
+    display: flex;
+    gap: 8px;
+  }
+  .car__arrows button {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid rgba(216, 229, 224, 0.25);
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    font-size: 17px;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      border-color 0.2s;
+  }
+  .car__arrows button:hover {
+    background: var(--lime);
+    border-color: var(--lime);
+    color: var(--g-950);
+  }
+  @media (max-width: 900px) {
+    .car {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .stars {
+      margin-left: 0;
+      width: 100%;
+    }
+  }
+</style>
