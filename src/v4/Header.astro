@@ -1,6 +1,7 @@
 ---
 import Arrow from './Arrow.astro';
 import { site } from '../site';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const links = [
   { href: '#problems', label: 'Audits we fix' },
   { href: '#approach', label: 'How it works' },
@@ -12,7 +13,7 @@ const links = [
 
 <header class="hd on-dk" data-hd>
   <div class="hd__in">
-    <a href="/" class="hd__logo" aria-label="BatchRx home">
+    <a href={`${base}/`} class="hd__logo" aria-label="BatchRx home">
       <svg width="30" height="30" viewBox="0 0 27.7279 27.7279" fill="none" aria-hidden="true"
         ><path
           d="M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z"

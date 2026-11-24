@@ -52,17 +52,27 @@ const included = [
   'Reverse distributor tracking',
   'BIN number search',
 ];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const year = new Date().getFullYear();
+const bgVars = [
+  `--bg-brand-a: url('${base}/v2/brand-a.jpg')`,
+  `--bg-brand-b: url('${base}/v2/brand-b.jpg')`,
+  `--bg-brand-c: url('${base}/v2/brand-c.jpg')`,
+  `--bg-brand-d: url('${base}/v2/brand-d.jpg')`,
+  `--bg-tex-a: url('${base}/v2/tex-a.jpg')`,
+  `--bg-tex-b: url('${base}/v2/tex-b.jpg')`,
+  `--bg-tex-c: url('${base}/v2/tex-c.jpg')`,
+].join('; ');
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" style={bgVars}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>BatchRx | Pharmacy audits, simplified</title>
     <meta name="description" content="Where pharmacies turn for trusted audit support. BatchRx reconciles every unit you buy against every claim you bill, flags shortages before PBMs do, and gives you a dedicated specialist for every audit. $350/month." />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <meta name="theme-color" content="#0b221d" />
     <script is:inline>
       try {
@@ -74,7 +84,7 @@ const year = new Date().getFullYear();
     <!-- ================= NAV ================= -->
     <header class="nav" data-nav>
       <div class="wrap nav__in">
-        <a href="/version-2" class="brand" aria-label="BatchRx home">
+        <a href={`${base}/version-2`} class="brand" aria-label="BatchRx home">
           <svg viewBox="0 0 27.7279 27.7279" width="22" height="22" aria-hidden="true"><path d={LOGO} fill="#d8e5e0"></path></svg>
           BatchRx
         </a>
@@ -604,7 +614,7 @@ const year = new Date().getFullYear();
             <svg viewBox="0 0 27.7279 27.7279" width="34" height="34" style="margin:0 auto 22px;display:block" aria-hidden="true"><path d={LOGO} fill="#3fd68a"></path></svg>
             <h2 class="t1" style="font-size:clamp(30px,3vw,40px);margin:0 auto">Ready to know more?<br /><span>Get in touch with our team.</span></h2>
             <div class="ctas" style="justify-content:center;margin-top:30px">
-              <a href="/#demo" class="pill pill--lg pill--glow">Request a demo <Icon name="chevron" size={16} stroke={2} /></a>
+              <a href={`${base}/#demo`} class="pill pill--lg pill--glow">Request a demo <Icon name="chevron" size={16} stroke={2} /></a>
               <a href={site.loginUrl} class="ghost">Sign in</a>
             </div>
             <p class="trust-badges">${site.price}/month · No setup fees · Cancel anytime · HIPAA compliant</p>
@@ -625,7 +635,7 @@ const year = new Date().getFullYear();
         </div>
         <div><h4>Product</h4><a href="#ch-1">Reconcile</a><a href="#ch-2">Savings</a><a href="#ch-3">Audit support</a><a href="#pricing">Pricing</a></div>
         <div><h4>Company</h4><a href="#demo">Book a demo</a><a href="#faq">FAQ</a><a href={site.loginUrl}>Sign in</a></div>
-        <div><h4>Versions</h4><a href="/">Version 1</a><a href="/version-2" aria-current="page">Version 2</a></div>
+        <div><h4>Versions</h4><a href={`${base}/`}>Version 1</a><a href={`${base}/version-2`} aria-current="page">Version 2</a></div>
       </div>
       <div class="wrap ft__bot">
         <span>© {year} BatchRx. All rights reserved.</span>

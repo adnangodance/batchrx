@@ -336,16 +336,16 @@ hr {
   pointer-events: none;
 }
 .panel--a {
-  background-image: url('/v2/brand-a.jpg');
+  background-image: var(--bg-brand-a, url('/v2/brand-a.jpg'));
 }
 .panel--b {
-  background-image: url('/v2/brand-b.jpg');
+  background-image: var(--bg-brand-b, url('/v2/brand-b.jpg'));
 }
 .panel--c {
-  background-image: url('/v2/brand-c.jpg');
+  background-image: var(--bg-brand-c, url('/v2/brand-c.jpg'));
 }
 .panel--d {
-  background-image: url('/v2/brand-d.jpg');
+  background-image: var(--bg-brand-d, url('/v2/brand-d.jpg'));
 }
 .panel.wide {
   margin-top: 72px;
@@ -1697,10 +1697,10 @@ input[type='range']::-moz-range-thumb {
   --ui-bg: #0a0a0b;
   --nav-bg: rgba(0, 0, 0, 0.78);
 }
-:root[data-theme='black'] .panel--a { background-image: url('/v2/tex-a.jpg'); }
-:root[data-theme='black'] .panel--b { background-image: url('/v2/tex-b.jpg'); }
-:root[data-theme='black'] .panel--c { background-image: url('/v2/tex-c.jpg'); }
-:root[data-theme='black'] .panel--d { background-image: url('/v2/tex-a.jpg'); }
+:root[data-theme='black'] .panel--a { background-image: var(--bg-tex-a, url('/v2/tex-a.jpg')); }
+:root[data-theme='black'] .panel--b { background-image: var(--bg-tex-b, url('/v2/tex-b.jpg')); }
+:root[data-theme='black'] .panel--c { background-image: var(--bg-tex-c, url('/v2/tex-c.jpg')); }
+:root[data-theme='black'] .panel--d { background-image: var(--bg-tex-a, url('/v2/tex-a.jpg')); }
 body,
 .nav,
 .ui,

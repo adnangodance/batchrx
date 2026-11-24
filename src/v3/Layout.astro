@@ -9,6 +9,7 @@ const {
   title = 'BatchRx | Pharmacy audit software with one-on-one audit support',
   description = 'BatchRx reconciles what your pharmacy bought against what it billed, flags shortages before PBMs do, and gives you a dedicated specialist for every desktop, onsite, CMS and investigative audit. $350/month, no setup fees.',
 } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://batchrx.com');
 const ld = {
   '@context': 'https://schema.org',
@@ -29,7 +30,7 @@ const ld = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <meta name="theme-color" content="#ffffff" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="BatchRx" />

@@ -2,6 +2,7 @@
 import Arrow from './Arrow.astro';
 import Steps from './Steps.astro';
 import { site } from '../site';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const faqs = [
   {
@@ -121,7 +122,7 @@ const year = new Date().getFullYear();
       <a href="#faq">FAQ</a>
       <a href="#demo">Book a demo</a>
       <a href={site.loginUrl}>Log in</a>
-      <a href="/version-2">Version 2</a>
+      <a href={`${base}/version-2`}>Version 2</a>
     </div>
     <div class="ft__word" aria-hidden="true">
       <svg viewBox="0 0 27.7279 27.7279" fill="none"

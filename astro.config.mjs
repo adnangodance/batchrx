@@ -3,5 +3,6 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://batchrx.com',
+  site: 'https://adnangodance.github.io',
+  base: '/batchrx',
 });
