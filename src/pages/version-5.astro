@@ -1,0 +1,1175 @@
+---
+/**
+ * BatchRx — Version 5.
+ * Follows the page structure and layout language of trustly.com:
+ * centred jumbo hero over a large media card, payer strip, scroll-lit
+ * statement, sage band with glass cards, three-up scale row with a dot map,
+ * asymmetric tool bento, phone-driven steps, black case-study panel,
+ * horizontal card rail, accordion + art split, two-way "get started",
+ * fading closing headline and a tagline footer.
+ */
+import '../v8/v8.css';
+import Phone from '../v8/Phone.astro';
+import { site, payers, pmsSystems, wholesalers, testimonials } from '../site';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const year = new Date().getFullYear();
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://adnangodance.github.io');
+
+const LOGO =
+  'M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z';
+
+const tex = (name: string) => `url('${base}/v2/${name}.jpg')`;
+const rootVars = `--tex-hero:${tex('brand-d')};--tex-dark:${tex('tex-a')}`;
+
+/* ---------- Dot map of the contiguous US (built at compile time) ---------- */
+const US: [number, number][] = [
+  [-124.6, 48.3], [-122.8, 49.0], [-95.2, 49.0], [-90.0, 47.8], [-87.5, 46.6], [-84.5, 46.4], [-82.5, 45.3],
+  [-82.4, 43.0], [-83.1, 42.0], [-79.0, 42.8], [-79.0, 43.3], [-76.3, 43.6], [-75.0, 45.0], [-71.5, 45.0],
+  [-70.3, 46.5], [-69.2, 47.4], [-68.0, 47.3], [-67.0, 44.8], [-70.0, 43.7], [-70.7, 42.0], [-70.0, 41.7],
+  [-71.5, 41.3], [-74.0, 40.6], [-74.2, 39.5], [-75.5, 38.0], [-76.0, 36.9], [-75.6, 35.3], [-77.5, 34.2],
+  [-79.5, 33.0], [-81.2, 31.5], [-81.4, 30.3], [-80.2, 27.2], [-80.2, 25.3], [-81.2, 25.2], [-82.8, 27.8],
+  [-82.7, 29.2], [-84.2, 30.0], [-85.5, 29.8], [-88.0, 30.3], [-89.6, 30.2], [-89.4, 29.2], [-91.5, 29.4],
+  [-93.8, 29.7], [-95.2, 29.0], [-97.2, 27.6], [-97.3, 26.0], [-99.2, 26.6], [-100.5, 28.5], [-101.5, 29.8],
+  [-102.8, 29.3], [-104.5, 29.8], [-106.5, 31.8], [-108.2, 31.4], [-111.0, 31.3], [-114.8, 32.5], [-117.1, 32.5],
+  [-118.4, 33.8], [-120.6, 34.5], [-121.9, 36.6], [-122.5, 37.8], [-123.8, 39.8], [-124.3, 40.4], [-124.2, 42.0],
+  [-124.5, 42.9], [-124.0, 46.2],
+];
+const inUS = (x: number, y: number) => {
+  let hit = false;
+  for (let i = 0, j = US.length - 1; i < US.length; j = i++) {
+    const [xi, yi] = US[i];
+    const [xj, yj] = US[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) hit = !hit;
+  }
+  return hit;
+};
+const cities: [number, number][] = [
+  [-74.0, 40.7], [-87.6, 41.9], [-95.4, 29.9], [-118.2, 34.1], [-80.3, 26.0], [-122.3, 47.5], [-104.9, 39.7], [-84.4, 33.7],
+];
+const mapDots: { x: number; y: number; hot: boolean }[] = [];
+for (let row = 0, lat = 49.3; lat > 24.8; lat -= 0.86, row++) {
+  for (let lon = -125 + (row % 2 ? 0.64 : 0); lon < -66.4; lon += 1.28) {
+    if (!inUS(lon, lat)) continue;
+    const hot = cities.some(([cx, cy]) => Math.hypot((cx - lon) * 0.79, cy - lat) < 0.62);
+    mapDots.push({ x: +((lon + 125.4) * 0.79).toFixed(2), y: +(49.9 - lat).toFixed(2), hot });
+  }
+}
+
+/* ---------- Content ---------- */
+const megaPlatform = [
+  ['Inventory report', 'Purchased vs. billed for every NDC'],
+  ['PBM report', 'Shortage exposure by payer'],
+  ['Billed & BIN search', 'Find any claim in seconds'],
+  ['Aberrant claims', 'Outliers flagged before auditors do'],
+  ['Document vault', 'Invoices and signatures, audit-ready'],
+  ['Audit specialists', 'One-on-one help, included'],
+];
+const megaAudits = [
+  ['CMS audits', 'Medicare reviews, requirement by requirement'],
+  ['OnSite audits', 'Be ready before the auditor walks in'],
+  ['Desktop audits', 'Complete packets, submitted on time'],
+  ['Investigative audits', 'Focused support when stakes are highest'],
+];
+
+const pillars = [
+  {
+    title: 'Catch shortages first',
+    body: 'Match purchased units from every primary and secondary wholesaler against billed claims each month—so gaps surface before a recoupment letter does.',
+  },
+  {
+    title: 'See clearly into claims',
+    body: 'Early refills, quantity spikes and BIN anomalies show up in one continuous view, cutting audit preparation from days to minutes.',
+  },
+  {
+    title: 'Own the entire response',
+    body: 'From reading the notice to pulling invoices, matching signatures and submitting the packet—handled end to end, with no guesswork.',
+  },
+  {
+    title: 'Keep a human in your corner',
+    body: 'Every pharmacy works one-on-one with a BatchRx specialist on CMS, OnSite, Desktop and Investigative audits. It’s part of the plan.',
+  },
+];
+
+const steps = [
+  {
+    title: '1. Upload your exports',
+    body: 'Drop in the PMS claims and wholesaler invoices you already pull. No new dispensing workflow, no IT project.',
+    heading: 'Data imports',
+    badge: 'Sources synced',
+    rows: [
+      ['PrimeRx claims', 'October export', '13,016 ✓', false],
+      ['Kinray invoices', 'Primary wholesaler', '1,284 ✓', false],
+      ['McKesson + Real Value', 'Secondaries', '642 ✓', false],
+      ['Returns log', 'Reverse distributor', 'Synced ✓', false],
+    ],
+    cta: 'Run reconciliation',
+  },
+  {
+    title: '2. Reconcile by NDC',
+    body: 'BatchRx matches every purchased unit to every billed claim, across all payers and suppliers, automatically.',
+    heading: 'Reconciliation',
+    badge: 'NDC × payer',
+    rows: [
+      ['Atorvastatin 20 mg', '360 bought · 360 billed', 'Matched', false],
+      ['Metformin 500 mg', '540 bought · 540 billed', 'Matched', false],
+      ['Lisinopril 10 mg', '120 bought · 150 billed', '−30 u', true],
+      ['Omeprazole 20 mg', '180 bought · 200 billed', '−20 u', true],
+    ],
+    cta: 'Review 2 shortages',
+  },
+  {
+    title: '3. Resolve what’s flagged',
+    body: 'Find the missing secondary invoice, fix the pack-size mismatch, clear the outlier—while there is still time to.',
+    heading: 'Discrepancy review',
+    badge: '2 resolved',
+    rows: [
+      ['Real Value #8821', 'Secondary invoice located', '+30 u', false],
+      ['BIN 610014', 'Early-refill outlier verified', 'Cleared', false],
+      ['C-II perpetual check', 'Controlled substances', 'Balanced', false],
+      ['Remaining exposure', 'All payers', '$0.00', false],
+    ],
+    cta: 'Mark month closed',
+  },
+  {
+    title: '4. Respond with your specialist',
+    body: 'When a PBM letter arrives, your specialist pulls the claims, assembles every document and walks you through submission.',
+    heading: 'Audit response',
+    badge: 'Desktop audit',
+    rows: [
+      ['Audit letter', 'Reviewed with specialist', 'Done', false],
+      ['26 claims + signatures', 'Bundled', '26 / 26', false],
+      ['Invoices', 'Primary & secondary', 'Matched', false],
+      ['PBM response', 'Submitted on time', 'Sent ✓', false],
+    ],
+    cta: 'Packet submitted',
+  },
+] as const;
+
+const cases = [
+  {
+    t: testimonials[0],
+    detail: 'Reconciliation rates, shortages and audit deadlines for twelve locations, without chasing a single spreadsheet.',
+    stat1: ['12 locations', 'overseen from one screen'],
+    stat2: [`$${site.price}/mo`, 'flat, per pharmacy'],
+    pic: ['12', 'pharmacies, one view'],
+    tex: 'brand-a',
+  },
+  {
+    t: testimonials[1],
+    detail: 'Invoice discrepancies get caught every month, before a payer asks—and signatures and records stay ready.',
+    stat1: ['Every month', 'reconciled before payers ask'],
+    stat2: ['0 hours', 'of extra billing at audit time'],
+    pic: ['4', 'core reports included'],
+    tex: 'brand-b',
+  },
+  {
+    t: testimonials[2],
+    detail: 'Fast BIN searches, aberrant-claim reviews and one-on-one support keep avoidable recoupments off the books.',
+    stat1: ['4 audit types', 'covered by one plan'],
+    stat2: ['All PMS', 'PrimeRx, Pioneer, BestRx & more'],
+    pic: ['1:1', 'specialist on every audit'],
+    tex: 'brand-c',
+  },
+  {
+    t: testimonials[3],
+    detail: 'Straightforward tools, backed by audit specialists who stay with you from notice to resolution.',
+    stat1: ['50 states', 'served, HIPAA compliant'],
+    stat2: ['1-on-1', 'help for every audit'],
+    pic: ['50', 'states covered'],
+    tex: 'brand-d',
+  },
+];
+const bars = Array.from({ length: 15 }, (_, i) => Math.round(7 + Math.pow(i / 14, 1.7) * 93));
+
+const tiles = [
+  {
+    title: 'CMS',
+    line: 'Medicare reviews, step by step',
+    tex: 'brand-a',
+    tint: 'linear-gradient(rgba(16,60,38,.35),rgba(16,60,38,.35))',
+    d: 'M12 3 4.5 6v6c0 4.6 3.2 7.9 7.5 9 4.3-1.1 7.5-4.4 7.5-9V6zM8.8 12l2.2 2.2 4.4-4.6',
+  },
+  {
+    title: 'OnSite',
+    line: 'Ready before they walk in',
+    tex: 'tex-b',
+    tint: 'linear-gradient(rgba(210,180,150,.5),rgba(120,96,74,.55))',
+    d: 'M4 10v10h16V10M3 10l1.8-6h14.4L21 10zM3 10h18M10 20v-5h4v5M7.5 4l-.8 6M16.5 4l.8 6M12 4v6',
+  },
+  {
+    title: 'Desktop',
+    line: 'Complete packets, on time',
+    tex: 'brand-c',
+    tint: 'linear-gradient(rgba(0,120,70,.45),rgba(0,90,55,.5))',
+    d: 'M3.5 4.5h17v11h-17zM9 20h6M12 15.5V20M7 8.5h5M7 11.5h8',
+  },
+  {
+    title: 'Investigative',
+    line: 'Focused help, high stakes',
+    tex: 'tex-a',
+    tint: 'linear-gradient(rgba(7,7,7,.5),rgba(7,7,7,.5))',
+    d: 'M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM20 20l-4.8-4.8M8 10.5h5M10.5 8v5',
+  },
+  {
+    title: 'Invoice audits',
+    line: 'Monthly, before PBMs run theirs',
+    tex: 'brand-b',
+    tint: 'linear-gradient(rgba(70,110,140,.45),rgba(40,70,95,.5))',
+    d: 'M3 6h4c3 0 5 2.5 5 6s2 6 5 6h4M3 18h4c1.6 0 2.9-.7 3.7-1.9M21 6h-4c-1.6 0-2.9.7-3.7 1.9M18 3l3 3-3 3M18 15l3 3-3 3',
+  },
+  {
+    title: 'Controlled substances',
+    line: 'Perpetual counts that balance',
+    tex: 'tex-c',
+    tint: 'linear-gradient(rgba(60,70,60,.35),rgba(30,36,30,.5))',
+    d: 'M10.4 20.6a5 5 0 0 1-7-7l10.2-10.2a5 5 0 0 1 7 7zM8 9l7 7',
+  },
+];
+
+const faqs = [
+  [
+    'Data protection',
+    'BatchRx is HIPAA compliant and purpose-built to safeguard patient health information for independent and multi-store pharmacies in all 50 states.',
+  ],
+  [
+    'Systems and wholesalers',
+    `Works with all major pharmacy systems—${pmsSystems.join(', ')}—and all primary and secondary wholesalers, including ${wholesalers.slice(0, 6).join(', ')} and more. You upload the exports you already pull.`,
+  ],
+  [
+    'Audit coverage',
+    'Desktop, OnSite, CMS and Investigative audits, plus the monthly invoice reconciliation PBMs run to find shortages. One-on-one specialist help is included with every audit.',
+  ],
+  [
+    'Multiple locations',
+    'Owners oversee reconciliation rates, shortages and active audits across 2 to 12+ locations from one screen.',
+  ],
+];
+
+const included = [
+  'Inventory & invoice reconciliation',
+  'PBM & billed claim reports',
+  'Aberrant claims & BIN search',
+  'Controlled substance reports',
+  'Document vault',
+  'One-on-one audit specialist',
+];
+const multi = [
+  'Every location on one screen',
+  'Match rates and shortages by store',
+  'Active audit deadlines in one list',
+  'A specialist for each store’s audits',
+];
+---
+
+<!doctype html>
+<html lang="en" style={rootVars}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BatchRx — Keep every claim you’ve earned</title>
+    <meta
+      name="description"
+      content={`Continuous wholesaler-to-PBM reconciliation and one-on-one audit specialists for independent and multi-store pharmacies. $${site.price}/month, HIPAA compliant, all 50 states.`}
+    />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <meta name="theme-color" content="#ffffff" />
+  </head>
+  <body>
+    <a href="#main" class="skip">Skip to content</a>
+
+    <!-- ================= NAV ================= -->
+    <header class="nav" data-nav>
+      <div class="wrap nav__in">
+        <div class="nav__left">
+          <a href={`${base}/version-5`} class="brand" aria-label="BatchRx home">
+            <svg viewBox="0 0 27.7279 27.7279" width="22" height="22" aria-hidden="true"><path d={LOGO} fill="currentColor"></path></svg>
+            BatchRx
+          </a>
+          <div class="switch" role="group" aria-label="Pharmacy type" data-mode-switch>
+            <button type="button" aria-pressed="true" data-mode="single">Independent</button>
+            <button type="button" aria-pressed="false" data-mode="multi">Multi-store</button>
+          </div>
+        </div>
+
+        <nav class="nav__links" aria-label="Primary">
+          <div class="nav__item" data-drop>
+            <button type="button" class="nav__link" aria-expanded="false">
+              Platform
+              <svg viewBox="0 0 10 6" width="10" height="6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m1 1 4 4 4-4"></path></svg>
+            </button>
+            <div class="mega">
+              {megaPlatform.map(([t, d]) => <a href="#platform"><b>{t}</b><small>{d}</small></a>)}
+            </div>
+          </div>
+          <div class="nav__item" data-drop>
+            <button type="button" class="nav__link" aria-expanded="false">
+              Audits
+              <svg viewBox="0 0 10 6" width="10" height="6" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m1 1 4 4 4-4"></path></svg>
+            </button>
+            <div class="mega">
+              {megaAudits.map(([t, d]) => <a href="#audits"><b>{t}</b><small>{d}</small></a>)}
+            </div>
+          </div>
+          <a href="#workflow" class="nav__link">How it works</a>
+          <a href="#cases" class="nav__link">Customers</a>
+          <a href="#pricing" class="nav__link">Pricing</a>
+        </nav>
+
+        <div class="nav__right">
+          <a href={site.loginUrl} class="nav__login">Log in</a>
+          <a href="#demo" class="btn btn--sm">Book a demo</a>
+          <button type="button" class="burger" aria-label="Menu" aria-expanded="false" aria-controls="mnav" data-burger>
+            <span></span><span></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mnav" id="mnav" hidden data-mnav>
+        <a href="#platform">Platform</a>
+        <a href="#workflow">How it works</a>
+        <a href="#cases">Customers</a>
+        <a href="#audits">Audits</a>
+        <a href="#pricing">Pricing</a>
+        <a href={site.loginUrl}>Log in</a>
+        <a href="#demo" class="btn">Book a demo</a>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ================= HERO ================= -->
+      <section class="hero">
+        <div class="wrap">
+          <h1 class="jumbo rv" data-mode-title>Keep every claim you’ve earned</h1>
+          <p class="lead hero__sub rv" style="--d:.06s" data-mode-sub>
+            Catch invoice shortages early, stop recoupments and answer every PBM audit with confidence—with continuous
+            NDC reconciliation and a dedicated audit specialist.
+          </p>
+          <div class="hero__cta rv" style="--d:.12s">
+            <a href="#demo" class="btn">
+              Get started
+              <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"></path></svg>
+            </a>
+          </div>
+
+          <div class="media rv" style="--d:.18s">
+            <p class="media__say">We take on audits that were never built in the pharmacy’s favor.</p>
+
+            <div class="glass glass--l">
+              <small><i></i>October reconciliation</small>
+              <b class="tnum">1,284</b>
+              NDCs matched across three wholesalers
+            </div>
+
+            <Phone>
+              <div class="app">
+                <div class="app__top">
+                  <span><svg viewBox="0 0 27.7279 27.7279" width="1em" height="1em"><path d={LOGO} fill="currentColor"></path></svg>BatchRx</span>
+                  <i class="app__menu"></i>
+                </div>
+                <div class="app__card">
+                  <span class="app__badge">Audit-ready</span>
+                  <p class="app__k">Purchased vs. billed · October</p>
+                  <p class="app__big tnum">98.6%</p>
+                  <div class="app__bar"><i></i></div>
+                </div>
+                <div class="app__card">
+                  <div class="app__row"><span>Atorvastatin 20 mg<small>360 bought · 360 billed</small></span><span class="tag">Matched</span></div>
+                  <div class="app__row"><span>Lisinopril 10 mg<small>120 bought · 150 billed</small></span><span class="tag tag--bad">−30 u</span></div>
+                </div>
+              </div>
+            </Phone>
+
+            <div class="glass glass--r">
+              <small><i></i>Your audit specialist</small>
+              <p>Found the missing Real Value invoice. Both shortages are cleared—you’re ready for Express Scripts.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PAYERS ================= -->
+      <section class="logos" aria-label="Supported PBMs and payers">
+        <div class="wrap"><p>Defending claims billed to every major PBM and payer</p></div>
+        <div class="marquee" aria-label={payers.join(', ')}>
+          <div class="marquee__track" aria-hidden="true">
+            {[...payers, ...payers].map((p) => <span>{p}</span>)}
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= STATEMENT ================= -->
+      <section class="statement">
+        <div class="wrap wrap--narrow">
+          <h2 data-fade-words>
+            We are the audit defense partner for community pharmacy, reconciling every wholesaler invoice against every
+            billed claim—so shortages surface early, audits close fast and recoupments stop.
+          </h2>
+        </div>
+      </section>
+
+      <!-- ================= SAGE BAND ================= -->
+      <section class="band" aria-labelledby="band-h">
+        <span class="capsule" aria-hidden="true"></span>
+        <div class="wrap">
+          <div class="band__head rv">
+            <h2 id="band-h" class="h2">Put reconciliation to work for you</h2>
+            <p>Audit readiness built for today’s PBM scrutiny, miles beyond spreadsheets and last-minute scrambles.</p>
+          </div>
+          <div class="band__grid">
+            {
+              pillars.map((p, i) => (
+                <article class="band__card rv" style={`--d:${i * 0.07}s`}>
+                  <h3>{p.title}</h3>
+                  <p>{p.body}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SCALE ================= -->
+      <section class="scale" aria-labelledby="scale-h">
+        <div class="wrap">
+          <h2 id="scale-h" class="h2 rv">Protecting 400+ pharmacies across all 50 states</h2>
+          <div class="scale__row">
+            <article class="scale__card scale__card--a rv">
+              <p class="scale__k">Proven experience</p>
+              <p class="scale__t">13,500+ audits generated</p>
+              <Phone>
+                <div class="app">
+                  <div class="app__top"><span>Audits</span><i class="app__menu"></i></div>
+                  <div class="app__card">
+                    <div class="app__row"><span>Express Scripts<small>Desktop · 26 claims</small></span><span class="tag">Ready</span></div>
+                    <div class="app__row"><span>CVS Caremark<small>Invoice · October</small></span><span class="tag">Sent ✓</span></div>
+                    <div class="app__row"><span>OptumRx<small>OnSite · Nov 14</small></span><span class="tag">Prepped</span></div>
+                  </div>
+                </div>
+              </Phone>
+            </article>
+
+            <article class="scale__card scale__card--b rv" style="--d:.07s">
+              <svg class="usmap" viewBox="0 0 47 25.6" role="img" aria-label="Dot map of the United States">
+                {mapDots.map((d) => <circle cx={d.x} cy={d.y} r={d.hot ? 0.36 : 0.3} class={d.hot ? 'hot' : undefined}></circle>)}
+              </svg>
+              <p>
+                From single neighborhood pharmacies to twelve-store groups, we turn monthly invoice reconciliation into
+                a standing defense.
+              </p>
+            </article>
+
+            <article class="scale__card scale__card--c rv" style="--d:.14s">
+              <p class="scale__k">Recoupments prevented</p>
+              <p class="scale__big tnum">$50 million+</p>
+              <p class="scale__t">Saved in audit recoupments</p>
+              <div class="scale__mini">
+                <span><b class="tnum">400+</b>Active pharmacies</span>
+                <span><b class="tnum">50</b>States served</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TOOLS BENTO ================= -->
+      <section class="tools" id="platform" aria-labelledby="tools-h">
+        <div class="wrap wrap--narrow">
+          <h2 id="tools-h" class="h2 rv">The right tool for every audit</h2>
+
+          <div class="bento">
+            <article class="card rv">
+              <h3>Inventory report</h3>
+              <p>Purchased versus billed for every NDC, across primary, secondary and reverse distributors.</p>
+              <div class="viz-inv" aria-hidden="true">
+                <div><span>Atorvastatin</span><i style="--w:100%"></i><span class="mono">360/360</span></div>
+                <div><span>Metformin</span><i style="--w:100%"></i><span class="mono">540/540</span></div>
+                <div class="short"><span>Lisinopril</span><i style="--w:80%"></i><span class="mono">120/150</span></div>
+              </div>
+              <a href="#demo" class="round" aria-label="See the inventory report in a demo">
+                <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 12 4M5.5 4H12v6.5"></path></svg>
+              </a>
+            </article>
+
+            <article class="card card--wide card--dark on-dark rv" style="--d:.07s">
+              <div class="card__txt">
+                <h3>PBM report</h3>
+                <p>Billed quantities and shortage exposure by payer, so you know where the risk sits before an audit starts.</p>
+                <a href="#demo" class="round" aria-label="See the PBM report in a demo">
+                  <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 12 4M5.5 4H12v6.5"></path></svg>
+                </a>
+              </div>
+              <div class="tiles" aria-hidden="true">
+                <div><span>Express Scripts</span><b class="tnum">−50 u</b></div>
+                <div><span>CVS Caremark</span><b class="tnum">−30 u</b></div>
+                <div><span>OptumRx</span><b class="tnum">−15 u</b></div>
+              </div>
+            </article>
+
+            <article class="card card--wide card--img on-dark rv">
+              <h3>Aberrant claims</h3>
+              <p>Early refills, high-cost outliers and days-supply mismatches, flagged before they put you on an audit list.</p>
+              <svg class="viz-out" viewBox="0 0 400 240" fill="none" aria-hidden="true">
+                <path d="M0 200 C80 190 120 170 190 150 S320 120 400 96" stroke="rgba(255,255,255,.35)" stroke-dasharray="3 5"></path>
+                {
+                  [[30, 196], [62, 188], [88, 190], [118, 172], [150, 168], [176, 150], [205, 152], [236, 138], [262, 140], [296, 122], [330, 118], [366, 100]].map(
+                    ([x, y]) => <circle cx={x} cy={y} r="4" fill="rgba(255,255,255,.55)" />,
+                  )
+                }
+                <circle cx="248" cy="52" r="18" stroke="#45ed7d" opacity=".5"></circle>
+                <circle cx="248" cy="52" r="6" fill="#45ed7d"></circle>
+                <circle cx="338" cy="34" r="6" fill="#45ed7d"></circle>
+              </svg>
+              <a href="#demo" class="round round--pill" aria-label="Explore aberrant claims in a demo">
+                Explore
+                <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"></path></svg>
+              </a>
+            </article>
+
+            <article class="card card--docs rv" style="--d:.07s">
+              <h3>Document vault</h3>
+              <p>Prescriptions, signatures, copay records and invoices—organized and ready for any request.</p>
+              <div class="viz-docs" aria-hidden="true"><span>RX-20418</span><span>INV-8821</span><span>SIG-0311</span></div>
+              <a href="#demo" class="round" aria-label="See the document vault in a demo">
+                <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 12 4M5.5 4H12v6.5"></path></svg>
+              </a>
+            </article>
+
+            <article class="card card--flat rv">
+              <h3>Billed & BIN search</h3>
+              <p>Search every claim in the period by drug, NDC, payer or BIN, without wrestling a spreadsheet.</p>
+              <div class="meter" aria-hidden="true">
+                <div class="meter__bars">
+                  {Array.from({ length: 22 }, (_, i) => <i class={i < 6 ? 'on' : undefined} />)}
+                </div>
+                <div class="meter__lbl"><span>BatchRx search</span><span>Spreadsheet</span></div>
+              </div>
+              <a href="#demo" class="round" aria-label="See billed and BIN search in a demo">
+                <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 12 4M5.5 4H12v6.5"></path></svg>
+              </a>
+            </article>
+
+            <article class="card card--wide card--sage card--phone rv" style="--d:.07s">
+              <div class="card__txt">
+                <h3>Audit specialists</h3>
+                <p>Work directly with an experienced BatchRx specialist whenever a Desktop, OnSite, CMS or Investigative audit lands.</p>
+                <a href="#demo" class="round" aria-label="Meet the audit specialists in a demo">
+                  <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 12 4M5.5 4H12v6.5"></path></svg>
+                </a>
+              </div>
+              <Phone>
+                <div class="app">
+                  <div class="app__who"><i>AS</i><span>Audit specialist<small>Included in your plan</small></span></div>
+                  <div class="bubble">Two shortages flagged for October. I’ve pulled the matching Real Value invoices.</div>
+                  <div class="bubble bubble--me">Signatures are uploaded. Ready for Express Scripts?</div>
+                  <div class="bubble">All 26 claims verified and bundled. Submitting ahead of the deadline.</div>
+                </div>
+              </Phone>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= STEPS ================= -->
+      <section class="steps gray" id="workflow" aria-labelledby="steps-h">
+        <div class="wrap">
+          <div class="steps__grid" data-steps>
+            <div>
+              <h2 id="steps-h" class="h2 rv">Audits built for speed</h2>
+              <div class="steps__list" role="tablist" aria-label="How BatchRx works">
+                {
+                  steps.map((s, i) => (
+                    <button type="button" class="step" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-step={i}>
+                      <b>{s.title}</b>
+                      <span><em>{s.body}</em></span>
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+
+            <div class="steps__stage rv">
+              <div class="steps__clip">
+                <Phone>
+                  {
+                    steps.map((s, i) => (
+                      <div class:list={['app screen', { 'is-on': i === 0 }]} data-screen={i}>
+                        <div class="app__top">
+                          <span><svg viewBox="0 0 27.7279 27.7279" width="1em" height="1em"><path d={LOGO} fill="currentColor" /></svg>BatchRx</span>
+                          <i class="app__menu" />
+                        </div>
+                        <p class="app__h">{s.heading}</p>
+                        <div class="app__card">
+                          <span class="app__badge">{s.badge}</span>
+                          {s.rows.map(([a, b, c, bad]) => (
+                            <div class="app__row">
+                              <span>{a}<small>{b}</small></span>
+                              <span class:list={['tag', { 'tag--bad': bad }]}>{c}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div class="app__cta">{s.cta}</div>
+                      </div>
+                    ))
+                  }
+                </Phone>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CASES ================= -->
+      <section class="cases gray" id="cases" aria-labelledby="cases-h">
+        <div class="wrap" data-cases>
+          <div class="headrow">
+            <h2 id="cases-h" class="h2 rv">Pharmacy stories</h2>
+            <div class="arrows">
+              <button type="button" aria-label="Previous story" data-prev>
+                <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 10h-13M9 4.5 3.5 10 9 15.5"></path></svg>
+              </button>
+              <button type="button" aria-label="Next story" data-next>
+                <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10h13M11 4.5l5.5 5.5-5.5 5.5"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div aria-live="polite">
+            {
+              cases.map((c, i) => (
+                <article class:list={['case on-dark', { 'is-on': i === 0 }]} data-case>
+                  <div class="case__main">
+                    <p class="case__brand">{c.t.place}</p>
+                    <blockquote>“{c.t.quote}”</blockquote>
+                    <p>{c.detail}</p>
+                    <p class="case__who">{c.t.name}<small>{c.t.place}</small></p>
+                  </div>
+                  <div class="case__mid">
+                    <div class="case__stat">
+                      {c.stat1[0]}<br />{c.stat1[1]}
+                      <div class="bars" aria-hidden="true">
+                        {bars.map((h, n) => <i style={`--h:${h}%;--i:${n}`} />)}
+                      </div>
+                    </div>
+                    <div class="case__stat case__stat--sage">
+                      {c.stat2[0]}<br />{c.stat2[1]}
+                      <span class="capsule" aria-hidden="true" />
+                    </div>
+                  </div>
+                  <div class="case__pic" style={`--tex:${tex(c.tex)}`}>
+                    <p><b class="tnum">{c.pic[0]}</b>{c.pic[1]}</p>
+                  </div>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= AUDIT RAIL ================= -->
+      <section class="rail-sec gray" id="audits" aria-labelledby="audits-h" data-rail-sec>
+        <div class="wrap">
+          <div class="headrow">
+            <h2 id="audits-h" class="h2 rv">Every audit, covered</h2>
+            <div class="arrows">
+              <button type="button" aria-label="Scroll back" data-prev>
+                <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 10h-13M9 4.5 3.5 10 9 15.5"></path></svg>
+              </button>
+              <button type="button" aria-label="Scroll forward" data-next>
+                <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10h13M11 4.5l5.5 5.5-5.5 5.5"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="rail" data-rail tabindex="0" role="group" aria-label="Audit types">
+          {
+            tiles.map((t) => (
+              <a class="tile" href="#demo">
+                <div class="tile__img" style={`--tex:${tex(t.tex)};--tint:${t.tint}`}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={t.d} /></svg>
+                  <span class="round">
+                    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg>
+                  </span>
+                </div>
+                <h3>{t.title}</h3>
+                <p>{t.line}</p>
+              </a>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- ================= SECURITY / FAQ ================= -->
+      <section class="secure" id="faq" aria-labelledby="secure-h">
+        <div class="wrap">
+          <div class="secure__grid">
+            <div class="rv">
+              <h2 id="secure-h" class="h2">HIPAA-grade care for every claim</h2>
+              {
+                faqs.map(([q, a], i) => (
+                  <details class="acc" name="v5-faq" open={i === 0}>
+                    <summary>{q}<i aria-hidden="true" /></summary>
+                    <p>{a}</p>
+                  </details>
+                ))
+              }
+              <a href="#demo" class="btn btn--sm btn--line">
+                Ask us anything
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"></path></svg>
+              </a>
+            </div>
+
+            <div class="secure__art rv" style="--d:.08s" aria-hidden="true">
+              <svg viewBox="0 0 400 400" fill="none" stroke="currentColor">
+                <circle cx="200" cy="200" r="190" opacity=".14"></circle>
+                <circle cx="200" cy="200" r="140" opacity=".22"></circle>
+                <circle cx="200" cy="200" r="92" opacity=".32"></circle>
+                <path d="M200 132 150 152v42c0 34 21 58 50 68 29-10 50-34 50-68v-42z" fill="rgba(255,255,255,.1)" stroke-width="1.5"></path>
+                <path d="m178 198 16 16 30-32" stroke="#45ed7d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                <circle cx="334" cy="102" r="5" fill="#45ed7d" stroke="none"></circle>
+                <circle cx="60" cy="200" r="4" fill="#fff" stroke="none"></circle>
+                <circle cx="265" cy="321" r="4" fill="#fff" stroke="none"></circle>
+              </svg>
+              <div class="secure__chips"><span>HIPAA compliant</span><span>All 50 states</span><span>Patient data safeguarded</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= GET STARTED / PRICING ================= -->
+      <section class="start gray" id="pricing" aria-labelledby="start-h">
+        <div class="wrap">
+          <div class="start__head rv">
+            <h2 id="start-h" class="h2">One plan, simply priced</h2>
+            <p>Every report, every audit tool and a specialist on every audit. No setup fees. Cancel anytime.</p>
+            <a href="#demo" class="btn btn--sm btn--line">
+              Book a demo
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"></path></svg>
+            </a>
+          </div>
+
+          <div class="start__grid">
+            <article class="plan on-dark rv">
+              <h3>Independent pharmacy</h3>
+              <p>Everything BatchRx does, for one flat monthly price per pharmacy.</p>
+              <p class="plan__price"><b class="tnum">${site.price}</b> per month</p>
+              <ul>{included.map((x) => <li>{x}</li>)}</ul>
+              <svg class="orbit" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+                <circle cx="400" cy="300" r="250" stroke="rgba(255,255,255,.14)"></circle>
+                <circle cx="400" cy="300" r="170" stroke="#45ed7d" opacity=".7"></circle>
+                <circle cx="400" cy="300" r="96" fill="rgba(255,255,255,.22)" stroke="#45ed7d"></circle>
+                <circle cx="222" cy="124" r="26" fill="rgba(69,237,125,.14)"></circle>
+                <circle cx="222" cy="124" r="4" fill="#45ed7d"></circle>
+                <circle cx="243" cy="235" r="4" fill="#45ed7d"></circle>
+                <circle cx="318" cy="268" r="6" fill="#1e201d" stroke="#fff" stroke-width="2"></circle>
+              </svg>
+            </article>
+
+            <article class="plan plan--sage rv" style="--d:.07s">
+              <h3>Multi-store groups</h3>
+              <p>The same plan at each location, with one screen across all of them—built for 2 to 12+ pharmacies.</p>
+              <p class="plan__price"><b class="tnum">${site.price}</b> per month, per location</p>
+              <ul>{multi.map((x) => <li>{x}</li>)}</ul>
+              <svg class="orbit" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+                <circle cx="400" cy="300" r="250" stroke="rgba(7,7,7,.16)"></circle>
+                <circle cx="400" cy="300" r="170" stroke="rgba(7,7,7,.5)"></circle>
+                <circle cx="400" cy="300" r="96" fill="#fff"></circle>
+                <circle cx="263" cy="200" r="20" fill="#232522" stroke="#fff" stroke-width="2"></circle>
+                <circle cx="263" cy="200" r="3.5" fill="#fff"></circle>
+                <circle cx="178" cy="186" r="4" fill="rgba(7,7,7,.45)"></circle>
+                <circle cx="352" cy="137" r="4" fill="#00bc70"></circle>
+              </svg>
+            </article>
+          </div>
+
+          <div class="calc rv" id="savings" data-calc>
+            <div>
+              <h3>See what’s at stake</h3>
+              <div class="calc__row">
+                <label for="v5-rx">Monthly prescriptions</label>
+                <output for="v5-rx" class="tnum" data-o="rx">4,450</output>
+              </div>
+              <input id="v5-rx" type="range" min="100" max="10000" step="50" value="4450" />
+              <small>Estimate based on a 3.5% PBM audit discrepancy rate and $175 at risk per discrepancy.</small>
+            </div>
+            <div class="calc__out">
+              Estimated savings per month
+              <b class="tnum" data-o="s">$27,256</b>
+              <div>
+                <span><b class="tnum" data-o="d">155.8</b>Discrepancies caught</span>
+                <span><b class="tnum" data-o="x">78×</b>Return on ${site.price}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= DEMO ================= -->
+      <section class="demo" id="demo" aria-labelledby="demo-h">
+        <div class="wrap">
+          <div class="demo__grid">
+            <div class="rv">
+              <h2 id="demo-h" class="h2">See your own numbers reconciled</h2>
+              <p>
+                Book a short live walkthrough. We’ll show how BatchRx matches your wholesalers against PBM claims and
+                how a specialist supports every audit.
+              </p>
+              <div class="demo__facts">
+                <span>${site.price}/month</span><span>No setup fees</span><span>Cancel anytime</span><span>HIPAA compliant</span>
+              </div>
+            </div>
+
+            <form class="form rv" style="--d:.08s" data-demo-form data-endpoint={site.demoEndpoint ?? ''} novalidate>
+              <label class="field">
+                Pharmacy name
+                <input name="pharmacyName" placeholder="Main St. Pharmacy" required autocomplete="organization" />
+              </label>
+              <label class="field">
+                Your name
+                <input name="contactName" placeholder="Dr. Sarah Chen" required autocomplete="name" />
+              </label>
+              <label class="field">
+                Email
+                <input name="email" type="email" placeholder="owner@pharmacy.com" required autocomplete="email" />
+              </label>
+              <label class="field">
+                Phone
+                <input name="phone" type="tel" placeholder="(555) 234-5678" required autocomplete="tel" />
+              </label>
+              <label class="field field--full">
+                Pharmacy address
+                <input name="pharmacyAddress" placeholder="120 Main St, Brooklyn, NY 11201" required autocomplete="street-address" />
+              </label>
+              <div class="form__foot">
+                <button type="submit" class="btn">
+                  Request a demo
+                  <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"></path></svg>
+                </button>
+                <p class="form__msg" role="status" aria-live="polite" data-fmsg></p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CLOSING ================= -->
+      <section class="closing gray" aria-labelledby="closing-h">
+        <div class="wrap">
+          <h2 id="closing-h" class="jumbo" data-fade-words>Stop recoupments before the letter arrives</h2>
+          <a href="#demo" class="btn">
+            Get started
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5"></path></svg>
+          </a>
+          <div class="closing__phone">
+            <Phone dark>
+              <div class="phone__logo">
+                <svg viewBox="0 0 27.7279 27.7279" width="1em" height="1em"><path d={LOGO} fill="#45ed7d"></path></svg>BatchRx
+              </div>
+            </Phone>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="ft gray">
+      <div class="wrap">
+        <p class="ft__tag">Audit defense that’s smarter, simpler and on your side.</p>
+
+        <div class="ft__cols">
+          <div>
+            <h4>Platform</h4>
+            <ul>
+              <li><a href="#platform">Inventory report</a></li>
+              <li><a href="#platform">PBM report</a></li>
+              <li><a href="#platform">Billed & BIN search</a></li>
+              <li><a href="#platform">Aberrant claims</a></li>
+              <li><a href="#platform">Document vault</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Audits</h4>
+            <ul>
+              <li><a href="#audits">CMS</a></li>
+              <li><a href="#audits">OnSite</a></li>
+              <li><a href="#audits">Desktop</a></li>
+              <li><a href="#audits">Investigative</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Company</h4>
+            <ul>
+              <li><a href="#workflow">How it works</a></li>
+              <li><a href="#cases">Pharmacy stories</a></li>
+              <li><a href="#pricing">Pricing</a></li>
+              <li><a href="#savings">Savings estimate</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Help</h4>
+            <ul>
+              <li><a href="#faq">Security & FAQ</a></li>
+              <li><a href="#demo">Book a demo</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Account</h4>
+            <ul>
+              <li><a href={site.loginUrl}>Log in</a></li>
+              <li><a href={site.registerUrl}>Create an account</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Versions</h4>
+            <ul>
+              <li><a href={`${base}/`}>Version 1</a></li>
+              <li><a href={`${base}/version-2`}>Version 2</a></li>
+              <li><a href={`${base}/version-3`}>Version 3</a></li>
+              <li><a href={`${base}/version-4`}>Version 4</a></li>
+              <li><a href={`${base}/version-5`} aria-current="page">Version 5</a></li>
+              <li><a href={`${base}/version-6`}>Version 6</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="ft__bottom">
+          <span>HIPAA compliant · Serving pharmacies in all 50 states</span>
+          <b>© {year} BatchRx</b>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Mobile menu
+      const nav = document.querySelector<HTMLElement>('[data-nav]')!;
+      const burger = nav.querySelector<HTMLButtonElement>('[data-burger]')!;
+      const mnav = nav.querySelector<HTMLElement>('[data-mnav]')!;
+      const setMenu = (open: boolean) => {
+        mnav.hidden = !open;
+        nav.classList.toggle('is-menu', open);
+        burger.setAttribute('aria-expanded', String(open));
+      };
+      burger.addEventListener('click', () => setMenu(mnav.hasAttribute('hidden')));
+      mnav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+
+      // Dropdowns: hover on pointer devices, click/keyboard everywhere
+      const drops = [...document.querySelectorAll<HTMLElement>('[data-drop]')];
+      const setDrop = (el: HTMLElement | null) =>
+        drops.forEach((d) => {
+          const on = d === el;
+          d.classList.toggle('is-open', on);
+          d.querySelector('button')!.setAttribute('aria-expanded', String(on));
+        });
+      drops.forEach((d) => {
+        d.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && setDrop(d));
+        d.addEventListener('pointerleave', (e) => e.pointerType === 'mouse' && setDrop(null));
+        d.querySelector('button')!.addEventListener('click', () => setDrop(d.classList.contains('is-open') ? null : d));
+        d.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setDrop(null)));
+        d.addEventListener('focusout', (e) => {
+          if (!d.contains(e.relatedTarget as Node)) setDrop(null);
+        });
+      });
+      document.addEventListener('keydown', (e) => e.key === 'Escape' && setDrop(null));
+
+      // Independent / Multi-store switch
+      const copy = {
+        single: {
+          title: 'Keep every claim you’ve earned',
+          sub: 'Catch invoice shortages early, stop recoupments and answer every PBM audit with confidence—with continuous NDC reconciliation and a dedicated audit specialist.',
+        },
+        multi: {
+          title: 'Every location, defended from one screen',
+          sub: 'Oversee reconciliation rates, wholesaler shortages and active audit deadlines across your whole group—with a dedicated specialist behind every store.',
+        },
+      };
+      const title = document.querySelector<HTMLElement>('[data-mode-title]')!;
+      const sub = document.querySelector<HTMLElement>('[data-mode-sub]')!;
+      const modeBtns = [...document.querySelectorAll<HTMLButtonElement>('[data-mode]')];
+      modeBtns.forEach((b) =>
+        b.addEventListener('click', () => {
+          const c = copy[b.dataset.mode as keyof typeof copy];
+          modeBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+          title.textContent = c.title;
+          sub.textContent = c.sub;
+        }),
+      );
+
+      // Reveal on scroll
+      const rv = document.querySelectorAll('.rv');
+      if (reduce) rv.forEach((el) => el.classList.add('in'));
+      else {
+        const io = new IntersectionObserver(
+          (entries) =>
+            entries.forEach((en) => {
+              if (en.isIntersecting) {
+                en.target.classList.add('in');
+                io.unobserve(en.target);
+              }
+            }),
+          { rootMargin: '0px 0px -6% 0px' },
+        );
+        rv.forEach((el) => io.observe(el));
+      }
+
+      // Scroll-lit headlines: words go from grey to black as they travel up the viewport
+      const faders = [...document.querySelectorAll<HTMLElement>('[data-fade-words]')].map((el) => {
+        const words = el.textContent!.trim().split(/\s+/);
+        el.setAttribute('aria-label', words.join(' '));
+        el.innerHTML = words.map((w) => `<span class="w" aria-hidden="true">${w}</span>`).join(' ');
+        return { el, spans: [...el.querySelectorAll<HTMLElement>('.w')] };
+      });
+      const light = () => {
+        const vh = window.innerHeight;
+        faders.forEach(({ el, spans }) => {
+          const r = el.getBoundingClientRect();
+          const p = (vh * 0.92 - r.top) / (vh * 0.5 + r.height * 0.6);
+          const n = Math.round(Math.min(1, Math.max(0, p)) * spans.length);
+          spans.forEach((s, i) => s.classList.toggle('on', i < n));
+        });
+      };
+      if (!reduce) {
+        let tick = false;
+        window.addEventListener(
+          'scroll',
+          () => {
+            if (tick) return;
+            tick = true;
+            requestAnimationFrame(() => {
+              light();
+              tick = false;
+            });
+          },
+          { passive: true },
+        );
+        window.addEventListener('resize', light);
+        light();
+      }
+
+      // Steps: auto-advance while visible until the visitor picks one
+      const stepsEl = document.querySelector<HTMLElement>('[data-steps]');
+      if (stepsEl) {
+        const btns = [...stepsEl.querySelectorAll<HTMLButtonElement>('[data-step]')];
+        const screens = [...stepsEl.querySelectorAll<HTMLElement>('[data-screen]')];
+        let cur = 0;
+        let timer = 0;
+        const show = (n: number) => {
+          cur = n;
+          btns.forEach((b, i) => b.setAttribute('aria-selected', String(i === n)));
+          screens.forEach((s, i) => s.classList.toggle('is-on', i === n));
+        };
+        const stop = () => window.clearInterval(timer);
+        btns.forEach((b, i) =>
+          b.addEventListener('click', () => {
+            stop();
+            show(i);
+          }),
+        );
+        if (!reduce) {
+          new IntersectionObserver(
+            ([en]) => {
+              stop();
+              if (en.isIntersecting && !stepsEl.dataset.touched)
+                timer = window.setInterval(() => show((cur + 1) % btns.length), 3800);
+            },
+            { threshold: 0.4 },
+          ).observe(stepsEl);
+          btns.forEach((b) => b.addEventListener('click', () => (stepsEl.dataset.touched = '1')));
+        }
+      }
+
+      // Stories carousel
+      const casesEl = document.querySelector<HTMLElement>('[data-cases]');
+      if (casesEl) {
+        const slides = [...casesEl.querySelectorAll<HTMLElement>('[data-case]')];
+        let ci = 0;
+        const go = (n: number) => {
+          ci = (n + slides.length) % slides.length;
+          slides.forEach((s, i) => s.classList.toggle('is-on', i === ci));
+        };
+        casesEl.querySelector('[data-prev]')!.addEventListener('click', () => go(ci - 1));
+        casesEl.querySelector('[data-next]')!.addEventListener('click', () => go(ci + 1));
+      }
+
+      // Audit rail arrows
+      const railSec = document.querySelector<HTMLElement>('[data-rail-sec]');
+      if (railSec) {
+        const rail = railSec.querySelector<HTMLElement>('[data-rail]')!;
+        const prev = railSec.querySelector<HTMLButtonElement>('[data-prev]')!;
+        const next = railSec.querySelector<HTMLButtonElement>('[data-next]')!;
+        const stepBy = () => (rail.querySelector<HTMLElement>('.tile')!.offsetWidth + 20) * 2;
+        const sync = () => {
+          prev.disabled = rail.scrollLeft < 4;
+          next.disabled = rail.scrollLeft > rail.scrollWidth - rail.clientWidth - 4;
+        };
+        prev.addEventListener('click', () => rail.scrollBy({ left: -stepBy(), behavior: reduce ? 'auto' : 'smooth' }));
+        next.addEventListener('click', () => rail.scrollBy({ left: stepBy(), behavior: reduce ? 'auto' : 'smooth' }));
+        rail.addEventListener('scroll', sync, { passive: true });
+        window.addEventListener('resize', sync);
+        sync();
+      }
+
+      // Savings estimate
+      const calc = document.querySelector<HTMLElement>('[data-calc]');
+      if (calc) {
+        const input = calc.querySelector<HTMLInputElement>('input')!;
+        const out = (k: string) => calc.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+        const update = () => {
+          const rx = Number(input.value);
+          const disc = rx * 0.035;
+          const save = Math.round(disc * 175);
+          input.style.setProperty('--p', ((rx - 100) / 9900) * 100 + '%');
+          out('rx').textContent = rx >= 10000 ? '10,000+' : rx.toLocaleString('en-US');
+          out('d').textContent = disc.toFixed(1);
+          out('s').textContent = '$' + save.toLocaleString('en-US');
+          out('x').textContent = Math.max(1, Math.round(save / 350)) + '×';
+        };
+        input.addEventListener('input', update);
+        update();
+      }
+
+      // Demo form
+      const form = document.querySelector<HTMLFormElement>('[data-demo-form]');
+      if (form) {
+        const msg = form.querySelector<HTMLElement>('[data-fmsg]')!;
+        const endpoint = form.dataset.endpoint || '';
+        form.addEventListener('submit', async (ev) => {
+          ev.preventDefault();
+          let ok = true;
+          form.querySelectorAll<HTMLInputElement>('input[required]').forEach((inp) => {
+            const valid = inp.checkValidity() && inp.value.trim().length > 0;
+            inp.classList.toggle('is-err', !valid);
+            if (!valid) ok = false;
+          });
+          msg.classList.toggle('is-err', !ok);
+          if (!ok) {
+            msg.textContent = 'Please complete all fields.';
+            return;
+          }
+          const data = Object.fromEntries(new FormData(form).entries());
+          if (!endpoint) {
+            form.reset();
+            msg.textContent = `Demo request received for ${data.pharmacyName}. Our audit team will reach out shortly.`;
+            return;
+          }
+          msg.textContent = 'Sending request…';
+          try {
+            const r = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data),
+            });
+            if (!r.ok) throw new Error('bad status');
+            form.reset();
+            msg.textContent = 'Thank you — a BatchRx specialist will reach out within one business day.';
+          } catch {
+            msg.classList.add('is-err');
+            msg.textContent = 'Could not send right now. Please try again or visit batchrx.com.';
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,808 @@
+---
+import { site, payers, pmsSystems, wholesalers, testimonials } from '../site';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const year = new Date().getFullYear();
+const LOGO =
+  'M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z';
+
+const storiesAndGuides = [
+  {
+    tag: 'Queens Pharmacy',
+    stat: '$0 Recouped',
+    title: 'How Queens pharmacies stop recoupments before they start',
+    body: `“${testimonials[2].quote}”`,
+    author: `${testimonials[2].name} · ${testimonials[2].place}`,
+    light: false,
+  },
+  {
+    tag: 'Manhattan Pharmacy',
+    stat: '100% Ready',
+    title: 'Turning surprise desktop audits into a routine 15-minute checklist',
+    body: `“${testimonials[3].quote}”`,
+    author: `${testimonials[3].name} · ${testimonials[3].place}`,
+    light: true,
+  },
+  {
+    tag: 'Invoice Audits',
+    stat: 'Primary + Secondary',
+    title: 'Why secondary wholesaler invoices trigger false PBM shortages',
+    body: 'PBMs frequently omit secondary supplier purchases when auditing invoice counts. BatchRx merges every wholesaler ledger automatically.',
+    author: 'BatchRx Audit Playbook',
+    light: false,
+  },
+  {
+    tag: 'Multi-Store',
+    stat: '12 Locations · 1 View',
+    title: 'Monitoring shortages and audit deadlines across multi-store networks',
+    body: 'Owners running 2 to 12+ locations review NDC match rates, aberrant BIN flags, and specialist packets from a single workspace.',
+    author: 'Multi-Store Guide',
+    light: true,
+  },
+  {
+    tag: 'Controlled Substances',
+    stat: 'DEA & Reverse Dist.',
+    title: 'Reconciling C-II counts with reverse distributor returns cleanly',
+    body: 'Track purchases, dispensing, and reverse distributor transfers end-to-end so counts reconcile cleanly under deeper reviews.',
+    author: 'Compliance Guide',
+    light: false,
+  },
+];
+
+const faqs = [
+  [
+    'What does BatchRx actually do?',
+    'BatchRx reconciles the medication you purchase from primary and secondary wholesalers against every claim you bill to PBMs, flags shortages and aberrant claims early, and pairs you with a dedicated specialist one-on-one whenever an audit arrives.',
+  ],
+  [
+    'Which pharmacy systems and wholesalers are supported?',
+    `All major pharmacy management systems—including ${pmsSystems.join(', ')}—and all primary and secondary wholesalers, including ${wholesalers.slice(0, 7).join(', ')} and more.`,
+  ],
+  [
+    'What kinds of audits do you support?',
+    'Desktop, OnSite, CMS, and Investigative audits, plus the monthly invoice reconciliation PBMs use to identify shortages. One-on-one specialist assistance is included in your flat plan.',
+  ],
+  [
+    'How much does it cost?',
+    `One flat plan at $${site.price} per month per pharmacy location—every report, every audit tool, and unlimited one-on-one specialist defense included. No setup fees, cancel anytime.`,
+  ],
+  [
+    'Is my pharmacy’s patient data HIPAA compliant?',
+    'Yes. BatchRx is HIPAA compliant and serves independent and multi-store pharmacies across all 50 states.',
+  ],
+];
+---
+
+<div class="dk-body">
+  <!-- ================= SECTION 1: WHY BATCHRX (Docker home-why 3-card group) ================= -->
+  <section class="dk-sec dk-sec--white" id="problems" aria-labelledby="dk-why-h">
+    <div class="dk-wrap">
+      <div class="dk-why-head">
+        <div>
+          <span class="dk-eyebrow">Why BatchRx</span>
+          <h2 id="dk-why-h" class="dk-h2">
+            Pharmacies depend on paid claims.<br /><span>Paid claims depend on BatchRx.</span>
+          </h2>
+        </div>
+        <p class="dk-lead">
+          BatchRx reconciles every wholesaler invoice against every PBM claim so independent pharmacies never walk into
+          an audit unprepared.
+        </p>
+      </div>
+
+      <div class="dk-why-cards">
+        <!-- Card 1 -->
+        <article class="dk-why-card">
+          <div class="dk-why-illo" aria-hidden="true">
+            <div class="dk-illo-stack">
+              <div class="dk-illo-win dk-illo-win--dim">
+                <div><b>Atorvastatin 20 mg</b><small>0093-0150-01 · Kinray</small></div>
+                <span class="dk-pill-ok">240 / 240</span>
+              </div>
+              <div class="dk-illo-win">
+                <div><b>Lisinopril 10 mg</b><small>0071-0155-23 · Express Scripts</small></div>
+                <span class="dk-pill-bad">−30 short</span>
+              </div>
+              <div class="dk-illo-win dk-illo-win--dim">
+                <div><b>Metformin 500 mg</b><small>0093-1048-01 · McKesson</small></div>
+                <span class="dk-pill-ok">500 / 500</span>
+              </div>
+            </div>
+          </div>
+          <h3>Trusted Reconciliation</h3>
+          <p>
+            Automatically compare every unit purchased from primary and secondary wholesalers against every billed claim,
+            NDC by NDC, before PBMs send a recoupment letter.
+          </p>
+          <div class="dk-why-links">
+            <a href="#approach" class="dk-arrow-link">Learn more →</a>
+            <a href="#savings" class="dk-arrow-link dk-arrow-link--accent">Estimate savings →</a>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="dk-why-card">
+          <div class="dk-why-illo" aria-hidden="true">
+            <div class="dk-illo-audits">
+              <div class="dk-illo-badgecard dk-illo-badgecard--hi">
+                <span>Active Defense</span>
+                <b>Desktop Audit</b>
+                <div class="dk-illo-meter"><i style="width:92%"></i></div>
+              </div>
+              <div class="dk-illo-badgecard">
+                <span>Pre-Visit Prep</span>
+                <b>OnSite Audit</b>
+                <div class="dk-illo-meter"><i style="width:100%"></i></div>
+              </div>
+              <div class="dk-illo-badgecard">
+                <span>Medicare</span>
+                <b>CMS Audit</b>
+                <div class="dk-illo-meter"><i style="width:86%"></i></div>
+              </div>
+              <div class="dk-illo-badgecard">
+                <span>1-on-1 Specialist</span>
+                <b>Investigative</b>
+                <div class="dk-illo-meter"><i style="width:100%"></i></div>
+              </div>
+            </div>
+          </div>
+          <h3>One-on-One Audit Defense</h3>
+          <p>
+            Software catches the shortage; a dedicated BatchRx specialist stays with you from the audit letter through
+            signatures, hard copies, and final PBM submission.
+          </p>
+          <div class="dk-why-links">
+            <a href="#plan" class="dk-arrow-link dk-arrow-link--accent">See what’s included →</a>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="dk-why-card">
+          <div class="dk-why-illo" aria-hidden="true">
+            <div class="dk-illo-hub">
+              <div class="dk-illo-hubbar">
+                <span>BATCHRX / INTEGRATIONS</span>
+                <span>{pmsSystems.length + wholesalers.length} CONNECTED</span>
+              </div>
+              <div class="dk-illo-chips">
+                {pmsSystems.slice(0, 4).map((p) => <span class="dk-illo-chip dk-illo-chip--pri">{p}</span>)}
+                {wholesalers.slice(0, 6).map((w) => <span class="dk-illo-chip">{w}</span>)}
+              </div>
+            </div>
+          </div>
+          <h3>Connected Ecosystem</h3>
+          <p>
+            Works out of the box with PrimeRx, Pioneer, Datascan, DigitalRx, BestRx, Liberty, and all primary and
+            secondary wholesalers—with zero IT project required.
+          </p>
+          <div class="dk-why-links">
+            <a href="#demo" class="dk-arrow-link">Book a walkthrough →</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 2: AUDIT DEFENSE (Docker Era of Trust sticky split + dark cards) ================= -->
+  <section class="dk-sec dk-sec--surface" id="approach" aria-labelledby="dk-era-h">
+    <div class="dk-wrap dk-era-grid" data-dk-era>
+      <div class="dk-era-left">
+        <span class="dk-eyebrow">Audit Defense</span>
+        <h2 id="dk-era-h" class="dk-h2">
+          Defend every claim,<br /><span>without the scramble.</span>
+        </h2>
+
+        <div class="dk-era-steps">
+          <div class="dk-era-step is-on" data-era-step="0" tabindex="0" role="button">
+            <h3>Catch shortages before PBMs do.</h3>
+            <p>
+              Upload the PMS and wholesaler exports you already pull each month. BatchRx isolates NDC shortages, BIN
+              outliers, and secondary invoice gaps before auditors ever look.
+            </p>
+            <a href="#savings" class="dk-arrow-link">Calculate exposure →</a>
+          </div>
+
+          <div class="dk-era-step" data-era-step="1" tabindex="0" role="button">
+            <h3>Recover millions across 13,500+ audits.</h3>
+            <p>
+              Pharmacies using BatchRx have protected more than $50M in paid claims—turning tense audit deadlines into
+              organized, documented responses submitted on time.
+            </p>
+            <a href="#stories" class="dk-arrow-link">Read pharmacy stories →</a>
+          </div>
+
+          <div class="dk-era-step" data-era-step="2" tabindex="0" role="button">
+            <h3>Compliant by default.</h3>
+            <p>
+              Every invoice match, delivery signature, controlled substance count, and reverse distributor return is
+              logged in one HIPAA-compliant workspace ready for verification.
+            </p>
+            <a href="#plan" class="dk-arrow-link">Explore the flat plan →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="dk-era-right">
+        <!-- Dark Visual Card 1: Built-in Payer Isolation -->
+        <div class="dk-era-card is-hl" data-era-card="0">
+          <div class="dk-era-card__head">
+            <h3>Payer-by-payer precision</h3>
+            <span class="dk-era-mini">NDC × PBM</span>
+          </div>
+          <div class="dk-iso-lanes">
+            <div class="dk-iso-lane">
+              <div><b>Express Scripts</b><small>4,210 claims · Kinray + Real Value</small></div>
+              <span class="dk-dk-tag dk-dk-tag--warn">1 shortage · −30u</span>
+            </div>
+            <div class="dk-iso-lane">
+              <div><b>CVS Caremark</b><small>3,840 claims · Desktop Packet #479</small></div>
+              <span class="dk-dk-tag dk-dk-tag--ok">99.4% matched</span>
+            </div>
+            <div class="dk-iso-lane">
+              <div><b>OptumRx &amp; Prime Therapeutics</b><small>4,870 claims · All suppliers synced</small></div>
+              <span class="dk-dk-tag dk-dk-tag--ok">0 flags · Clear</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dark Visual Card 2: Recoupments Saved Chart -->
+        <div class="dk-era-card" data-era-card="1">
+          <div class="dk-era-card__head">
+            <h3>Protected claims at scale</h3>
+            <span class="dk-era-mini">400+ pharmacies</span>
+          </div>
+          <div class="dk-chart-box">
+            <div class="dk-chart-top">
+              <b>$50M+</b>
+              <span>13,500+ audits defended</span>
+            </div>
+            <svg class="dk-chart-svg" viewBox="0 0 480 120" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="dkArea" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#3fd68a" stop-opacity="0.34" />
+                  <stop offset="100%" stop-color="#3fd68a" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <line x1="0" y1="30" x2="480" y2="30" stroke="rgba(232,244,239,0.08)" />
+              <line x1="0" y1="70" x2="480" y2="70" stroke="rgba(232,244,239,0.08)" />
+              <path d="M0,104 C65,98 115,82 180,68 C245,54 310,42 385,26 C425,18 455,14 480,10 L480,120 L0,120 Z" fill="url(#dkArea)" />
+              <path d="M0,104 C65,98 115,82 180,68 C245,54 310,42 385,26 C425,18 455,14 480,10" fill="none" stroke="#3fd68a" stroke-width="2.5" stroke-linecap="round" />
+              <circle cx="385" cy="26" r="4.5" fill="#071a17" stroke="#3fd68a" stroke-width="2.5" />
+            </svg>
+            <div class="dk-chart-axis">
+              <span>Q1</span>
+              <span>Q2</span>
+              <span>Q3</span>
+              <span>Q4</span>
+              <span>50 STATES</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dark Visual Card 3: Monospace Audit Policy & Verification Log -->
+        <div class="dk-era-card" data-era-card="2">
+          <div class="dk-era-card__head">
+            <h3>Audit trail enforcement</h3>
+            <span class="dk-era-mini">HIPAA verified</span>
+          </div>
+          <div class="dk-log">
+            <div class="dk-log-row">
+              <span class="dk-log-time">09:14:02.14</span>
+              <span class="dk-log-b dk-log-b--match">Match</span>
+              <span class="dk-log-msg">ndc 0071-0155-23 · real-value +30u</span>
+              <span class="dk-log-res">cleared</span>
+            </div>
+            <div class="dk-log-row">
+              <span class="dk-log-time">09:14:02.41</span>
+              <span class="dk-log-b dk-log-b--verify">Verify</span>
+              <span class="dk-log-msg">bin 610014 · 26 rx hardcopies &amp; copays</span>
+              <span class="dk-log-res">26 / 26</span>
+            </div>
+            <div class="dk-log-row">
+              <span class="dk-log-time">09:14:02.88</span>
+              <span class="dk-log-b dk-log-b--sign">Sign</span>
+              <span class="dk-log-msg">specialist review · packet #482</span>
+              <span class="dk-log-res">approved</span>
+            </div>
+            <div class="dk-log-row">
+              <span class="dk-log-time">09:14:03.12</span>
+              <span class="dk-log-b dk-log-b--submit">Submit</span>
+              <span class="dk-log-msg">express-scripts · hipaa encrypted</span>
+              <span class="dk-log-res">$0 loss</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 3: IN GOOD COMPANY (Docker Primary-Tinted Bento Grid) ================= -->
+  <section class="dk-sec dk-sec--primary" id="stories" aria-labelledby="dk-bento-h">
+    <div class="dk-wrap">
+      <div class="dk-bento-head">
+        <span class="dk-eyebrow">In good company</span>
+        <h2 id="dk-bento-h" class="dk-h2">
+          The trusted foundation for independent &amp; multi-store pharmacies.
+        </h2>
+      </div>
+
+      <div class="dk-bento">
+        <!-- Cell 1: Tall featured quote -->
+        <figure class="dk-bcell dk-bcell--s3 dk-bcell--quote">
+          <blockquote class="dk-bquote">“{testimonials[0].quote}”</blockquote>
+          <figcaption class="dk-bwho">
+            <span class="dk-bav">D</span>
+            <div>
+              <b>{testimonials[0].name}</b>
+              <small>{testimonials[0].place} · 12 Locations</small>
+            </div>
+          </figcaption>
+        </figure>
+
+        <!-- Cell 2: Big stat + regional hubs -->
+        <div class="dk-bcell dk-bcell--s3">
+          <div>
+            <div class="dk-bstat">$50M+</div>
+            <div class="dk-blabel">in audit recoupments saved across independent pharmacies</div>
+          </div>
+          <div class="dk-regions">
+            <div class="dk-reg">
+              <small>Northeast</small>
+              <b>142 stores</b>
+              <em>99.4% match</em>
+            </div>
+            <div class="dk-reg">
+              <small>South &amp; TX</small>
+              <b>138 stores</b>
+              <em>99.1% match</em>
+            </div>
+            <div class="dk-reg">
+              <small>Midwest &amp; West</small>
+              <b>120+ stores</b>
+              <em>99.3% match</em>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2 (2 + 2 + 2 = 6 cols): Audits, Active Pharmacies, Trust Badges -->
+        <div class="dk-bcell dk-bcell--s2">
+          <div>
+            <div class="dk-bstat">13,500+</div>
+            <div class="dk-blabel">Desktop, OnSite, CMS &amp; Investigative audits guided</div>
+          </div>
+        </div>
+
+        <div class="dk-bcell dk-bcell--s2">
+          <div>
+            <div class="dk-bstat">400+</div>
+            <div class="dk-blabel">Active pharmacies protected across all 50 states</div>
+          </div>
+        </div>
+
+        <div class="dk-bcell dk-bcell--s2">
+          <div style="font-size:20px;font-weight:500;letter-spacing:-0.02em">Security &amp; support you can trust</div>
+          <div class="dk-trust-pills">
+            <span class="dk-trust-pill">HIPAA Compliant</span>
+            <span class="dk-trust-pill">All 50 States</span>
+            <span class="dk-trust-pill">1-on-1 Specialist</span>
+            <span class="dk-trust-pill">$0 Hourly Fees</span>
+          </div>
+        </div>
+
+        <!-- Row 3 (3 + 3 = 6 cols): Two pharmacy owner quotes -->
+        <figure class="dk-bcell dk-bcell--s3 dk-bcell--quote">
+          <blockquote class="dk-bquote dk-bquote--sm">“{testimonials[1].quote}”</blockquote>
+          <figcaption class="dk-bwho">
+            <span class="dk-bav">M</span>
+            <div>
+              <b>{testimonials[1].name}</b>
+              <small>{testimonials[1].place}</small>
+            </div>
+          </figcaption>
+        </figure>
+
+        <figure class="dk-bcell dk-bcell--s3 dk-bcell--quote">
+          <blockquote class="dk-bquote dk-bquote--sm">“{testimonials[2].quote}”</blockquote>
+          <figcaption class="dk-bwho">
+            <span class="dk-bav">M</span>
+            <div>
+              <b>{testimonials[2].name}</b>
+              <small>{testimonials[2].place}</small>
+            </div>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 4: FLAT PLAN & SAVINGS ESTIMATOR (Docker dark home-containers) ================= -->
+  <section class="dk-sec dk-sec--dark" id="plan" aria-labelledby="dk-plan-h">
+    <div class="dk-wrap dk-plat-grid" id="savings">
+      <div>
+        <span class="dk-eyebrow">All-in-One Plan</span>
+        <h2 id="dk-plan-h" class="dk-h2">
+          Software and specialists,<br /><span>in one predictable flat rate.</span>
+        </h2>
+        <p class="dk-lead" style="margin-top:16px;max-width:50ch">
+          Go from wholesaler exports to a clean reconciliation and audit defense packet in minutes—without tiers, setup
+          fees, or surprise hourly bills.
+        </p>
+
+        <!-- Docker-style segmented selector -->
+        <div class="dk-seg" role="group" aria-label="Pharmacy network size" data-dk-stores>
+          <button type="button" aria-pressed="true" data-stores="1">Single Store</button>
+          <button type="button" aria-pressed="false" data-stores="4">Multi-Store (4)</button>
+          <button type="button" aria-pressed="false" data-stores="12">Network (12)</button>
+        </div>
+
+        <!-- Interactive ROI Savings Estimator -->
+        <div class="dk-calc-box" data-dk-calc>
+          <div class="dk-calc-top">
+            <small>Monthly prescriptions / store</small>
+            <b data-dk-rxval>4,500 Rx</b>
+          </div>
+          <input
+            type="range"
+            class="dk-range"
+            min="1500"
+            max="12000"
+            step="250"
+            value="4500"
+            aria-label="Monthly prescriptions per store"
+            data-dk-slider
+          />
+          <div class="dk-calc-out">
+            <div>
+              <small>Est. annual audit exposure</small>
+              <b class="dk-calc-risk" data-dk-risk>$33,075 / yr</b>
+            </div>
+            <div>
+              <small>BatchRx flat subscription</small>
+              <b class="dk-calc-cost" data-dk-sub>$350 / mo</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="dk-plat-ctas">
+          <a href="#demo" class="dk-btn dk-btn--glow">Book a live demo</a>
+          <a href={site.loginUrl} class="dk-btn dk-btn--outline-dk">Existing customer? Sign in</a>
+        </div>
+        <p class="dk-plat-note">Billed monthly · No setup fees · Cancel anytime</p>
+      </div>
+
+      <!-- Right: 3-Stage Loop + Flat Plan Details -->
+      <div class="dk-loop-card">
+        <div class="dk-loop-nodes">
+          <div class="dk-loop-node">
+            <span>01 · CONNECT</span>
+            <b>Upload exports</b>
+            <small>PrimeRx, Pioneer, BestRx &amp; wholesalers</small>
+          </div>
+          <div class="dk-loop-node">
+            <span>02 · RECONCILE</span>
+            <b>Flag shortages</b>
+            <small>Every NDC matched against every PBM</small>
+          </div>
+          <div class="dk-loop-node">
+            <span>03 · DEFEND</span>
+            <b>Submit packet</b>
+            <small>Dedicated 1-on-1 audit specialist</small>
+          </div>
+        </div>
+
+        <div class="dk-plan-price">
+          <div>
+            <span style="display:block;font-family:var(--dk-mono);font-size:11px;color:var(--dk-glow);margin-bottom:6px">
+              EVERYTHING INCLUDED · PER PHARMACY
+            </span>
+            <b>${site.price}<small>/ month</small></b>
+          </div>
+          <span class="dk-dk-tag dk-dk-tag--ok">No hourly fees</span>
+        </div>
+
+        <ul class="dk-plan-list">
+          <li>Inventory &amp; invoice reconciliation</li>
+          <li>PBM &amp; billed claim reports</li>
+          <li>Aberrant claim &amp; BIN search</li>
+          <li>Controlled substance tracking</li>
+          <li>Desktop &amp; OnSite audit defense</li>
+          <li>CMS &amp; Investigative guidance</li>
+          <li>Dedicated 1-on-1 specialist</li>
+          <li>Multi-store network overview</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 5: STORIES & PLAYBOOK CAROUSEL + FAQ (Docker home-blog) ================= -->
+  <section class="dk-sec dk-sec--white" id="faq" aria-labelledby="dk-blog-h">
+    <div class="dk-wrap">
+      <div class="dk-blog-head">
+        <div>
+          <span class="dk-eyebrow">Stories &amp; Playbook</span>
+          <h2 id="dk-blog-h" class="dk-h2">
+            See how pharmacies<br /><span>stay audit-ready.</span>
+          </h2>
+        </div>
+
+        <div class="dk-pager" aria-label="Scroll stories">
+          <button type="button" aria-label="Previous" data-dk-prev>
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M10 3.5 5.5 8 10 12.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <button type="button" aria-label="Next" data-dk-next>
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M6 3.5 10.5 8 6 12.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="dk-rail" data-dk-rail>
+        {
+          storiesAndGuides.map((card) => (
+            <article class="dk-post">
+              <div class:list={['dk-post__cover', { 'dk-post__cover--lt': card.light }]}>
+                <span class="dk-post__tag">{card.tag}</span>
+                <div class="dk-post__stat">{card.stat}</div>
+              </div>
+              <div class="dk-post__body">
+                <h3>{card.title}</h3>
+                <p>{card.body}</p>
+                <div class="dk-post__foot">
+                  <span>{card.author}</span>
+                  <a href="#demo" class="dk-arrow-link">Book demo →</a>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <!-- Compact Docker-style FAQ Accordion -->
+      <div class="dk-faq-wrap">
+        <div>
+          <span class="dk-eyebrow">FAQ</span>
+          <h2 class="dk-h2" style="font-size:clamp(30px,3.2vw,42px)">Questions,<br /><span>answered.</span></h2>
+          <p class="dk-lead" style="margin-top:14px">
+            Straight answers on wholesaler imports, audit coverage, flat pricing, and HIPAA security.
+          </p>
+        </div>
+
+        <div class="dk-faq-list">
+          {
+            faqs.map(([q, a], i) => (
+              <details name="dk-faq" open={i === 0}>
+                <summary>
+                  <span class="dk-faq-n">0{i + 1}</span>
+                  <span>{q}</span>
+                  <span class="dk-faq-pm" aria-hidden="true" />
+                </summary>
+                <p>{a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 6: GIANT CLOSING CTA + DEMO FORM (Docker home-cta) ================= -->
+  <section class="dk-sec dk-cta-sec" id="demo" aria-labelledby="dk-cta-h">
+    <div class="dk-wrap dk-cta-grid">
+      <div class="dk-cta-copy">
+        <h2 id="dk-cta-h" class="dk-cta-display">
+          Audit on trust<sup>®</sup>
+        </h2>
+        <p>
+          Book a live walkthrough with our team. We’ll show you where pharmacies like yours uncover invoice shortages
+          and how your dedicated BatchRx specialist defends every audit.
+        </p>
+        <div class="dk-payers" aria-label="Payers supported">
+          {payers.slice(0, 6).map((p) => <span>{p}</span>)}
+        </div>
+      </div>
+
+      <form class="dk-form-card" data-dk-form data-endpoint={site.demoEndpoint ?? ''} novalidate>
+        <div class="dk-form-grid">
+          <label class="dk-field">
+            <span>Pharmacy name</span>
+            <input name="pharmacyName" placeholder="Main St. Pharmacy" required autocomplete="organization" />
+          </label>
+          <label class="dk-field">
+            <span>Your name</span>
+            <input name="contactName" placeholder="Dr. Miriam Cohen" required autocomplete="name" />
+          </label>
+          <label class="dk-field">
+            <span>Email</span>
+            <input name="email" type="email" placeholder="owner@pharmacy.com" required autocomplete="email" />
+          </label>
+          <label class="dk-field">
+            <span>Phone</span>
+            <input name="phone" type="tel" placeholder="(555) 234-5678" required autocomplete="tel" />
+          </label>
+          <label class="dk-field dk-field--full">
+            <span>Pharmacy address</span>
+            <input name="pharmacyAddress" placeholder="120 Main St, Brooklyn, NY 11201" required autocomplete="street-address" />
+          </label>
+        </div>
+
+        <div class="dk-form-foot">
+          <button type="submit" class="dk-btn dk-btn--primary">Request a live demo</button>
+          <a href={site.loginUrl} class="dk-btn dk-btn--outline">Sign in</a>
+        </div>
+        <p class="dk-fmsg" role="status" aria-live="polite" data-dk-fmsg></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= ARCHITECTURAL MULTI-COLUMN FOOTER (Docker style) ================= -->
+  <footer class="dk-footer">
+    <div class="dk-wrap">
+      <div class="dk-ft-grid">
+        <div class="dk-ft-brand">
+          <a href={`${base}/version-3`} class="dk-ft-logo">
+            <svg viewBox="0 0 27.7279 27.7279" width="22" height="22" aria-hidden="true">
+              <path d={LOGO} fill="#3fd68a" />
+            </svg>
+            <span>BatchRx</span>
+          </a>
+          <p>
+            Pharmacy audit software and dedicated one-on-one audit defense for independent and multi-store pharmacies
+            across all 50 states.
+          </p>
+        </div>
+
+        <div class="dk-ft-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="#problems">Inventory Reconciliation</a></li>
+            <li><a href="#approach">PBM &amp; Billed Reports</a></li>
+            <li><a href="#approach">Aberrant &amp; BIN Search</a></li>
+            <li><a href="#plan">Controlled Substances</a></li>
+          </ul>
+        </div>
+
+        <div class="dk-ft-col">
+          <h4>Audit Defense</h4>
+          <ul>
+            <li><a href="#problems">Desktop Audits</a></li>
+            <li><a href="#problems">OnSite Audits</a></li>
+            <li><a href="#plan">CMS &amp; Investigative</a></li>
+            <li><a href="#savings">Savings Estimator</a></li>
+          </ul>
+        </div>
+
+        <div class="dk-ft-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#stories">Pharmacy Stories</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#demo">Book a Demo</a></li>
+            <li><a href={site.loginUrl}>Customer Sign In</a></li>
+          </ul>
+        </div>
+
+        <div class="dk-ft-col">
+          <h4>Versions</h4>
+          <ul>
+            <li><a href={`${base}/`}>Version 1</a></li>
+            <li><a href={`${base}/version-2`}>Version 2</a></li>
+            <li><a href={`${base}/version-3`} aria-current="page">Version 3</a></li>
+            <li><a href={`${base}/version-4`}>Version 4</a></li>
+            <li><a href={`${base}/version-5`}>Version 5</a></li>
+            <li><a href={`${base}/version-6`}>Version 6</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="dk-ft-bot">
+        <span>© {year} BatchRx. All rights reserved · HIPAA compliant · All 50 states</span>
+        <div class="dk-ft-links">
+          <a href={`${site.appUrl}/privacy-policy`}>Privacy Policy</a>
+          <a href={`${site.appUrl}/terms-of-service`}>Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // Section 2: Interactive Audit Defense step highlighting
+  const era = document.querySelector<HTMLElement>('[data-dk-era]');
+  if (era) {
+    const steps = [...era.querySelectorAll<HTMLElement>('[data-era-step]')];
+    const cards = [...era.querySelectorAll<HTMLElement>('[data-era-card]')];
+    const setEra = (idx: string) => {
+      steps.forEach((s) => s.classList.toggle('is-on', s.dataset.eraStep === idx));
+      cards.forEach((c) => c.classList.toggle('is-hl', c.dataset.eraCard === idx));
+    };
+    steps.forEach((s) => {
+      s.addEventListener('click', () => setEra(s.dataset.eraStep!));
+      s.addEventListener('mouseenter', () => setEra(s.dataset.eraStep!));
+    });
+  }
+
+  // Section 4: Segmented store count + live ROI savings calculator
+  const storesGroup = document.querySelector<HTMLElement>('[data-dk-stores]');
+  const calc = document.querySelector<HTMLElement>('[data-dk-calc]');
+  if (storesGroup && calc) {
+    const storeBtns = [...storesGroup.querySelectorAll<HTMLButtonElement>('[data-stores]')];
+    const slider = calc.querySelector<HTMLInputElement>('[data-dk-slider]')!;
+    const rxEl = calc.querySelector<HTMLElement>('[data-dk-rxval]')!;
+    const riskEl = calc.querySelector<HTMLElement>('[data-dk-risk]')!;
+    const subEl = calc.querySelector<HTMLElement>('[data-dk-sub]')!;
+
+    let stores = 1;
+    const update = () => {
+      const rx = Number(slider.value);
+      const annualRisk = Math.round(rx * 0.035 * 175 * 1.2 * stores);
+      const monthlySub = 350 * stores;
+      rxEl.textContent = `${rx.toLocaleString('en-US')} Rx`;
+      riskEl.textContent = `$${annualRisk.toLocaleString('en-US')} / yr`;
+      subEl.textContent = `$${monthlySub.toLocaleString('en-US')} / mo`;
+    };
+    storeBtns.forEach((b) => {
+      b.addEventListener('click', () => {
+        stores = Number(b.dataset.stores || '1');
+        storeBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        update();
+      });
+    });
+    slider.addEventListener('input', update);
+    update();
+  }
+
+  // Section 5: Horizontal rail prev/next arrows
+  const rail = document.querySelector<HTMLElement>('[data-dk-rail]');
+  const prev = document.querySelector<HTMLButtonElement>('[data-dk-prev]');
+  const next = document.querySelector<HTMLButtonElement>('[data-dk-next]');
+  if (rail && prev && next) {
+    prev.addEventListener('click', () => rail.scrollBy({ left: -388, behavior: 'smooth' }));
+    next.addEventListener('click', () => rail.scrollBy({ left: 388, behavior: 'smooth' }));
+  }
+
+  // Section 6: Demo request form
+  const form = document.querySelector<HTMLFormElement>('[data-dk-form]');
+  if (form) {
+    const msg = form.querySelector<HTMLElement>('[data-dk-fmsg]')!;
+    const endpoint = form.dataset.endpoint || '';
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const reqs = [...form.querySelectorAll<HTMLInputElement>('input[required]')];
+      let ok = true;
+      reqs.forEach((inp) => {
+        const valid = inp.checkValidity() && inp.value.trim().length > 0;
+        inp.classList.toggle('is-err', !valid);
+        if (!valid) ok = false;
+      });
+      if (!ok) {
+        msg.classList.add('is-err');
+        msg.textContent = 'Please complete all required fields.';
+        return;
+      }
+      msg.classList.remove('is-err');
+      const data = Object.fromEntries(new FormData(form).entries());
+      if (endpoint) {
+        msg.textContent = 'Sending request…';
+        try {
+          const r = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+          if (!r.ok) throw new Error('err');
+          form.reset();
+          msg.textContent = 'Thank you — a BatchRx specialist will reach out within one business day.';
+        } catch {
+          msg.classList.add('is-err');
+          msg.textContent = 'Could not send right now. Please try again or visit batchrx.com.';
+        }
+      } else {
+        form.reset();
+        msg.textContent = `Demo request received for ${data.pharmacyName}. Our audit team will reach out shortly.`;
+      }
+    });
+  }
+</script>

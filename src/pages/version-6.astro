@@ -1,0 +1,633 @@
+---
+/**
+ * BatchRx — Version 6.
+ * Follows the page structure and layout language of baseten.co:
+ * white panels on a dotted field, jumbo left-aligned hero over an isometric
+ * scene with a notched lede, a tile wall, scroll-lit statement, tabbed
+ * platform stage, sticky "outcomes" switcher with a customer story, centred
+ * get-started block over numbered stats, and a black footer with a
+ * full-width wordmark. All artwork is generated here as SVG.
+ */
+import '../v9/v9.css';
+import { site, stats, payers, pmsSystems, wholesalers, testimonials } from '../site';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const year = new Date().getFullYear();
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://adnangodance.github.io');
+
+const LOGO =
+  'M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z';
+
+/* ---------- Isometric helpers (compile time) ---------- */
+const C = 0.866;
+const iso = (U: number) => {
+  const P = (x: number, y: number, z = 0) => [+((x - y) * C * U).toFixed(1), +((x + y) * 0.5 * U - z * U).toFixed(1)];
+  const poly = (pts: number[][]) => pts.map((p) => p.join(',')).join(' ');
+  const tile = (x: number, y: number, w: number, d: number, g = 0.05) =>
+    poly([P(x + g, y + g), P(x + w - g, y + g), P(x + w - g, y + d - g), P(x + g, y + d - g)]);
+  const box = (x0: number, y0: number, x1: number, y1: number, h: number) => ({
+    top: poly([P(x0, y0, h), P(x1, y0, h), P(x1, y1, h), P(x0, y1, h)]),
+    left: poly([P(x0, y1, h), P(x1, y1, h), P(x1, y1), P(x0, y1)]),
+    right: poly([P(x1, y1, h), P(x1, y0, h), P(x1, y0), P(x1, y1)]),
+    mTop: `matrix(${C} .5 ${-C} .5 ${P(x0, y0, h)})`,
+    mLeft: `matrix(${C} .5 0 1 ${P(x0, y1, h)})`,
+    mRight: `matrix(${C} -.5 0 1 ${P(x1, y1, h)})`,
+    w: (x1 - x0) * U,
+    d: (y1 - y0) * U,
+    hh: h * U,
+    depth: x1 + y1,
+  });
+  return { P, tile, box };
+};
+const rnd = (a: number, b: number) => {
+  const v = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453;
+  return v - Math.floor(v);
+};
+
+/* Hero scene: pastel tile field + three labelled blocks */
+const H = iso(46);
+const heroTiles: { pts: string; fill: string }[] = [];
+for (let j = -18; j <= 32; j++) {
+  for (let i = -20 + (((j % 2) + 2) % 2); i <= 34; i += 2) {
+    const [cx, cy] = H.P(i + 1, j + 0.5);
+    if (cx < -820 || cx > 820 || cy < -120 || cy > 580) continue;
+    const r = rnd(i, j);
+    const fill =
+      r < 0.46 ? '#e8f2e3' : r < 0.66 ? '#d6f6d3' : r < 0.75 ? '#b9f0c2' : r < 0.81 ? '#dccbf6'
+      : r < 0.86 ? '#f8caf2' : r < 0.91 ? '#bcd2f8' : r < 0.95 ? '#f9dcb4' : '#8fe9a8';
+    heroTiles.push({ pts: H.tile(i, j, 2, 1), fill });
+  }
+}
+const hbA = H.box(5, 3, 9, 6, 2.2);
+const hbB = H.box(9, -3, 12, -1, 1.3);
+const hbC = H.box(3, 8, 5, 11, 3);
+const heroBars = [28, 40, 34, 52, 46, 64, 58, 78];
+
+/* Platform scene: five blocks, one per report */
+const S = iso(46);
+const groundTiles: { pts: string; fill: string }[] = [];
+for (let j = -24; j <= 36; j += 4) {
+  for (let i = -24; i <= 40; i += 4) {
+    const [cx, cy] = S.P(i + 2, j + 2);
+    if (cx < -900 || cx > 900 || cy < -160 || cy > 720) continue;
+    groundTiles.push({ pts: S.tile(i, j, 4, 4, 0.03), fill: (i + j) % 8 === 0 ? '#b6f5c3' : '#d9f8d2' });
+  }
+}
+const platform = [
+  {
+    key: 'inventory',
+    name: 'Inventory report',
+    tag: 'INV',
+    body: 'Purchased versus billed for every NDC, across every wholesaler you buy from.',
+    rows: [['Primary + secondary wholesalers', 'Matched'], ['Shortages by NDC', 'Monthly'], ['Pack-size mismatches', 'Flagged']],
+    box: [3, 4, 7, 8, 3.5],
+    tones: ['#3a2a55', '#24143a', '#2e1f47'],
+  },
+  {
+    key: 'pbm',
+    name: 'PBM report',
+    tag: 'PBM',
+    body: 'Shortage exposure by payer, so you know where a recoupment would land before a letter does.',
+    rows: [['Exposure by payer', 'Ranked'], ['Every PBM and plan', 'Covered'], ['Dollar impact', 'Estimated']],
+    box: [8, -3, 12, 1, 3.5],
+    tones: ['#5b3757', '#3d2540', '#4a2d49'],
+  },
+  {
+    key: 'bin',
+    name: 'Billed & BIN search',
+    tag: 'BIN',
+    body: 'Find any claim in seconds by drug, date, payer or BIN — the lookup every audit starts with.',
+    rows: [['Search by BIN or NDC', 'Instant'], ['Claim history', 'Complete'], ['Export for auditors', 'Included']],
+    box: [-3, 6, 1, 10, 3],
+    tones: ['#16385c', '#0c2440', '#112e4d'],
+  },
+  {
+    key: 'aberrant',
+    name: 'Aberrant claims',
+    tag: 'ABR',
+    body: 'Early refills, quantity spikes and outliers flagged before an auditor finds them.',
+    rows: [['Early refills', 'Flagged'], ['Quantity spikes', 'Flagged'], ['Controlled substances', 'Balanced']],
+    box: [10, 5, 14, 9, 3],
+    tones: ['#5c4216', '#3f2c0c', '#4c3611'],
+  },
+  {
+    key: 'vault',
+    name: 'Document vault',
+    tag: 'DOC',
+    body: 'Invoices and signatures stored audit-ready, so a response packet is assembled, not hunted for.',
+    rows: [['Wholesaler invoices', 'Stored'], ['Signature logs', 'Stored'], ['Audit packets', 'Ready']],
+    box: [1, 12, 5, 16, 2.5],
+    tones: ['#234a36', '#12301f', '#1a3d2a'],
+  },
+].map((p, n) => {
+  const [x0, y0, x1, y1, h] = p.box;
+  const b = S.box(x0, y0, x1, y1, h);
+  const cols = 4;
+  const rowsN = Math.max(2, Math.floor((b.hh - 14) / 40));
+  const pad = 9;
+  const sz = (b.w - pad * (cols + 1)) / cols;
+  const win = [];
+  for (let r = 0; r < rowsN; r++)
+    for (let c = 0; c < cols; c++)
+      win.push({ x: +(pad + c * (sz + pad)).toFixed(1), y: +(pad + r * (sz + pad)).toFixed(1), dark: rnd(c + n * 7, r + 3) < 0.3 });
+  return { ...p, b, win, sz: +sz.toFixed(1) };
+});
+const platformDraw = [...platform].sort((a, b) => a.b.depth - b.b.depth);
+
+/* Closing scene: a row of rising slabs */
+const D = iso(30);
+const slabs = Array.from({ length: 15 }, (_, k) => {
+  const x0 = k * 1.25 - 9;
+  const y0 = -k * 1.25 + 9;
+  const late = k > 8;
+  return {
+    b: D.box(x0, y0, x0 + 0.42, y0 + 2.6, 0.7 + k * 0.26),
+    top: late ? '#eef5ea' : '#eaf2e6',
+    left: late ? '#000' : '#cddbc6',
+    right: late ? '#cddbc6' : '#dde8d7',
+  };
+});
+
+/* ---------- Content ---------- */
+const reports = platform.slice(0, 4).map((p) => [p.name, p.body]);
+const audits = [
+  ['CMS', 'CMS audits', 'Medicare reviews, requirement by requirement'],
+  ['OnSite', 'OnSite audits', 'Be ready before the auditor walks in'],
+  ['Desktop', 'Desktop audits', 'Complete packets, submitted on time'],
+  ['Investigative', 'Investigative audits', 'Focused support when stakes are highest'],
+];
+
+const faces = ['', 'tile--f1', 'tile--f2', 'tile--f3', 'tile--f4'];
+const wall = [
+  ...payers.map((n) => ['PBM', n]),
+  ...pmsSystems.map((n) => ['PMS', n]),
+  ...wholesalers.slice(0, 4).map((n) => ['WHS', n]),
+].map(([kind, name], i) => ({
+  kind,
+  name,
+  face: faces[(i * 3) % faces.length],
+  tone: i === 2 || i === 8 ? 'tile--sky' : i === 17 ? 'tile--lime' : '',
+}));
+
+const statement =
+  'Stay ahead of every PBM with records that hold up: invoices you can produce, claims you can explain, and shortages you find first. Built for independent and multi-store pharmacies, with audit specialists who work as an extension of your team.';
+
+const outcomes = [
+  {
+    key: 'Shortages',
+    head: ['Find the shortage', 'before a PBM does.'],
+    body: 'Match purchased units from every primary and secondary wholesaler against billed claims each month, so gaps surface before a recoupment letter does.',
+    t: testimonials[1],
+    about: 'An independent pharmacy that reconciles wholesaler invoices against billed claims every month.',
+    stats: [['Monthly', 'Reconciliation'], ['4', 'Core reports']],
+  },
+  {
+    key: 'Recoupments',
+    head: ['Keep the claims', 'you’ve already earned.'],
+    body: 'Fast BIN searches, aberrant-claim reviews and one-on-one support keep avoidable recoupments off the books.',
+    t: testimonials[2],
+    about: 'An independent pharmacy using BatchRx reports and specialists to prevent recoupments.',
+    stats: [['4', 'Audit types covered'], ['1:1', 'Specialist support']],
+  },
+  {
+    key: 'Compliance',
+    head: ['Be audit-ready', 'on an ordinary day.'],
+    body: 'Invoices, signatures and controlled-substance counts stay organised all year, with HIPAA-compliant handling of patient information.',
+    t: testimonials[3],
+    about: 'An independent pharmacy that keeps records audit-ready with straightforward tools.',
+    stats: [['50', 'States served'], ['HIPAA', 'Compliant']],
+  },
+  {
+    key: 'Multi-store',
+    head: ['See every location', 'from one screen.'],
+    body: 'Owners oversee reconciliation rates, shortages and active audit deadlines across every store, without chasing a single spreadsheet.',
+    t: testimonials[0],
+    about: 'A twelve-pharmacy network overseeing every location from a single BatchRx view.',
+    stats: [['12', 'Locations, one screen'], [`$${site.price}`, 'Per pharmacy / month']],
+  },
+];
+
+const fmt = (s: (typeof stats)[number]) =>
+  `${'prefix' in s ? (s.prefix ?? '') : ''}${s.value.toLocaleString('en-US')}${s.suffix ?? ''}`;
+const versions = [
+  ['Version 1', `${base}/`],
+  ['Version 2', `${base}/version-2`],
+  ['Version 3', `${base}/version-3`],
+  ['Version 4', `${base}/version-4`],
+  ['Version 5', `${base}/version-5`],
+  ['Version 6', `${base}/version-6`],
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BatchRx — Audit-ready pharmacies are built on BatchRx</title>
+    <meta
+      name="description"
+      content={`Wholesaler-to-PBM reconciliation, audit reports and one-on-one audit specialists for independent and multi-store pharmacies. $${site.price}/month, HIPAA compliant, all 50 states.`}
+    />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <meta name="theme-color" content="#ffffff" />
+  </head>
+  <body>
+    <a href="#main" class="skip">Skip to content</a>
+
+    <!-- ================= NAV ================= -->
+    <header class="nav" data-nav>
+      <div class="nav__in">
+        <a href={`${base}/version-6`} class="brand" aria-label="BatchRx home">
+          <svg viewBox="0 0 27.7279 27.7279" width="20" height="20" aria-hidden="true"><path d={LOGO} fill="currentColor"></path></svg>
+          batchrx
+        </a>
+        <nav class="nav__links" aria-label="Primary">
+          <div class="nav__drop">
+            <button type="button" aria-haspopup="true">Platform</button>
+            <div class="nav__menu">
+              {platform.map((p) => <a href="#platform"><b>{p.name}</b><small>{p.body.split(',')[0].replace(/\.$/, '')}</small></a>)}
+            </div>
+          </div>
+          <div class="nav__drop">
+            <button type="button" aria-haspopup="true">Audits</button>
+            <div class="nav__menu">
+              {audits.map(([, t, d]) => <a href="#audits"><b>{t}</b><small>{d}</small></a>)}
+            </div>
+          </div>
+          <a href="#outcomes">Outcomes</a>
+          <a href="#outcomes">Customers</a>
+          <a href="#start">Pricing</a>
+        </nav>
+        <div class="nav__right">
+          <a href={site.loginUrl} class="nav__login">Log in</a>
+          <a href={site.registerUrl} class="btn btn--sm">Get started</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ================= HERO ================= -->
+      <section class="panel hero">
+        <h1>Audit-ready pharmacies are built on BatchRx</h1>
+
+        <div class="hero__grid">
+          <div class="hero__art">
+            <div class="hero__lede">
+              <p>
+                BatchRx brings invoice reconciliation, audit reports and one-on-one specialists together on one
+                platform, so the claims you bill stay paid.
+              </p>
+              <div class="hero__cta">
+                <a href={site.registerUrl} class="btn">Start now</a>
+                <a href="#start" class="btn btn--ghost">Talk to a specialist</a>
+              </div>
+            </div>
+
+            <svg viewBox="-700 -60 1400 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              {heroTiles.map((t) => <polygon points={t.pts} fill={t.fill} />)}
+
+              <!-- back block: PBM audit -->
+              <polygon points={hbB.top} fill="#7df2a8" />
+              <polygon points={hbB.left} fill="#14e56f" />
+              <polygon points={hbB.right} fill="#0fc45d" />
+              <g transform={hbB.mLeft} font-family="Geist Mono, monospace" fill="#003d1a">
+                <text x="10" y="20" font-size="10" letter-spacing="1.2">DESKTOP AUDIT</text>
+                <text x="10" y="46" font-size="22">26/26</text>
+              </g>
+              <g transform={hbB.mRight} font-family="Geist Mono, monospace" fill="#003d1a">
+                <text x="8" y="20" font-size="9" letter-spacing="1">DOCS SENT</text>
+              </g>
+
+              <!-- main block: reconciliation -->
+              <polygon points={hbA.top} fill="#c9f9d6" />
+              <polygon points={hbA.left} fill="#14e56f" />
+              <polygon points={hbA.right} fill="#0fc45d" />
+              <g transform={hbA.mTop} fill="#003d1a">
+                <rect x="14" y="14" width="36" height="36" fill="#14e56f" />
+                <rect x="24" y="24" width="16" height="16" fill="none" stroke="#003d1a" stroke-width="5" />
+                <text x="62" y="30" font-family="Inter Variable, sans-serif" font-size="17">Inventory</text>
+                <text x="62" y="50" font-family="Inter Variable, sans-serif" font-size="17">report</text>
+                <text x="14" y={hbA.d - 14} font-family="Geist Mono, monospace" font-size="9.5" letter-spacing="1.2">NDC × PAYER · OCTOBER</text>
+              </g>
+              <g transform={hbA.mLeft} fill="#003d1a">
+                <text x="14" y="44" font-family="Inter Variable, sans-serif" font-size="34" letter-spacing="-1">13,016</text>
+                <text x="14" y="62" font-family="Geist Mono, monospace" font-size="9.5" letter-spacing="1.2">CLAIMS MATCHED</text>
+                <line x1="14" y1="76" x2={hbA.w - 14} y2="76" stroke="#003d1a" stroke-opacity=".35" />
+                <text x="14" y="93" font-family="Geist Mono, monospace" font-size="9.5" letter-spacing="1.2">+ ACTIVE</text>
+              </g>
+              <g transform={hbA.mRight}>
+                {heroBars.map((v, i) => <rect x={14 + i * 14} y={hbA.hh - 12 - v} width="8" height={v} fill="#003d1a" opacity={0.35 + i * 0.08} />)}
+              </g>
+
+              <!-- front block: shortage flagged -->
+              <polygon points={hbC.top} fill="#14e56f" />
+              <polygon points={hbC.left} fill="#000" />
+              <polygon points={hbC.right} fill="#0b8f43" />
+              <g transform={hbC.mLeft} font-family="Geist Mono, monospace" fill="#14e56f">
+                <text x="10" y="22" font-size="9.5" letter-spacing="1.2">SHORTAGE</text>
+                <text x="10" y="52" font-family="Inter Variable, sans-serif" font-size="26" fill="#fff">−30 u</text>
+                <text x="10" y="72" font-size="9" letter-spacing="1" fill="#8d9c88">LISINOPRIL</text>
+                <text x="10" y="86" font-size="9" letter-spacing="1" fill="#8d9c88">10 MG</text>
+              </g>
+              <g transform={hbC.mTop} font-family="Geist Mono, monospace" fill="#003d1a">
+                <text x="10" y="20" font-size="9.5" letter-spacing="1.2">FLAGGED</text>
+              </g>
+            </svg>
+
+            <div class="hero__card" data-rotator data-items={JSON.stringify(reports)}>
+              <div class="hero__card-top"><i class="sq"></i><span data-rot-title>{reports[0][0]}</span></div>
+              <p data-rot-body>{reports[0][1]}</p>
+              <div class="hero__bar"><i data-rot-bar></i></div>
+            </div>
+          </div>
+
+          {wall.map((w) => <div class:list={['tile', w.face, w.tone]}><small>{w.kind}</small>{w.name}</div>)}
+        </div>
+      </section>
+
+      <div class="gap" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <!-- ================= STATEMENT ================= -->
+      <section class="panel say" aria-label="What BatchRx does">
+        <p data-lit>{statement}</p>
+      </section>
+
+      <div class="gap" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <!-- ================= PLATFORM ================= -->
+      <section class="panel plat" id="platform" aria-labelledby="plat-h">
+        <span class="chip">The platform</span>
+        <h2 class="h2" id="plat-h">Built for every pharmacy audit</h2>
+
+        <div class="plat__stage" data-tabs>
+          <svg viewBox="-700 -40 1400 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            {groundTiles.map((t) => <polygon points={t.pts} fill={t.fill} />)}
+            {
+              platformDraw.map((p) => (
+                <g class="blk" data-blk={p.key} data-on={p.key === platform[0].key ? '' : undefined} style={`--bt:${p.tones[0]};--bl:${p.tones[1]};--br:${p.tones[2]}`}>
+                  <polygon class="t" points={p.b.top} />
+                  <polygon class="l" points={p.b.left} />
+                  <polygon class="r" points={p.b.right} />
+                  <g transform={p.b.mLeft}>
+                    {p.win.map((w) => <rect class:list={['w', { d: w.dark }]} x={w.x} y={w.y} width={p.sz} height={p.sz} />)}
+                  </g>
+                  <g transform={p.b.mTop}><text x="12" y="22">{p.tag}</text></g>
+                </g>
+              ))
+            }
+          </svg>
+
+          <div class="tabs" role="tablist" aria-label="Platform reports">
+            {
+              platform.map((p, i) => (
+                <button type="button" role="tab" id={`tab-${p.key}`} aria-selected={i === 0 ? 'true' : 'false'} aria-controls={`card-${p.key}`} tabindex={i === 0 ? 0 : -1} data-tab={p.key}>
+                  {p.name}
+                </button>
+              ))
+            }
+          </div>
+
+          {
+            platform.map((p, i) => (
+              <div class="plat__card" role="tabpanel" id={`card-${p.key}`} aria-labelledby={`tab-${p.key}`} hidden={i !== 0} data-card={p.key}>
+                <h3><i class="sq"></i>{p.name}</h3>
+                <p>{p.body}</p>
+                <ul>
+                  {p.rows.map(([a, b]) => <li>{a}<b>{b}</b></li>)}
+                </ul>
+                <a href={site.registerUrl} class="btn btn--block">Run it on your data</a>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <div class="gap" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <!-- ================= OUTCOMES ================= -->
+      <section class="panel out" id="outcomes" aria-label="Outcomes">
+        <div class="out__grid" data-tabs>
+          <div class="out__side">
+            <span class="chip">Outcomes</span>
+            <nav role="tablist" aria-label="Outcomes">
+              {
+                outcomes.map((o, i) => (
+                  <button type="button" role="tab" id={`otab-${i}`} aria-selected={i === 0 ? 'true' : 'false'} aria-controls={`opane-${i}`} tabindex={i === 0 ? 0 : -1} data-tab={`o${i}`}>
+                    {o.key}
+                  </button>
+                ))
+              }
+            </nav>
+          </div>
+
+          <div class="out__main">
+            {
+              outcomes.map((o, i) => (
+                <div class="out__pane" role="tabpanel" id={`opane-${i}`} aria-labelledby={`otab-${i}`} hidden={i !== 0} data-card={`o${i}`}>
+                  <h2><span>{o.head[0]}</span><span>{o.head[1]}</span></h2>
+                  <p>{o.body}</p>
+                  <div class="story">
+                    <div class="story__who">
+                      <header>{o.t.place}</header>
+                      <div class="story__mark">{o.t.place}</div>
+                      <p>{o.about}</p>
+                    </div>
+                    <figure class="story__quote" style="margin:0">
+                      <header><div>{o.t.name}, <span>{o.t.place}</span></div></header>
+                      <blockquote>“{o.t.quote}”</blockquote>
+                      <div class="story__stats">
+                        {o.stats.map(([v, l]) => <div><b>{v}</b><small>{l}</small></div>)}
+                      </div>
+                    </figure>
+                  </div>
+                </div>
+              ))
+            }
+
+            <div class="more" id="audits">
+              <span class="chip chip--soft">Audits we cover</span>
+              <div class="more__grid">
+                {
+                  audits.map(([short, title, line]) => (
+                    <a href="#start">
+                      <div class="more__thumb"><span>{short}</span></div>
+                      <h3>{title}</h3>
+                      <p class="mono">{line}</p>
+                    </a>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="gap" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <!-- ================= GET STARTED ================= -->
+      <section class="panel go" id="start" aria-labelledby="go-h">
+        <span class="chip chip--soft">Get started</span>
+        <h2 class="h2" id="go-h">Built for audits. Ready for the letter.</h2>
+        <div class="go__cta">
+          <a href={site.registerUrl} class="btn">Start now</a>
+          <a href={site.appUrl} class="btn btn--ghost">Talk to a specialist</a>
+        </div>
+        <p class="mono go__note">${site.price}/month per pharmacy · Specialist included · HIPAA compliant</p>
+
+        <div class="go__stage">
+          <div class="go__art" aria-hidden="true">
+            <svg viewBox="-500 -150 1040 210" preserveAspectRatio="xMidYMid meet">
+              {
+                slabs.map((s) => (
+                  <g>
+                    <polygon points={s.b.left} fill={s.left} />
+                    <polygon points={s.b.right} fill={s.right} />
+                    <polygon points={s.b.top} fill={s.top} />
+                  </g>
+                ))
+              }
+            </svg>
+          </div>
+          <div class="stats">
+            {
+              stats.map((s, i) => (
+                <div>
+                  <span class="mono">{String(i + 1).padStart(3, '0')}</span>
+                  <b>{fmt(s)}</b>
+                  <span class="mono">{s.label}</span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <div class="gap" aria-hidden="true"><i></i><i></i><i></i></div>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="foot">
+      <div class="foot__cols">
+        <div>
+          <h2>Platform</h2>
+          {platform.map((p) => <a href="#platform">{p.name}</a>)}
+        </div>
+        <div>
+          <h2>Audits</h2>
+          {audits.map(([, t]) => <a href="#audits">{t}</a>)}
+        </div>
+        <div>
+          <h2>Account</h2>
+          <a href={site.loginUrl}>Log in</a>
+          <a href={site.registerUrl}>Get started</a>
+          <a href="#start">Pricing</a>
+        </div>
+        <div>
+          <h2>Versions</h2>
+          {versions.map(([t, href]) => <a href={href} aria-current={t === 'Version 6' ? 'page' : undefined}>{t}</a>)}
+        </div>
+      </div>
+
+      <div class="foot__bar">
+        <span class="foot__ok">HIPAA compliant · all 50 states</span>
+        <nav aria-label="Footer">
+          <a href="#platform">Platform</a>
+          <a href="#outcomes">Outcomes</a>
+          <a href="#start">Get started</a>
+        </nav>
+      </div>
+
+      <svg class="foot__word" viewBox="0 0 1000 232" role="img" aria-label="batchrx">
+        <text x="-6" y="196" font-size="262" textLength="1010" lengthAdjust="spacingAndGlyphs">batchrx</text>
+      </svg>
+
+      <div class="foot__end">
+        <span>Audit-ready pharmacies are built on BatchRx</span>
+        <span>© {year} BatchRx</span>
+      </div>
+    </footer>
+
+    <script>
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Sticky nav hairline
+      const nav = document.querySelector('[data-nav]');
+      const onScroll = () => nav?.toggleAttribute('data-stuck', scrollY > 8);
+      addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // Tabs (platform stage + outcomes)
+      document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+        const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+        const select = (key: string, focus = false) => {
+          tabs.forEach((t) => {
+            const on = t.dataset.tab === key;
+            t.setAttribute('aria-selected', String(on));
+            t.tabIndex = on ? 0 : -1;
+            if (on && focus) t.focus();
+          });
+          root.querySelectorAll<HTMLElement>('[data-card]').forEach((c) => (c.hidden = c.dataset.card !== key));
+          root.querySelectorAll<SVGGElement>('[data-blk]').forEach((b) => b.toggleAttribute('data-on', b.dataset.blk === key));
+        };
+        tabs.forEach((t, i) => {
+          t.addEventListener('click', () => select(t.dataset.tab!));
+          t.addEventListener('keydown', (e) => {
+            const d = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+            if (!d) return;
+            e.preventDefault();
+            select(tabs[(i + d + tabs.length) % tabs.length].dataset.tab!, true);
+          });
+        });
+      });
+
+      // Hero card rotator
+      const rot = document.querySelector<HTMLElement>('[data-rotator]');
+      if (rot && !reduce) {
+        const items: string[][] = JSON.parse(rot.dataset.items || '[]');
+        const title = rot.querySelector('[data-rot-title]')!;
+        const body = rot.querySelector('[data-rot-body]')!;
+        const bar = rot.querySelector<HTMLElement>('[data-rot-bar]')!;
+        let n = 0;
+        const run = () => {
+          bar.classList.remove('run');
+          void bar.offsetWidth;
+          bar.classList.add('run');
+        };
+        bar.addEventListener('animationend', () => {
+          n = (n + 1) % items.length;
+          title.textContent = items[n][0];
+          body.textContent = items[n][1];
+          run();
+        });
+        run();
+      }
+
+      // Scroll-lit statement
+      const lit = document.querySelector<HTMLElement>('[data-lit]');
+      if (lit) {
+        const words = (lit.textContent || '').trim().split(/\s+/);
+        lit.textContent = '';
+        const spans = words.map((w, i) => {
+          const s = document.createElement('span');
+          s.textContent = w;
+          lit.append(s, i < words.length - 1 ? ' ' : '');
+          return s;
+        });
+        if (reduce) spans.forEach((s) => s.classList.add('on'));
+        else {
+          const paint = () => {
+            const r = lit.getBoundingClientRect();
+            const p = (innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35);
+            const upto = Math.round(Math.min(1, Math.max(0, p)) * spans.length);
+            spans.forEach((s, i) => s.classList.toggle('on', i < upto));
+          };
+          addEventListener('scroll', paint, { passive: true });
+          addEventListener('resize', paint);
+          paint();
+        }
+      }
+    </script>
+  </body>
+</html>

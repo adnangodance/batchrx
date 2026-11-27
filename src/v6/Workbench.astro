@@ -1,0 +1,844 @@
+---
+/**
+ * High-contrast luminous white-on-forest-emerald interactive BatchRx Ledger.
+ * Combines V1's razor-sharp white app readability with real user interactivity:
+ * switch views, filter shortages, click any NDC row, search BINs, and dispatch a specialist.
+ */
+const LOGO =
+  'M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z';
+
+const rows = [
+  {
+    ndc: '0071-0155-23',
+    drug: 'Lisinopril 10 mg',
+    supplier: 'Kinray',
+    pbm: 'Express Scripts',
+    bought: 120,
+    billed: 150,
+    risk: 1950,
+    action: 'Pull secondary Real Value invoice (30 units) before Express Scripts cycle closes.',
+  },
+  {
+    ndc: '0093-5264-56',
+    drug: 'Omeprazole 20 mg',
+    supplier: 'Kinray + McKesson',
+    pbm: 'CVS Caremark',
+    bought: 90,
+    billed: 110,
+    risk: 1300,
+    action: 'Reconcile 30-ct vs 90-ct package split across Kinray & McKesson invoices.',
+  },
+  {
+    ndc: '0003-0894-21',
+    drug: 'Eliquis 5 mg',
+    supplier: 'McKesson',
+    pbm: 'OptumRx',
+    bought: 180,
+    billed: 180,
+    risk: 0,
+    action: 'All 180 tablets matched across 3 invoices. Audit documentation archived.',
+  },
+  {
+    ndc: '0093-0150-01',
+    drug: 'Atorvastatin 20 mg',
+    supplier: 'Kinray',
+    pbm: 'Express Scripts',
+    bought: 240,
+    billed: 240,
+    risk: 0,
+    action: 'Zero variance across 8 dispensed prescriptions in October.',
+  },
+  {
+    ndc: '0093-1048-01',
+    drug: 'Metformin 500 mg',
+    supplier: 'McKesson',
+    pbm: 'Prime Therapeutics',
+    bought: 500,
+    billed: 500,
+    risk: 0,
+    action: 'Clean invoice match verified against PrimeRx claims.',
+  },
+];
+
+const bins = [
+  { bin: '610014', rx: 'Rx 4410923', drug: 'Eliquis 5 mg', flag: 'Early refill (day 19/30)', st: 'Review' },
+  { bin: '610014', rx: 'Rx 4411278', drug: 'Ozempic 1 mg', flag: 'Quantity above 95th pct', st: 'Review' },
+  { bin: '004336', rx: 'Rx 4412051', drug: 'Jardiance 25 mg', flag: 'High-cost brand · new pt', st: 'Review' },
+  { bin: '610591', rx: 'Rx 4412630', drug: 'Lantus SoloStar', flag: 'Days-supply variance', st: 'Cleared' },
+];
+---
+
+<div class="app" data-app>
+  <!-- Luminous Crisp White Main Window -->
+  <div class="app__win">
+    <div class="app__top">
+      <div class="app__id">
+        <svg viewBox="0 0 27.7279 27.7279" width="16" height="16" aria-hidden="true">
+          <path d={LOGO} fill="#184e40"></path>
+        </svg>
+        <b>Main St. Pharmacy</b>
+        <span class="mono">PrimeRx · 3 wholesalers</span>
+      </div>
+      <div class="app__tabs" role="tablist" aria-label="Live app views">
+        <button type="button" role="tab" aria-selected="true" data-app-tab="rec">Reconciliation</button>
+        <button type="button" role="tab" aria-selected="false" data-app-tab="bin">BIN Search</button>
+        <button type="button" role="tab" aria-selected="false" data-app-tab="aud">Active Audit</button>
+      </div>
+    </div>
+
+    <!-- VIEW 1: RECONCILIATION -->
+    <div class="app__pane is-on" data-app-pane="rec">
+      <div class="app__kpis">
+        <div>
+          <small>Purchased</small>
+          <b class="tnum">12,840</b>
+        </div>
+        <div>
+          <small>Billed</small>
+          <b class="tnum">12,920</b>
+        </div>
+        <div class="is-ok">
+          <small>Matched</small>
+          <b class="tnum">98.6%</b>
+        </div>
+        <div class="is-bad">
+          <small>At risk</small>
+          <b class="tnum">$3,250</b>
+        </div>
+      </div>
+
+      <div class="app__bar">
+        <span class="mono">OCTOBER CYCLE · CLICK ANY ROW TO INSPECT</span>
+        <div class="app__flts">
+          <button type="button" class="is-on" data-flt="all">All</button>
+          <button type="button" data-flt="bad">Shortages (2)</button>
+          <button type="button" data-flt="ok">Matched</button>
+        </div>
+      </div>
+
+      <div class="app__tbl">
+        <div class="atr ath">
+          <span>NDC &amp; Medication</span>
+          <span class="r">Bought</span>
+          <span class="r">Billed</span>
+          <span class="r">Status</span>
+        </div>
+        {
+          rows.map((r, i) => {
+            const diff = r.bought - r.billed;
+            const bad = diff < 0;
+            return (
+              <button
+                type="button"
+                class:list={['atr arow', { 'is-sel': i === 0, 'is-bad': bad }]}
+                data-arow
+                data-st={bad ? 'bad' : 'ok'}
+                data-ndc={r.ndc}
+                data-drug={r.drug}
+                data-supplier={r.supplier}
+                data-pbm={r.pbm}
+                data-bought={r.bought}
+                data-billed={r.billed}
+                data-risk={r.risk}
+                data-action={r.action}
+              >
+                <span class="adrug">
+                  <b>{r.drug}</b>
+                  <small class="mono">{r.ndc} · {r.supplier}</small>
+                </span>
+                <span class="r mono tnum">{r.bought}</span>
+                <span class="r mono tnum">{r.billed}</span>
+                <span class="r">
+                  <em class:list={['atag mono', bad ? 'atag--bad' : 'atag--ok']}>
+                    {bad ? `${diff} short` : 'Matched'}
+                  </em>
+                </span>
+              </button>
+            );
+          })
+        }
+      </div>
+
+      <!-- Bottom Inline Inspector Strip -->
+      <div class="insp" data-insp>
+        <div class="insp__top">
+          <div>
+            <span class="mono" data-i-meta>Express Scripts · 0071-0155-23</span>
+            <h4 data-i-drug>Lisinopril 10 mg — $1,950 exposure</h4>
+          </div>
+          <button type="button" class="insp__btn" data-i-send>Send to specialist →</button>
+        </div>
+        <div class="insp__bars">
+          <div>
+            <small>Bought <b class="mono" data-i-b>120</b></small>
+            <span><i data-i-bb style="width: 80%"></i></span>
+          </div>
+          <div class="is-b">
+            <small>Billed <b class="mono" data-i-s>150</b></small>
+            <span><i data-i-bs style="width: 100%"></i></span>
+          </div>
+        </div>
+        <p class="insp__note" data-i-action>
+          Pull secondary Real Value invoice (30 units) before Express Scripts cycle closes.
+        </p>
+      </div>
+    </div>
+
+    <!-- VIEW 2: BIN SEARCH -->
+    <div class="app__pane" data-app-pane="bin">
+      <div class="app__search">
+        <span class="mono">BIN</span>
+        <input type="text" placeholder="Type BIN (e.g. 610014) or drug…" data-bin-q />
+        <div class="app__flts">
+          <button type="button" class="is-on" data-bq="">All</button>
+          <button type="button" data-bq="610014">610014</button>
+          <button type="button" data-bq="004336">004336</button>
+        </div>
+      </div>
+      <div class="app__tbl">
+        <div class="atr ath">
+          <span>BIN / Drug</span>
+          <span>Flagged pattern</span>
+          <span class="r">Rx</span>
+          <span class="r">Status</span>
+        </div>
+        {
+          bins.map((b) => (
+            <div class="atr" data-brow data-s={`${b.bin} ${b.drug} ${b.flag} ${b.rx}`.toLowerCase()}>
+              <span class="adrug">
+                <b>{b.drug}</b>
+                <small class="mono">BIN {b.bin}</small>
+              </span>
+              <span style="font-size:12px;color:var(--ink-2)">{b.flag}</span>
+              <span class="r mono" style="font-size:11px;color:var(--ink-3)">{b.rx}</span>
+              <span class="r">
+                <em class:list={['atag mono', b.st === 'Cleared' ? 'atag--ok' : 'atag--bad']}>{b.st}</em>
+              </span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- VIEW 3: ACTIVE AUDIT -->
+    <div class="app__pane" data-app-pane="aud">
+      <div class="aud__head">
+        <div>
+          <b>Desktop Audit · Express Scripts</b>
+          <small>26 prescriptions requested · Due in 9 days</small>
+        </div>
+        <span class="atag atag--ok mono" data-aud-st>3 / 5 ready</span>
+      </div>
+      <div class="aud__list">
+        <label><input type="checkbox" checked data-acb /> Audit notice reviewed with specialist</label>
+        <label><input type="checkbox" checked data-acb /> 26 claims extracted from Billed Report</label>
+        <label><input type="checkbox" checked data-acb /> Patient signatures &amp; copay logs uploaded</label>
+        <label><input type="checkbox" data-acb /> Kinray &amp; Real Value invoices reconciled</label>
+        <label><input type="checkbox" data-acb /> Complete audit packet submitted to PBM</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Dark Specialist Card (Overlapping Corner, Tactile Depth) -->
+  <div class="spec-card" data-spec-card>
+    <span class="spec__av">AS<i></i></span>
+    <div class="spec__body">
+      <div class="spec__h">
+        <b>Alex S. · Audit Specialist</b>
+        <span class="mono" data-spec-time>Online</span>
+      </div>
+      <p data-spec-msg>I’ve queued the missing Real Value invoice for Lisinopril 10 mg ahead of your Express Scripts cycle.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const app = document.querySelector<HTMLElement>('[data-app]');
+  if (app) {
+    // Tabs
+    const tabs = [...app.querySelectorAll<HTMLButtonElement>('[data-app-tab]')];
+    const panes = [...app.querySelectorAll<HTMLElement>('[data-app-pane]')];
+    tabs.forEach((t) => {
+      t.addEventListener('click', () => {
+        const k = t.dataset.appTab!;
+        tabs.forEach((b) => b.setAttribute('aria-selected', String(b === t)));
+        panes.forEach((p) => p.classList.toggle('is-on', p.dataset.appPane === k));
+      });
+    });
+
+    // Rows + Inspector
+    const rows = [...app.querySelectorAll<HTMLButtonElement>('[data-arow]')];
+    const flts = [...app.querySelectorAll<HTMLButtonElement>('[data-flt]')];
+    const iMeta = app.querySelector<HTMLElement>('[data-i-meta]')!;
+    const iDrug = app.querySelector<HTMLElement>('[data-i-drug]')!;
+    const iB = app.querySelector<HTMLElement>('[data-i-b]')!;
+    const iS = app.querySelector<HTMLElement>('[data-i-s]')!;
+    const iBB = app.querySelector<HTMLElement>('[data-i-bb]')!;
+    const iBS = app.querySelector<HTMLElement>('[data-i-bs]')!;
+    const iAction = app.querySelector<HTMLElement>('[data-i-action]')!;
+    const iSend = app.querySelector<HTMLButtonElement>('[data-i-send]')!;
+    const specMsg = app.querySelector<HTMLElement>('[data-spec-msg]')!;
+    const specTime = app.querySelector<HTMLElement>('[data-spec-time]')!;
+    const specCard = app.querySelector<HTMLElement>('[data-spec-card]')!;
+
+    let activeDrug = 'Lisinopril 10 mg';
+    let activePbm = 'Express Scripts';
+
+    const pick = (r: HTMLButtonElement) => {
+      rows.forEach((el) => el.classList.toggle('is-sel', el === r));
+      const b = Number(r.dataset.bought);
+      const s = Number(r.dataset.billed);
+      const risk = Number(r.dataset.risk);
+      const max = Math.max(b, s, 1);
+      activeDrug = r.dataset.drug!;
+      activePbm = r.dataset.pbm!;
+      iMeta.textContent = `${activePbm} · ${r.dataset.ndc}`;
+      iDrug.textContent = risk > 0 ? `${activeDrug} — $${risk.toLocaleString('en-US')} exposure` : `${activeDrug} — Fully reconciled`;
+      iB.textContent = String(b);
+      iS.textContent = String(s);
+      iBB.style.width = `${Math.round((b / max) * 100)}%`;
+      iBS.style.width = `${Math.round((s / max) * 100)}%`;
+      iAction.textContent = r.dataset.action!;
+      iSend.textContent = risk > 0 ? 'Send to specialist →' : 'Verify packet →';
+    };
+
+    rows.forEach((r) => r.addEventListener('click', () => pick(r)));
+
+    flts.forEach((f) => {
+      f.addEventListener('click', () => {
+        const mode = f.dataset.flt!;
+        flts.forEach((b) => b.classList.toggle('is-on', b === f));
+        let first: HTMLButtonElement | null = null;
+        rows.forEach((r) => {
+          const show = mode === 'all' || r.dataset.st === mode;
+          r.hidden = !show;
+          if (show && !first) first = r;
+        });
+        if (first) pick(first);
+      });
+    });
+
+    iSend.addEventListener('click', () => {
+      specTime.textContent = 'Just now';
+      specMsg.textContent = `Got it — pulling wholesaler invoices and signature logs for ${activeDrug} (${activePbm}) now.`;
+      specCard.classList.remove('is-ping');
+      void specCard.offsetWidth;
+      specCard.classList.add('is-ping');
+    });
+
+    // BIN search
+    const binQ = app.querySelector<HTMLInputElement>('[data-bin-q]')!;
+    const bqs = [...app.querySelectorAll<HTMLButtonElement>('[data-bq]')];
+    const brows = [...app.querySelectorAll<HTMLElement>('[data-brow]')];
+    const runBin = (q: string) => {
+      const t = q.trim().toLowerCase();
+      brows.forEach((r) => {
+        r.hidden = t.length > 0 && !r.dataset.s!.includes(t);
+      });
+    };
+    binQ.addEventListener('input', () => {
+      bqs.forEach((b) => b.classList.remove('is-on'));
+      runBin(binQ.value);
+    });
+    bqs.forEach((b) => {
+      b.addEventListener('click', () => {
+        binQ.value = b.dataset.bq!;
+        bqs.forEach((x) => x.classList.toggle('is-on', x === b));
+        runBin(binQ.value);
+      });
+    });
+
+    // Audit checklist
+    const acbs = [...app.querySelectorAll<HTMLInputElement>('[data-acb]')];
+    const audSt = app.querySelector<HTMLElement>('[data-aud-st]')!;
+    acbs.forEach((c) => {
+      c.addEventListener('change', () => {
+        const n = acbs.filter((x) => x.checked).length;
+        audSt.textContent = `${n} / ${acbs.length} ready`;
+      });
+    });
+  }
+</script>
+
+<style>
+  .app {
+    position: relative;
+    width: 100%;
+    display: grid;
+    gap: 12px;
+  }
+
+  .app__win {
+    background: #ffffff;
+    color: var(--ink);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+      0 32px 72px -18px rgba(0, 0, 0, 0.58),
+      0 12px 28px -12px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+  }
+
+  .app__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #f8f9f8;
+    border-bottom: 1px solid #e4e8e6;
+  }
+
+  .app__id {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .app__id b {
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  .app__id span {
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+
+  .app__tabs {
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    background: #ebefed;
+    border-radius: 4px;
+  }
+
+  .app__tabs button {
+    padding: 5px 10px;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition:
+      background-color 0.15s,
+      color 0.15s;
+  }
+
+  .app__tabs button[aria-selected='true'] {
+    background: #ffffff;
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(7, 27, 23, 0.08);
+  }
+
+  .app__pane {
+    display: none;
+    padding: 16px;
+  }
+
+  .app__pane.is-on {
+    display: grid;
+    gap: 12px;
+  }
+
+  .app__kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: #e4e8e6;
+    border: 1px solid #e4e8e6;
+  }
+
+  .app__kpis div {
+    background: #ffffff;
+    padding: 10px 12px;
+  }
+
+  .app__kpis small {
+    display: block;
+    font-size: 10.5px;
+    color: var(--ink-3);
+  }
+
+  .app__kpis b {
+    display: block;
+    margin-top: 2px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .app__kpis .is-ok b {
+    color: var(--ok);
+  }
+
+  .app__kpis .is-bad b {
+    color: var(--bad);
+  }
+
+  .app__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 10.5px;
+    color: var(--ink-3);
+  }
+
+  .app__flts {
+    display: inline-flex;
+    gap: 4px;
+  }
+
+  .app__flts button {
+    padding: 4px 8px;
+    border: 1px solid #dce2df;
+    background: #ffffff;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+
+  .app__flts button.is-on {
+    background: var(--dk);
+    border-color: var(--dk);
+    color: #ffffff;
+  }
+
+  .app__tbl {
+    border: 1px solid #e4e8e6;
+  }
+
+  .atr {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) 58px 58px 86px;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    border: 0;
+    border-bottom: 1px solid #eef1ef;
+    background: #ffffff;
+    text-align: left;
+    font-size: 12.5px;
+  }
+
+  .atr:last-child {
+    border-bottom: 0;
+  }
+
+  .atr[hidden] {
+    display: none;
+  }
+
+  .ath {
+    padding-block: 6px;
+    background: #f6f8f7;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-3);
+  }
+
+  .arow {
+    cursor: pointer;
+    transition: background-color 0.14s;
+  }
+
+  .arow:hover {
+    background: #f8faf9;
+  }
+
+  .arow.is-sel {
+    background: #f1f8f4;
+    box-shadow: inset 3px 0 0 var(--ok);
+  }
+
+  .arow.is-bad.is-sel {
+    background: #fff5f3;
+    box-shadow: inset 3px 0 0 var(--bad);
+  }
+
+  .adrug b {
+    display: block;
+    font-weight: 550;
+    color: var(--ink);
+  }
+
+  .adrug small {
+    display: block;
+    font-size: 10.5px;
+    color: var(--ink-3);
+  }
+
+  .r {
+    text-align: right;
+  }
+
+  .atag {
+    display: inline-block;
+    padding: 2px 7px;
+    font-style: normal;
+    font-size: 10.5px;
+    font-weight: 500;
+    border-radius: 2px;
+  }
+
+  .atag--ok {
+    background: var(--ok-bg);
+    color: var(--ok);
+  }
+
+  .atag--bad {
+    background: var(--bad-bg);
+    color: var(--bad);
+  }
+
+  .insp {
+    padding: 12px 14px;
+    background: #f6f8f7;
+    border: 1px solid #e2e7e5;
+    display: grid;
+    gap: 10px;
+  }
+
+  .insp__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .insp__top span {
+    font-size: 10.5px;
+    color: var(--ink-3);
+  }
+
+  .insp__top h4 {
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  .insp__btn {
+    padding: 6px 11px;
+    border: 0;
+    border-radius: 3px;
+    background: var(--dk);
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.16s;
+  }
+
+  .insp__btn:hover {
+    background: var(--brand);
+  }
+
+  .insp__bars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .insp__bars small {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-bottom: 4px;
+  }
+
+  .insp__bars span {
+    display: block;
+    height: 6px;
+    background: #e2e7e5;
+  }
+
+  .insp__bars i {
+    display: block;
+    height: 100%;
+    background: var(--ok);
+    transition: width 0.3s var(--ease);
+  }
+
+  .insp__bars .is-b i {
+    background: var(--bad);
+  }
+
+  .insp__note {
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+
+  /* BIN & Audit Views */
+  .app__search {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid #dce2df;
+    background: #f8f9f8;
+  }
+
+  .app__search span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--brand);
+  }
+
+  .app__search input {
+    flex: 1;
+    min-width: 140px;
+    border: 0;
+    background: transparent;
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .app__search input:focus {
+    outline: none;
+  }
+
+  .aud__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e4e8e6;
+  }
+
+  .aud__head b {
+    display: block;
+    font-size: 14px;
+  }
+
+  .aud__head small {
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  .aud__list {
+    display: grid;
+    gap: 6px;
+  }
+
+  .aud__list label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 11px;
+    background: #f8f9f8;
+    border: 1px solid #e8ecea;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .aud__list input {
+    accent-color: var(--brand);
+  }
+
+  /* Docked Dark Specialist Bar (Zero overlap, crisp depth) */
+  .spec-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    background: var(--dk);
+    border: 1px solid rgba(56, 217, 139, 0.42);
+    color: #ffffff;
+    box-shadow: 0 20px 44px -12px rgba(0, 0, 0, 0.55);
+  }
+
+  .spec-card.is-ping {
+    animation: ping 0.45s var(--ease);
+  }
+
+  @keyframes ping {
+    0% {
+      transform: translateY(4px);
+      border-color: var(--glow);
+    }
+    50% {
+      transform: translateY(-3px);
+      box-shadow: 0 0 0 4px rgba(56, 217, 139, 0.25);
+    }
+    100% {
+      transform: none;
+    }
+  }
+
+  .spec__av {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #d8ece3;
+    color: var(--dk);
+    font-size: 11px;
+    font-weight: 700;
+    flex: none;
+  }
+
+  .spec__av i {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--glow);
+    border: 2px solid var(--dk);
+  }
+
+  .spec__h {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .spec__h span {
+    font-size: 10.5px;
+    color: var(--glow);
+  }
+
+  .spec__body p {
+    margin-top: 3px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: rgba(226, 240, 234, 0.84);
+  }
+
+  @media (max-width: 620px) {
+    .app {
+      padding-bottom: 0;
+    }
+    .app__kpis {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .atr {
+      grid-template-columns: minmax(0, 1fr) 44px 44px 72px;
+      padding: 8px;
+      font-size: 11.5px;
+    }
+    .spec-card {
+      position: static;
+      max-width: none;
+      margin-top: 10px;
+    }
+  }
+</style>

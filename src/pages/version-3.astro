@@ -1,0 +1,24 @@
+---
+/**
+ * BatchRx — Version 3.
+ * Hoplite.sh-style Header & Hero (in BatchRx forest-teal/emerald/mint fluted glass
+ * with live BatchRx Desktop + iPhone Dashboard) paired with Docker.com (2026)-style
+ * body sections & footer in BatchRx's brand palette.
+ */
+import '../v3-hoplite/hoplite.css';
+import '../v3-hoplite/docker-sections.css';
+import Layout from '../v4/Layout.astro';
+import Header from '../v3-hoplite/Header.astro';
+import Hero from '../v3-hoplite/Hero.astro';
+import DockerBody from '../v3-hoplite/DockerBody.astro';
+---
+
+<Layout title="BatchRx | Pharmacy audit software and one-on-one audit support">
+  <Header />
+  <main id="main">
+    <div class="hk-scope">
+      <Hero />
+    </div>
+    <DockerBody />
+  </main>
+</Layout>

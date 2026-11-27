@@ -1,0 +1,713 @@
+---
+const LOGO =
+  'M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z';
+
+const headlineWords = ['Your', 'claims', 'should', 'get', 'paid.', 'Not', 'clawed', 'back.'];
+
+const rows = [
+  {
+    ndc: '0071-0155-23',
+    drug: 'Lisinopril 10 mg',
+    supplier: 'Kinray',
+    pbm: 'Express Scripts',
+    bought: 120,
+    billed: 150,
+    risk: 1950,
+    action: 'Pull secondary Real Value invoice (30 units) before Express Scripts cycle closes.',
+  },
+  {
+    ndc: '0093-5264-56',
+    drug: 'Omeprazole 20 mg',
+    supplier: 'Kinray + McK',
+    pbm: 'CVS Caremark',
+    bought: 90,
+    billed: 110,
+    risk: 1300,
+    action: 'Reconcile 30-ct vs 90-ct package split across Kinray & McKesson invoices.',
+  },
+  {
+    ndc: '0093-0150-01',
+    drug: 'Atorvastatin 20 mg',
+    supplier: 'Kinray',
+    pbm: 'Express Scripts',
+    bought: 240,
+    billed: 240,
+    risk: 0,
+    action: 'Zero variance across 8 dispensed prescriptions in October. Archived for audit.',
+  },
+  {
+    ndc: '0093-1048-01',
+    drug: 'Metformin 500 mg',
+    supplier: 'McKesson',
+    pbm: 'Prime Therapeutics',
+    bought: 500,
+    billed: 500,
+    risk: 0,
+    action: 'Clean invoice match verified against PrimeRx billed claims.',
+  },
+  {
+    ndc: '0003-0894-21',
+    drug: 'Eliquis 5 mg',
+    supplier: 'McKesson',
+    pbm: 'OptumRx',
+    bought: 180,
+    billed: 180,
+    risk: 0,
+    action: 'All 180 tablets matched across 3 invoices. Audit packet ready.',
+  },
+];
+
+const pbms = [
+  { name: 'Express Scripts', claims: '4,210 claims', rate: '98.1%', pct: 98.1, status: '1 shortage · $1,950', bad: true },
+  { name: 'CVS Caremark', claims: '3,840 claims', rate: '98.8%', pct: 98.8, status: '1 shortage · $1,300', bad: true },
+  { name: 'OptumRx', claims: '2,690 claims', rate: '100%', pct: 100, status: '0 shortages · Clear', bad: false },
+  { name: 'Prime Therapeutics', claims: '2,180 claims', rate: '100%', pct: 100, status: '0 shortages · Clear', bad: false },
+];
+
+const bins = [
+  { bin: '610014', rx: 'Rx 4410923', drug: 'Eliquis 5 mg', flag: 'Early refill (day 19/30)', st: 'Review' },
+  { bin: '610014', rx: 'Rx 4411278', drug: 'Ozempic 1 mg', flag: 'Qty above 95th pct', st: 'Review' },
+  { bin: '004336', rx: 'Rx 4412051', drug: 'Jardiance 25 mg', flag: 'High-cost brand · new pt', st: 'Review' },
+  { bin: '610591', rx: 'Rx 4412630', drug: 'Lantus SoloStar', flag: 'Days-supply variance', st: 'Cleared' },
+];
+
+const sources = [
+  { code: 'PR', name: 'PrimeRx', role: 'PMS claims', kind: 'pms', status: 'done' },
+  { code: 'KN', name: 'Kinray', role: 'Primary', kind: 'pri', status: 'done' },
+  { code: 'MC', name: 'McKesson', role: 'Secondary', kind: 'sec', status: 'done' },
+  { code: 'RV', name: 'Real Value', role: 'Syncing…', kind: 'sec', status: 'working' },
+];
+---
+
+<section class="hk-hp" aria-labelledby="hk-hero-title" data-section="hero">
+  <div class="hk-wrap hk-hp__copy">
+    <a class="hk-hp__badge" href="#stories">
+      Trusted by
+      <span class="hk-hp__badge-mark" aria-hidden="true">
+        <svg viewBox="0 0 27.7279 27.7279" width="11" height="11">
+          <path d={LOGO} fill="currentColor"></path>
+        </svg>
+      </span>
+      400+ Pharmacies in 50 States
+    </a>
+
+    <h1 id="hk-hero-title" class="hk-hp__title">
+      <span class="sr-only">Your claims should get paid. Not clawed back.</span>
+      <span aria-hidden="true">
+        {
+          headlineWords.map((w, i) => (
+            <span class="hk-hp__word" style={`--i:${i}`}>
+              {w}
+              {i < headlineWords.length - 1 ? ' ' : ''}
+            </span>
+          ))
+        }
+      </span>
+    </h1>
+
+    <p class="hk-hp__body">
+      Audit software and one-on-one audit defense for independent pharmacies. Reconcile every unit you buy against every
+      claim you bill—before PBMs do.
+    </p>
+
+    <div class="hk-hp__actions">
+      <a href="#demo" class="hk-btn hk-btn--primary">
+        <svg viewBox="0 0 27.7279 27.7279" width="14" height="14" aria-hidden="true">
+          <path d={LOGO} fill="currentColor"></path>
+        </svg>
+        Book a live demo
+      </a>
+      <a href="#savings" class="hk-btn hk-btn--line">Calculate your savings</a>
+    </div>
+  </div>
+
+  <div class="hk-wrap hk-hp__stage">
+    <!-- Iconic Hoplite diagonal fluted-glass luminous backdrop -->
+    <div class="hk-hg" aria-hidden="true">
+      <div class="hk-hg__glass">
+        <canvas data-hk-glass data-flute="1" data-rise="" data-pitch="54"></canvas>
+      </div>
+    </div>
+
+    <!-- Frosted-Glass BatchRx Desktop Dashboard + Overlapping Glass iPhone Dashboard -->
+    <div class="hk-hd" data-hk-db>
+      <div class="hk-hd-frame">
+        <div class="hk-hd-screen">
+          <div class="hk-ad-shell">
+            <!-- macOS Titlebar -->
+            <div class="hk-ad-titlebar">
+              <span class="hk-ad-lights" aria-hidden="true">
+                <span class="hk-ad-light" data-light="close"></span>
+                <span class="hk-ad-light" data-light="min"></span>
+                <span class="hk-ad-light" data-light="zoom"></span>
+              </span>
+              <div class="hk-ad-winnav" aria-hidden="true">
+                <span class="hk-ad-winkey">
+                  <svg viewBox="0 0 18 18" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M11 4.5 6.5 9 11 13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+                <span class="hk-ad-winkey" data-disabled>
+                  <svg viewBox="0 0 18 18" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M7 4.5 11.5 9 7 13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+                <span class="hk-ad-winkey">
+                  <svg viewBox="0 0 18 18" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="2.5" y="3" width="13" height="12" rx="2"></rect>
+                    <path d="M6.5 3v12"></path>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <div class="hk-ad-layout">
+              <!-- BatchRx Sidebar -->
+              <aside class="hk-ad-sidebar" aria-label="BatchRx Dashboard Navigation">
+                <div class="hk-ad-brand">
+                  <svg viewBox="0 0 27.7279 27.7279" width="18" height="18" aria-hidden="true">
+                    <path d={LOGO} fill="#1d5043"></path>
+                  </svg>
+                  <span>BatchRx</span>
+                </div>
+
+                <div class="hk-ad-nav" role="tablist" aria-label="Dashboard sections">
+                  <button type="button" class="hk-ad-navbtn" role="tab" aria-selected="true" data-db-tab="rec" data-db-title="Inventory Reconciliation">
+                    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="2.5" y="3" width="13" height="12" rx="2"></rect>
+                      <path d="M2.5 7h13M7 7v8"></path>
+                    </svg>
+                    <span>Reconciliation</span>
+                    <span class="hk-ad-navbadge">2</span>
+                  </button>
+                  <button type="button" class="hk-ad-navbtn" role="tab" aria-selected="false" data-db-tab="pbm" data-db-title="PBM Reports">
+                    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M3.5 14.5V9M9 14.5V4.5M14.5 14.5V7.5" stroke-linecap="round"></path>
+                    </svg>
+                    <span>PBM Reports</span>
+                  </button>
+                  <button type="button" class="hk-ad-navbtn" role="tab" aria-selected="false" data-db-tab="bin" data-db-title="Aberrant & BIN Search">
+                    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <circle cx="8" cy="8" r="4.8"></circle>
+                      <path d="m11.8 11.8 3.2 3.2" stroke-linecap="round"></path>
+                    </svg>
+                    <span>BIN Search</span>
+                  </button>
+                  <button type="button" class="hk-ad-navbtn" role="tab" aria-selected="false" data-db-tab="aud" data-db-title="Active Desktop Audit">
+                    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M9 2.5 14.5 5v4.5c0 3.2-2.4 5.2-5.5 6-3.1-.8-5.5-2.8-5.5-6V5L9 2.5Z"></path>
+                      <path d="m6.5 9.2 1.8 1.8 3.5-3.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <span>Active Audits</span>
+                  </button>
+                </div>
+
+                <div class="hk-ad-sep"></div>
+
+                <div class="hk-ad-sec-head">
+                  <span>Connected</span>
+                  <span>4/4</span>
+                </div>
+
+                <div class="hk-ad-sources">
+                  {
+                    sources.map((s) => (
+                      <div class="hk-ad-src">
+                        <span class="hk-ad-src-ic" data-kind={s.kind}>{s.code}</span>
+                        <span class="hk-ad-src-txt">
+                          <b>{s.name}</b>
+                          <small>{s.role}</small>
+                        </span>
+                        <span class="hk-px" data-status={s.status} aria-hidden="true">
+                          <i data-lit={s.status === 'done' ? '' : undefined} />
+                          <i data-lit="" />
+                          <i data-lit={s.status === 'done' ? '' : undefined} />
+                          <i data-lit="" />
+                          <i />
+                          <i data-lit="" />
+                          <i data-lit={s.status === 'done' ? '' : undefined} />
+                          <i data-lit="" />
+                          <i data-lit={s.status === 'done' ? '' : undefined} />
+                        </span>
+                      </div>
+                    ))
+                  }
+                </div>
+
+                <div class="hk-ad-footer">
+                  <span class="hk-ad-avatar">MS</span>
+                  <span class="hk-ad-acct">
+                    <b>Main St. Pharmacy</b>
+                    <small>PrimeRx · 3 wholesalers</small>
+                  </span>
+                </div>
+              </aside>
+
+              <!-- Main BatchRx Dashboard Panel -->
+              <div class="hk-ad-main">
+                <div class="hk-ad-strip">
+                  <div class="hk-ad-crumb">
+                    <span class="hk-ad-crumb-proj">Main St. Pharmacy</span>
+                    <span class="hk-ad-crumb-sep" aria-hidden="true">/</span>
+                    <span class="hk-ad-crumb-title" data-db-crumb>Inventory Reconciliation</span>
+                  </div>
+                  <span class="hk-db-pill">
+                    <i></i>
+                    Oct 1 – Oct 31
+                  </span>
+                </div>
+
+                <!-- PANE 1: INVENTORY RECONCILIATION -->
+                <div class="hk-db-pane is-on" data-db-pane="rec">
+                  <div class="hk-db-kpis">
+                    <div class="hk-db-kpi">
+                      <small>Units purchased</small>
+                      <b>12,840</b>
+                    </div>
+                    <div class="hk-db-kpi">
+                      <small>Units billed</small>
+                      <b>12,920</b>
+                    </div>
+                    <div class="hk-db-kpi is-ok">
+                      <small>Reconciled</small>
+                      <b>98.6%</b>
+                    </div>
+                    <div class="hk-db-kpi is-bad">
+                      <small>At risk</small>
+                      <b>$3,250</b>
+                    </div>
+                  </div>
+
+                  <div class="hk-db-bar">
+                    <span class="hk-db-bar-lbl">NDC LEDGER · CLICK ANY ROW TO INSPECT</span>
+                    <div class="hk-db-flts">
+                      <button type="button" class="is-on" data-db-flt="all">All (5)</button>
+                      <button type="button" data-db-flt="bad">Shortages (2)</button>
+                      <button type="button" data-db-flt="ok">Matched</button>
+                    </div>
+                  </div>
+
+                  <div class="hk-db-tbl">
+                    <div class="hk-db-tr hk-db-th">
+                      <span>NDC &amp; Medication</span>
+                      <span class="hk-db-sup">Supplier</span>
+                      <span class="hk-db-n">Bought</span>
+                      <span class="hk-db-n">Billed</span>
+                      <span class="hk-db-n">Diff</span>
+                      <span class="hk-db-st">Status</span>
+                    </div>
+                    {
+                      rows.map((r, i) => {
+                        const diff = r.bought - r.billed;
+                        const bad = diff < 0;
+                        return (
+                          <button
+                            type="button"
+                            class:list={['hk-db-tr', 'hk-db-row', { 'is-sel': i === 0, 'is-bad': bad }]}
+                            data-db-row
+                            data-st={bad ? 'bad' : 'ok'}
+                            data-ndc={r.ndc}
+                            data-drug={r.drug}
+                            data-supplier={r.supplier}
+                            data-pbm={r.pbm}
+                            data-bought={r.bought}
+                            data-billed={r.billed}
+                            data-risk={r.risk}
+                            data-action={r.action}
+                          >
+                            <span class="hk-db-drug">
+                              <b>{r.drug}</b>
+                              <small>{r.ndc}</small>
+                            </span>
+                            <span class="hk-db-sup">{r.supplier}</span>
+                            <span class="hk-db-n">{r.bought}</span>
+                            <span class="hk-db-n">{r.billed}</span>
+                            <span class:list={['hk-db-n', 'hk-db-diff', { 'is-neg': bad }]}>{bad ? diff : '0'}</span>
+                            <span class="hk-db-st">
+                              <em class:list={['hk-db-tag', bad ? 'hk-db-tag--bad' : 'hk-db-tag--ok']}>
+                                {bad ? 'Shortage' : 'Matched'}
+                              </em>
+                            </span>
+                          </button>
+                        );
+                      })
+                    }
+                  </div>
+
+                  <!-- Bottom Inline Inspector Strip -->
+                  <div class="hk-db-insp">
+                    <div class="hk-db-insp-top">
+                      <div>
+                        <span class="hk-db-insp-meta" data-di-meta>Express Scripts · 0071-0155-23</span>
+                        <h4 class="hk-db-insp-title" data-di-drug>Lisinopril 10 mg — $1,950 exposure</h4>
+                      </div>
+                      <button type="button" class="hk-db-insp-btn" data-di-send>Assign specialist →</button>
+                    </div>
+                    <div class="hk-db-insp-bars">
+                      <div class="hk-db-baritem">
+                        <small><span>Purchased</span><b data-di-b>120 u</b></small>
+                        <span><i data-di-bb style="width: 80%"></i></span>
+                      </div>
+                      <div class="hk-db-baritem is-b">
+                        <small><span>Billed</span><b data-di-s>150 u</b></small>
+                        <span><i data-di-bs style="width: 100%"></i></span>
+                      </div>
+                    </div>
+                    <p class="hk-db-insp-note" data-di-action>
+                      Pull secondary Real Value invoice (30 units) before Express Scripts cycle closes.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- PANE 2: PBM REPORTS -->
+                <div class="hk-db-pane" data-db-pane="pbm">
+                  <div class="hk-db-bar">
+                    <span class="hk-db-bar-lbl">OCTOBER PBM EXPOSURE BREAKDOWN</span>
+                    <span class="hk-db-tag hk-db-tag--ok">4 active payers</span>
+                  </div>
+                  <div class="hk-db-pbm-grid">
+                    {
+                      pbms.map((p) => (
+                        <div class="hk-db-pbm-card">
+                          <div class="hk-db-pbm-top">
+                            <b>{p.name}</b>
+                            <span class:list={['hk-db-tag', p.bad ? 'hk-db-tag--bad' : 'hk-db-tag--ok']}>{p.rate}</span>
+                          </div>
+                          <div class="hk-db-pbm-bar">
+                            <i style={`width:${p.pct}%`}></i>
+                          </div>
+                          <div class="hk-db-pbm-meta">
+                            <span>{p.claims}</span>
+                            <span>{p.status}</span>
+                          </div>
+                        </div>
+                      ))
+                    }
+                  </div>
+                </div>
+
+                <!-- PANE 3: BIN SEARCH -->
+                <div class="hk-db-pane" data-db-pane="bin">
+                  <div class="hk-db-search">
+                    <span>BIN</span>
+                    <input type="text" placeholder="Type BIN (e.g. 610014) or drug…" data-db-binq />
+                    <div class="hk-db-flts">
+                      <button type="button" class="is-on" data-db-bq="">All</button>
+                      <button type="button" data-db-bq="610014">610014</button>
+                      <button type="button" data-db-bq="004336">004336</button>
+                    </div>
+                  </div>
+                  <div class="hk-db-tbl">
+                    <div class="hk-db-tr hk-db-th" style="grid-template-columns: minmax(0,1.2fr) minmax(0,1.4fr) 76px 70px">
+                      <span>BIN / Drug</span>
+                      <span>Flagged pattern</span>
+                      <span class="hk-db-n">Rx</span>
+                      <span class="hk-db-st">Status</span>
+                    </div>
+                    {
+                      bins.map((b) => (
+                        <div
+                          class="hk-db-tr"
+                          style="grid-template-columns: minmax(0,1.2fr) minmax(0,1.4fr) 76px 70px"
+                          data-db-brow
+                          data-s={`${b.bin} ${b.drug} ${b.flag} ${b.rx}`.toLowerCase()}
+                        >
+                          <span class="hk-db-drug">
+                            <b>{b.drug}</b>
+                            <small>BIN {b.bin}</small>
+                          </span>
+                          <span style="font-size:11.5px;color:var(--hk-app-muted)">{b.flag}</span>
+                          <span class="hk-db-n">{b.rx}</span>
+                          <span class="hk-db-st">
+                            <em class:list={['hk-db-tag', b.st === 'Cleared' ? 'hk-db-tag--ok' : 'hk-db-tag--bad']}>{b.st}</em>
+                          </span>
+                        </div>
+                      ))
+                    }
+                  </div>
+                </div>
+
+                <!-- PANE 4: ACTIVE AUDIT CHECKLIST -->
+                <div class="hk-db-pane" data-db-pane="aud">
+                  <div class="hk-db-bar">
+                    <div>
+                      <b style="display:block;font-size:13.5px">Desktop Audit · Express Scripts</b>
+                      <span style="font-size:11.5px;color:var(--hk-app-muted)">26 prescriptions requested · Due in 9 days</span>
+                    </div>
+                    <span class="hk-db-tag hk-db-tag--ok" data-db-audst>3 / 5 ready</span>
+                  </div>
+                  <div class="hk-db-aud-list">
+                    <label><input type="checkbox" checked data-db-acb /> Audit notice reviewed one-on-one with specialist</label>
+                    <label><input type="checkbox" checked data-db-acb /> 26 claims pulled from PrimeRx Billed Report</label>
+                    <label><input type="checkbox" checked data-db-acb /> Patient delivery signatures &amp; copay logs uploaded</label>
+                    <label><input type="checkbox" data-db-acb /> Kinray &amp; Real Value secondary invoices matched</label>
+                    <label><input type="checkbox" data-db-acb /> Final audit packet submitted to Express Scripts</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overlapping Translucent Glass iPhone — BatchRx Mobile Dashboard (Synced Live!) -->
+      <div class="hk-hdp" aria-hidden="true">
+        <div class="hk-phone-shell">
+          <div class="hk-phone-screen">
+            <div class="hk-phone-status">
+              <span>9:41</span>
+              <span class="hk-phone-island"></span>
+              <span>5G</span>
+            </div>
+
+            <div class="hk-pm-head">
+              <div class="hk-pm-brand">
+                <svg viewBox="0 0 27.7279 27.7279" width="18" height="18">
+                  <path d={LOGO} fill="#1d5043"></path>
+                </svg>
+                <div>
+                  <b>BatchRx</b>
+                  <small>Main St. Pharmacy</small>
+                </div>
+              </div>
+              <span class="hk-pm-live"><i></i>Synced</span>
+            </div>
+
+            <div class="hk-pm-kpis">
+              <div class="hk-pm-kpi is-ok">
+                <small>Reconciled</small>
+                <b>98.6%</b>
+              </div>
+              <div class="hk-pm-kpi is-bad">
+                <small>At risk</small>
+                <b>$3,250</b>
+              </div>
+            </div>
+
+            <!-- Live Synced Selected NDC Card -->
+            <div class="hk-pm-focus">
+              <div class="hk-pm-focus-top">
+                <div>
+                  <b data-pm-drug>Lisinopril 10 mg</b>
+                  <small data-pm-ndc>0071-0155-23 · Kinray</small>
+                </div>
+                <span class="hk-db-tag hk-db-tag--bad" data-pm-badge>−30 short</span>
+              </div>
+
+              <div class="hk-pm-bars">
+                <div class="hk-pm-brow">
+                  <small>Bought</small>
+                  <span><i data-pm-bb style="width: 80%"></i></span>
+                  <b data-pm-b>120</b>
+                </div>
+                <div class="hk-pm-brow is-b">
+                  <small>Billed</small>
+                  <span><i data-pm-bs style="width: 100%"></i></span>
+                  <b data-pm-s>150</b>
+                </div>
+              </div>
+
+              <div class="hk-pm-focus-foot">
+                <span data-pm-pbm>Express Scripts</span>
+                <b data-pm-risk>$1,950 at risk</b>
+              </div>
+            </div>
+
+            <div class="hk-pm-list-h">
+              <span>October cycle</span>
+              <span>2 shortages</span>
+            </div>
+
+            <div class="hk-pm-list">
+              <div class="hk-pm-item">
+                <div>
+                  <b>Lisinopril 10 mg</b>
+                  <small>Express Scripts · Kinray</small>
+                </div>
+                <span class="hk-db-tag hk-db-tag--bad">−30</span>
+              </div>
+              <div class="hk-pm-item">
+                <div>
+                  <b>Omeprazole 20 mg</b>
+                  <small>CVS Caremark · Kinray</small>
+                </div>
+                <span class="hk-db-tag hk-db-tag--bad">−20</span>
+              </div>
+              <div class="hk-pm-item">
+                <div>
+                  <b>Atorvastatin 20 mg</b>
+                  <small>Express Scripts · 240/240</small>
+                </div>
+                <span class="hk-db-tag hk-db-tag--ok">Matched</span>
+              </div>
+            </div>
+
+            <div class="hk-pm-spec">
+              <span class="hk-pm-spec-av">AS<i></i></span>
+              <div class="hk-pm-spec-txt">
+                <b>Alex S. · Specialist</b>
+                <small data-pm-spec>Pulling Real Value invoice (30u)</small>
+              </div>
+            </div>
+
+            <div class="hk-phone-foot">
+              <div class="hk-phone-merge">
+                <span>Open Audit Packet</span>
+                <svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M2.5 6h7M6.5 3l3 3-3 3" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </div>
+              <div class="hk-phone-home"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountFlutedGlass } from './flutedGlass';
+
+  // Mount WebGL fluted glass shaders (hero backdrop + header featured card)
+  document.querySelectorAll<HTMLCanvasElement>('[data-hk-glass]').forEach((canvas) => {
+    mountFlutedGlass(canvas);
+  });
+
+  // Interactive BatchRx Desktop Dashboard + Live-Synced Mobile Dashboard
+  const db = document.querySelector<HTMLElement>('[data-hk-db]');
+  if (db) {
+    // Sidebar tabs
+    const tabs = [...db.querySelectorAll<HTMLButtonElement>('[data-db-tab]')];
+    const panes = [...db.querySelectorAll<HTMLElement>('[data-db-pane]')];
+    const crumb = db.querySelector<HTMLElement>('[data-db-crumb]')!;
+
+    tabs.forEach((t) => {
+      t.addEventListener('click', () => {
+        const key = t.dataset.dbTab!;
+        tabs.forEach((b) => b.setAttribute('aria-selected', String(b === t)));
+        panes.forEach((p) => p.classList.toggle('is-on', p.dataset.dbPane === key));
+        crumb.textContent = t.dataset.dbTitle || 'Inventory Reconciliation';
+      });
+    });
+
+    // Reconciliation row selection + desktop inspector + live iPhone sync
+    const rowBtns = [...db.querySelectorAll<HTMLButtonElement>('[data-db-row]')];
+    const flts = [...db.querySelectorAll<HTMLButtonElement>('[data-db-flt]')];
+
+    const diMeta = db.querySelector<HTMLElement>('[data-di-meta]')!;
+    const diDrug = db.querySelector<HTMLElement>('[data-di-drug]')!;
+    const diB = db.querySelector<HTMLElement>('[data-di-b]')!;
+    const diS = db.querySelector<HTMLElement>('[data-di-s]')!;
+    const diBB = db.querySelector<HTMLElement>('[data-di-bb]')!;
+    const diBS = db.querySelector<HTMLElement>('[data-di-bs]')!;
+    const diAction = db.querySelector<HTMLElement>('[data-di-action]')!;
+    const diSend = db.querySelector<HTMLButtonElement>('[data-di-send]')!;
+
+    const pmDrug = db.querySelector<HTMLElement>('[data-pm-drug]')!;
+    const pmNdc = db.querySelector<HTMLElement>('[data-pm-ndc]')!;
+    const pmBadge = db.querySelector<HTMLElement>('[data-pm-badge]')!;
+    const pmB = db.querySelector<HTMLElement>('[data-pm-b]')!;
+    const pmS = db.querySelector<HTMLElement>('[data-pm-s]')!;
+    const pmBB = db.querySelector<HTMLElement>('[data-pm-bb]')!;
+    const pmBS = db.querySelector<HTMLElement>('[data-pm-bs]')!;
+    const pmPbm = db.querySelector<HTMLElement>('[data-pm-pbm]')!;
+    const pmRisk = db.querySelector<HTMLElement>('[data-pm-risk]')!;
+    const pmSpec = db.querySelector<HTMLElement>('[data-pm-spec]')!;
+
+    let activeDrug = 'Lisinopril 10 mg';
+    let activePbm = 'Express Scripts';
+
+    const selectRow = (r: HTMLButtonElement) => {
+      rowBtns.forEach((x) => x.classList.toggle('is-sel', x === r));
+      const b = Number(r.dataset.bought);
+      const s = Number(r.dataset.billed);
+      const risk = Number(r.dataset.risk);
+      const diff = b - s;
+      const max = Math.max(b, s, 1);
+      const pctB = `${Math.round((b / max) * 100)}%`;
+      const pctS = `${Math.round((s / max) * 100)}%`;
+
+      activeDrug = r.dataset.drug!;
+      activePbm = r.dataset.pbm!;
+
+      // Desktop inspector
+      diMeta.textContent = `${activePbm} · ${r.dataset.ndc}`;
+      diDrug.textContent =
+        risk > 0 ? `${activeDrug} — $${risk.toLocaleString('en-US')} exposure` : `${activeDrug} — Fully reconciled`;
+      diB.textContent = `${b} u`;
+      diS.textContent = `${s} u`;
+      diBB.style.width = pctB;
+      diBS.style.width = pctS;
+      diAction.textContent = r.dataset.action!;
+      diSend.textContent = risk > 0 ? 'Assign specialist →' : 'Verify packet →';
+
+      // Mobile iPhone dashboard sync
+      pmDrug.textContent = activeDrug;
+      pmNdc.textContent = `${r.dataset.ndc} · ${r.dataset.supplier}`;
+      pmBadge.textContent = diff < 0 ? `${diff} short` : 'Matched';
+      pmBadge.className = `hk-db-tag ${diff < 0 ? 'hk-db-tag--bad' : 'hk-db-tag--ok'}`;
+      pmB.textContent = String(b);
+      pmS.textContent = String(s);
+      pmBB.style.width = pctB;
+      pmBS.style.width = pctS;
+      pmPbm.textContent = activePbm;
+      pmRisk.textContent = risk > 0 ? `$${risk.toLocaleString('en-US')} at risk` : '$0 variance';
+      pmRisk.classList.toggle('is-ok', risk === 0);
+    };
+
+    rowBtns.forEach((r) => r.addEventListener('click', () => selectRow(r)));
+
+    flts.forEach((f) => {
+      f.addEventListener('click', () => {
+        const mode = f.dataset.dbFlt!;
+        flts.forEach((b) => b.classList.toggle('is-on', b === f));
+        let first: HTMLButtonElement | null = null;
+        rowBtns.forEach((r) => {
+          const show = mode === 'all' || r.dataset.st === mode;
+          r.hidden = !show;
+          if (show && !first) first = r;
+        });
+        if (first) selectRow(first);
+      });
+    });
+
+    diSend.addEventListener('click', () => {
+      diSend.textContent = 'Assigned to Alex S. ✓';
+      pmSpec.textContent = `Reviewing ${activeDrug} (${activePbm})`;
+    });
+
+    // BIN search
+    const binQ = db.querySelector<HTMLInputElement>('[data-db-binq]');
+    const bqs = [...db.querySelectorAll<HTMLButtonElement>('[data-db-bq]')];
+    const brows = [...db.querySelectorAll<HTMLElement>('[data-db-brow]')];
+    const runBin = (q: string) => {
+      const t = q.trim().toLowerCase();
+      brows.forEach((r) => {
+        r.hidden = t.length > 0 && !r.dataset.s!.includes(t);
+      });
+    };
+    binQ?.addEventListener('input', () => {
+      bqs.forEach((b) => b.classList.remove('is-on'));
+      runBin(binQ.value);
+    });
+    bqs.forEach((b) => {
+      b.addEventListener('click', () => {
+        if (binQ) binQ.value = b.dataset.dbBq!;
+        bqs.forEach((x) => x.classList.toggle('is-on', x === b));
+        runBin(b.dataset.dbBq!);
+      });
+    });
+
+    // Active Audit checklist
+    const acbs = [...db.querySelectorAll<HTMLInputElement>('[data-db-acb]')];
+    const audSt = db.querySelector<HTMLElement>('[data-db-audst]');
+    acbs.forEach((c) => {
+      c.addEventListener('change', () => {
+        if (!audSt) return;
+        const n = acbs.filter((x) => x.checked).length;
+        audSt.textContent = `${n} / ${acbs.length} ready`;
+      });
+    });
+  }
+</script>
