@@ -1,42 +1,36 @@
 ---
 /**
- * Version 1 header: a copy of the Version 6 nav (white 64px bar, lowercase
- * wordmark, square hover dropdowns, sage "Log in" chip, black "Get started"),
+ * Version 1 header: a copy of the Version 6 nav (white 64px bar, BatchRx logo, square hover dropdowns, sage "Log in" chip, black "Get started"),
  * with links pointed at Version 1's sections and a burger menu on small screens.
  */
 import { site } from '../site';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const LOGO =
-  'M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z';
-
+const home = `${base}/`;
 const platform = [
-  { href: '#problems', name: 'Inventory report', body: 'Purchased versus billed for every NDC' },
-  { href: '#problems', name: 'PBM report', body: 'Shortage exposure by payer' },
-  { href: '#approach', name: 'Billed & BIN search', body: 'Find any claim in seconds by drug' },
-  { href: '#approach', name: 'Aberrant claims', body: 'Early refills' },
-  { href: '#approach', name: 'Document vault', body: 'Invoices and signatures stored audit-ready' },
+  { href: home + '#problems', name: 'Inventory report', body: 'Purchased versus billed for every NDC' },
+  { href: home + '#problems', name: 'PBM report', body: 'Shortage exposure by payer' },
+  { href: home + '#approach', name: 'Billed & BIN search', body: 'Find any claim in seconds by drug' },
+  { href: home + '#approach', name: 'Aberrant claims', body: 'Early refills' },
+  { href: home + '#approach', name: 'Document vault', body: 'Invoices and signatures stored audit-ready' },
 ];
 const audits = [
-  { href: '#problems', name: 'CMS audits', body: 'Medicare reviews, requirement by requirement' },
-  { href: '#problems', name: 'OnSite audits', body: 'Be ready before the auditor walks in' },
-  { href: '#problems', name: 'Desktop audits', body: 'Complete packets, submitted on time' },
-  { href: '#problems', name: 'Investigative audits', body: 'Focused support when stakes are highest' },
+  { href: home + '#problems', name: 'CMS audits', body: 'Medicare reviews, requirement by requirement' },
+  { href: home + '#problems', name: 'OnSite audits', body: 'Be ready before the auditor walks in' },
+  { href: home + '#problems', name: 'Desktop audits', body: 'Complete packets, submitted on time' },
+  { href: home + '#problems', name: 'Investigative audits', body: 'Focused support when stakes are highest' },
 ];
 const links = [
-  { href: '#stories', label: 'Outcomes' },
-  { href: '#stories', label: 'Customers' },
-  { href: '#plan', label: 'Pricing' },
+  { href: home + '#stories', label: 'Outcomes' },
+  { href: home + '#stories', label: 'Customers' },
+  { href: `${base}/pricing`, label: 'Pricing' },
 ];
 ---
 
 <header class="nv" data-nv>
   <div class="nv__in">
     <a href={`${base}/`} class="nv__brand" aria-label="BatchRx home">
-      <svg viewBox="0 0 27.7279 27.7279" width="20" height="20" aria-hidden="true"
-        ><path d={LOGO} fill="currentColor"></path></svg
-      >
-      batchrx
+      <img src={`${base}/logo.png`} alt="BatchRx" width="128" height="28" />
     </a>
     <nav class="nv__links" aria-label="Primary">
       <div class="nv__drop">
@@ -62,8 +56,8 @@ const links = [
     </div>
   </div>
   <div class="nv__sheet" id="nv-menu" hidden>
-    <a href="#problems">Platform</a>
-    <a href="#problems">Audits</a>
+    <a href={`${home}#problems`}>Platform</a>
+    <a href={`${home}#problems`}>Audits</a>
     {links.map((l) => <a href={l.href}>{l.label}</a>)}
     <a href={site.loginUrl}>Log in</a>
   </div>
@@ -120,11 +114,13 @@ const links = [
   .nv__brand {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    flex: none;
     margin-right: clamp(16px, 6vw, 90px);
-    font-size: 21px;
-    font-weight: 500;
-    letter-spacing: -0.03em;
+  }
+  .nv__brand img {
+    display: block;
+    width: auto;
+    height: 28px;
   }
   .nv__links {
     display: flex;

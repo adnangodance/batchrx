@@ -11,9 +11,6 @@ const year = new Date().getFullYear();
 const versions = [
   ['Version 1', `${base}/`],
   ['Version 2', `${base}/version-2`],
-  ['Version 3', `${base}/version-3`],
-  ['Version 4', `${base}/version-4`],
-  ['Version 5', `${base}/version-5`],
   ['Version 6', `${base}/version-6`],
 ];
 ---
@@ -23,16 +20,16 @@ const versions = [
     <div class="foot__cols">
       <div>
         <h2>Product</h2>
-        <a href="#problems">Audits we fix</a>
-        <a href="#approach">How it works</a>
-        <a href="#plan">Pricing</a>
-        <a href="#savings">Savings estimator</a>
+        <a href={`${base}/#problems`}>Audits we fix</a>
+        <a href={`${base}/#approach`}>How it works</a>
+        <a href={`${base}/pricing`}>Pricing</a>
+        <a href={`${base}/#savings`}>Savings estimator</a>
       </div>
       <div>
         <h2>Company</h2>
-        <a href="#stories">Pharmacy stories</a>
-        <a href="#faq">FAQ</a>
-        <a href="#demo">Book a demo</a>
+        <a href={`${base}/#stories`}>Pharmacy stories</a>
+        <a href={`${base}/#faq`}>FAQ</a>
+        <a href={`${base}/#demo`}>Book a demo</a>
       </div>
       <div>
         <h2>Account</h2>

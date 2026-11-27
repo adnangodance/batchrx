@@ -3,7 +3,7 @@
  * "Get started" block, after Version 6: a centred label chip, headline, two
  * flat buttons and a mono note, over a ruled row of numbered stats.
  */
-import { site, stats } from '../site';
+import { site, stats, plans } from '../site';
 
 const fmt = (s: (typeof stats)[number]) =>
   `${'prefix' in s ? (s.prefix ?? '') : ''}${s.value.toLocaleString('en-US')}${s.suffix ?? ''}`;
@@ -18,7 +18,7 @@ const fmt = (s: (typeof stats)[number]) =>
       <a href="#demo" class="go__btn go__btn--ghost">Talk to a specialist</a>
     </div>
     <p class="go__mono go__note rv" style="--d:.14s">
-      ${site.price}/month per pharmacy · Specialist included · HIPAA compliant
+      From ${plans[0].price}/month per pharmacy · No setup fees · HIPAA compliant
     </p>
 
     <div class="go__stats">
