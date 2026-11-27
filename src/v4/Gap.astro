@@ -1,0 +1,31 @@
+---
+// Version 6 section divider: a strip of the dotted page field with three white tabs.
+---
+
+<div class="gap" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<style>
+  .gap {
+    display: flex;
+    align-items: flex-start;
+    height: clamp(56px, 7vw, 100px);
+    margin: 0 var(--gut);
+  }
+  .gap i {
+    display: block;
+    width: clamp(60px, 8.6vw, 124px);
+    height: 24px;
+    background: #fff;
+  }
+  .gap i:nth-child(1) {
+    height: 36px;
+    margin-top: 24px;
+  }
+  .gap i:nth-child(2) {
+    height: 22px;
+  }
+  .gap i:nth-child(3) {
+    height: 30px;
+    margin-top: 24px;
+  }
+</style>

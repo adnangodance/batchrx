@@ -1,0 +1,294 @@
+---
+/**
+ * Version 1 header: a copy of the Version 6 nav (white 64px bar, lowercase
+ * wordmark, square hover dropdowns, sage "Log in" chip, black "Get started"),
+ * with links pointed at Version 1's sections and a burger menu on small screens.
+ */
+import { site } from '../site';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const LOGO =
+  'M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z';
+
+const platform = [
+  { href: '#problems', name: 'Inventory report', body: 'Purchased versus billed for every NDC' },
+  { href: '#problems', name: 'PBM report', body: 'Shortage exposure by payer' },
+  { href: '#approach', name: 'Billed & BIN search', body: 'Find any claim in seconds by drug' },
+  { href: '#approach', name: 'Aberrant claims', body: 'Early refills' },
+  { href: '#approach', name: 'Document vault', body: 'Invoices and signatures stored audit-ready' },
+];
+const audits = [
+  { href: '#problems', name: 'CMS audits', body: 'Medicare reviews, requirement by requirement' },
+  { href: '#problems', name: 'OnSite audits', body: 'Be ready before the auditor walks in' },
+  { href: '#problems', name: 'Desktop audits', body: 'Complete packets, submitted on time' },
+  { href: '#problems', name: 'Investigative audits', body: 'Focused support when stakes are highest' },
+];
+const links = [
+  { href: '#stories', label: 'Outcomes' },
+  { href: '#stories', label: 'Customers' },
+  { href: '#plan', label: 'Pricing' },
+];
+---
+
+<header class="nv" data-nv>
+  <div class="nv__in">
+    <a href={`${base}/`} class="nv__brand" aria-label="BatchRx home">
+      <svg viewBox="0 0 27.7279 27.7279" width="20" height="20" aria-hidden="true"
+        ><path d={LOGO} fill="currentColor"></path></svg
+      >
+      batchrx
+    </a>
+    <nav class="nv__links" aria-label="Primary">
+      <div class="nv__drop">
+        <button type="button" aria-haspopup="true">Platform</button>
+        <div class="nv__menu">
+          {platform.map((p) => <a href={p.href}><b>{p.name}</b><small>{p.body}</small></a>)}
+        </div>
+      </div>
+      <div class="nv__drop">
+        <button type="button" aria-haspopup="true">Audits</button>
+        <div class="nv__menu">
+          {audits.map((p) => <a href={p.href}><b>{p.name}</b><small>{p.body}</small></a>)}
+        </div>
+      </div>
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+    <div class="nv__right">
+      <a href={site.loginUrl} class="nv__login">Log in</a>
+      <a href={site.registerUrl} class="nv__cta">Get started</a>
+      <button class="nv__burger" aria-label="Open menu" aria-expanded="false" aria-controls="nv-menu" data-burger>
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="nv__sheet" id="nv-menu" hidden>
+    <a href="#problems">Platform</a>
+    <a href="#problems">Audits</a>
+    {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    <a href={site.loginUrl}>Log in</a>
+  </div>
+</header>
+
+<script>
+  const nv = document.querySelector<HTMLElement>('[data-nv]')!;
+  const b = nv.querySelector<HTMLButtonElement>('[data-burger]')!;
+  const m = nv.querySelector<HTMLElement>('#nv-menu')!;
+  const set = (open: boolean) => {
+    m.hidden = !open;
+    b.setAttribute('aria-expanded', String(open));
+    b.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    nv.classList.toggle('is-open', open);
+  };
+  b.addEventListener('click', () => set(m.hasAttribute('hidden')));
+  m.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)));
+
+  // Hairline once the page has scrolled under the bar
+  const onScroll = () => nv.toggleAttribute('data-stuck', scrollY > 8);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+<style>
+  .nv {
+    /* Version 6 tokens */
+    --ink: #000;
+    --sage: #eff5ec;
+    --sage-2: #dfe9d9;
+    --sage-3: #c9d8c2;
+    --mute: #8d9c88;
+    --green: #14e56f;
+    --v6pad: clamp(16px, 1.7vw, 24px);
+    color: var(--ink);
+    position: sticky;
+    top: 0;
+    z-index: 70;
+    background: #fff;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .nv[data-stuck],
+  .nv.is-open {
+    border-color: var(--sage-2);
+  }
+  .nv__in {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 64px;
+    padding: 0 calc(12px + var(--v6pad));
+  }
+  .nv__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: clamp(16px, 6vw, 90px);
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+  }
+  .nv__links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    font-size: 14.5px;
+  }
+  .nv__links > a:hover,
+  .nv__drop > button:hover {
+    color: #4b6b4f;
+  }
+  .nv__drop {
+    position: relative;
+  }
+  .nv__drop > button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 64px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .nv__drop > button::after {
+    content: '';
+    border: 3.5px solid transparent;
+    border-top: 4.5px solid var(--mute);
+    border-bottom: 0;
+  }
+  .nv__menu {
+    position: absolute;
+    top: 100%;
+    left: -16px;
+    display: grid;
+    width: 340px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid var(--sage-2);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition:
+      opacity 0.16s,
+      transform 0.16s,
+      visibility 0.16s;
+  }
+  .nv__drop:hover .nv__menu,
+  .nv__drop:focus-within .nv__menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+  .nv__menu a {
+    display: grid;
+    grid-template-columns: 14px 1fr;
+    gap: 2px 10px;
+    padding: 9px 10px;
+  }
+  .nv__menu a::before {
+    content: '';
+    grid-row: span 2;
+    width: 10px;
+    height: 10px;
+    margin-top: 5px;
+    background: var(--sage-3);
+  }
+  .nv__menu a:hover {
+    background: var(--sage);
+  }
+  .nv__menu a:hover::before {
+    background: var(--green);
+  }
+  .nv__menu small {
+    font-size: 13px;
+    color: var(--mute);
+  }
+  .nv__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .nv__login,
+  .nv__cta {
+    padding: 8px 14px;
+    font-size: 14px;
+    line-height: 1.2;
+    border: 1px solid;
+    transition:
+      background 0.18s,
+      color 0.18s,
+      border-color 0.18s;
+  }
+  .nv__login {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+  .nv__login:hover {
+    background: var(--sage-2);
+  }
+  .nv__cta {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+  .nv__cta:hover {
+    background: var(--green);
+    border-color: var(--green);
+    color: #000;
+  }
+
+  .nv__burger {
+    display: none;
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--sage-2);
+    background: none;
+    cursor: pointer;
+  }
+  .nv__burger span {
+    position: absolute;
+    left: 9px;
+    right: 9px;
+    height: 1.5px;
+    background: var(--ink);
+    transition: transform 0.25s var(--ease);
+  }
+  .nv__burger span:first-child {
+    top: 14px;
+  }
+  .nv__burger span:last-child {
+    top: 20px;
+  }
+  .is-open .nv__burger span:first-child {
+    transform: translateY(3px) rotate(45deg);
+  }
+  .is-open .nv__burger span:last-child {
+    transform: translateY(-3px) rotate(-45deg);
+  }
+  .nv__sheet[hidden] {
+    display: none;
+  }
+  .nv__sheet {
+    display: grid;
+    border-top: 1px solid var(--sage-2);
+  }
+  .nv__sheet a {
+    padding: 16px calc(12px + var(--v6pad));
+    border-bottom: 1px solid var(--sage-2);
+    font-size: 17px;
+  }
+  .nv__sheet a:last-child {
+    border-bottom: 0;
+  }
+
+  @media (max-width: 1000px) {
+    .nv__links,
+    .nv__login {
+      display: none;
+    }
+    .nv__burger {
+      display: block;
+    }
+  }
+</style>

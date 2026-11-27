@@ -43,12 +43,12 @@ const items = [
           <svg viewBox="0 0 560 360" preserveAspectRatio="xMidYMid meet">
             <defs>
               <linearGradient id="beam" x1="0" x2="1">
-                <stop offset="0" stop-color="#3fd68a" stop-opacity="0"></stop>
-                <stop offset="1" stop-color="#3fd68a"></stop>
+                <stop offset="0" stop-color="#14e56f" stop-opacity="0"></stop>
+                <stop offset="1" stop-color="#14e56f"></stop>
               </linearGradient>
               <linearGradient id="fan" x1="0" x2="1">
-                <stop offset="0" stop-color="#3fd68a" stop-opacity="0.05"></stop>
-                <stop offset="1" stop-color="#3fd68a" stop-opacity="0.32"></stop>
+                <stop offset="0" stop-color="#14e56f" stop-opacity="0.05"></stop>
+                <stop offset="1" stop-color="#14e56f" stop-opacity="0.32"></stop>
               </linearGradient>
             </defs>
             <path d="M300 180 C 400 180, 420 40, 560 0 L 560 360 C 420 320, 400 180, 300 180 Z" fill="url(#fan)"></path>
@@ -114,7 +114,7 @@ const items = [
 
 <style>
   .proc {
-    background: var(--card);
+    background: #fff;
     padding-block: 0 clamp(72px, 9vw, 112px);
   }
   .frame {
@@ -168,7 +168,7 @@ const items = [
     transform: none;
   }
   .list li.on {
-    background: #fafaf8;
+    background: var(--sage);
   }
   .n {
     font-size: 12px;
@@ -218,11 +218,11 @@ const items = [
     stroke-linejoin: round;
   }
   .nd.on circle:not(.ring2):not(.dim) {
-    fill: #1f5a4a;
+    fill: #0d5a2c;
     stroke: var(--glow);
   }
   .nd.on .ring2 {
-    stroke: rgba(63, 214, 138, 0.4);
+    stroke: rgba(20, 229, 111, 0.4);
   }
   .nd .dim {
     fill: transparent;

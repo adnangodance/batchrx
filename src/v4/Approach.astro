@@ -93,7 +93,7 @@ const pathOf = (p: number[][]) => p.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y
                   <stop offset="1" stop-color="#17905e" stop-opacity="0" />
                 </linearGradient>
                 <filter id={`sh${i}`} x="-30%" y="-30%" width="160%" height="160%">
-                  <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="#0d2b27" flood-opacity="0.08" />
+                  <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="#000" flood-opacity="0.08" />
                 </filter>
               </defs>
 
@@ -239,7 +239,7 @@ const pathOf = (p: number[][]) => p.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y
     max-width: 1440px;
     margin-inline: auto;
     border: 1px solid var(--line);
-    background: var(--card);
+    background: #fff;
   }
   .col {
     display: grid;
@@ -257,14 +257,14 @@ const pathOf = (p: number[][]) => p.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y
     background:
       linear-gradient(rgba(255, 255, 255, 0.75) 1px, transparent 1px) -1px -1px / 48px 48px,
       linear-gradient(90deg, rgba(255, 255, 255, 0.75) 1px, transparent 1px) -1px -1px / 48px 48px,
-      #f2f2f0;
+      var(--sage);
     overflow: hidden;
   }
   .dia::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(closest-side, rgba(242, 242, 240, 0), rgba(242, 242, 240, 0.85));
+    background: radial-gradient(closest-side, rgba(239, 245, 236, 0), rgba(239, 245, 236, 0.85));
     pointer-events: none;
   }
   .svg {

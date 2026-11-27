@@ -1,8 +1,8 @@
 ---
 import Arrow from './Arrow.astro';
-import Steps from './Steps.astro';
+import Gap from './Gap.astro';
+import Footer from './Footer.astro';
 import { site } from '../site';
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const faqs = [
   {
@@ -30,7 +30,6 @@ const faqLd = {
   '@type': 'FAQPage',
   mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
 };
-const year = new Date().getFullYear();
 ---
 
 <section class="faq" id="faq" aria-labelledby="faq-h">
@@ -59,9 +58,9 @@ const year = new Date().getFullYear();
   <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />
 </section>
 
-<Steps from="#f3f3f1" to="#0d2b27" />
+<Gap />
 
-<section class="cta on-dk" id="demo" aria-labelledby="cta-h">
+<section class="cta" id="demo" aria-labelledby="cta-h">
   <div class="wrap cta__grid">
     <div class="cta__copy">
       <h2 id="cta-h" class="d2 rv">Pass your next audit with someone in your corner.</h2>
@@ -79,7 +78,7 @@ const year = new Date().getFullYear();
         <label class="full"><span>Pharmacy address</span><input name="pharmacyAddress" required autocomplete="street-address" /></label>
       </div>
       <div class="form__foot">
-        <button type="submit" class="btn">
+        <button type="submit" class="btn btn--dark">
           <span class="btn__l">Request a demo</span><span class="btn__a"><Arrow /></span>
         </button>
         <a href="#faq" class="link">Read the FAQ</a>
@@ -100,52 +99,9 @@ const year = new Date().getFullYear();
   </div>
 </section>
 
-<footer class="ft on-dk">
-  <div class="ft__grid">
-    <div class="ft__a">
-      <p class="ft__news">Pharmacy audit software, with a specialist for every audit.</p>
-      <p class="ft__legal">
-        BatchRx is HIPAA compliant and serves independent and multi-store pharmacies in all 50 states.<br />© {year} BatchRx.
-        All rights reserved.
-      </p>
-    </div>
-    <div class="ft__col">
-      <h3>Product</h3>
-      <a href="#problems">Audits we fix</a>
-      <a href="#approach">How it works</a>
-      <a href="#plan">Pricing</a>
-      <a href="#savings">Savings estimator</a>
-    </div>
-    <div class="ft__col">
-      <h3>Company</h3>
-      <a href="#stories">Pharmacy stories</a>
-      <a href="#faq">FAQ</a>
-      <a href="#demo">Book a demo</a>
-      <a href={site.loginUrl}>Log in</a>
-      <a href={`${base}/version-2`}>Version 2</a>
-      <a href={`${base}/version-3`}>Version 3</a>
-      <a href={`${base}/version-4`}>Version 4</a>
-      <a href={`${base}/version-5`}>Version 5</a>
-      <a href={`${base}/version-6`}>Version 6</a>
-    </div>
-    <div class="ft__word" aria-hidden="true">
-      <svg viewBox="0 0 27.7279 27.7279" fill="none"
-        ><path
-          d="M18.39 4.53 15.7 1.84a2.6 2.6 0 0 0-3.68 0L9.34 4.53a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM10.89 12.03 8.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM25.89 12.03 23.2 9.34a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67ZM18.39 19.53l-2.69-2.69a2.6 2.6 0 0 0-3.67 0l-2.69 2.69a2.6 2.6 0 0 0 0 3.67l2.69 2.69a2.6 2.6 0 0 0 3.67 0l2.69-2.69a2.6 2.6 0 0 0 0-3.67Z"
-          fill="#F2F5F3"></path></svg
-      >
-      <span>BatchRx</span>
-    </div>
-    <div class="ft__col ft__col--sm">
-      <a href={`${site.appUrl}/privacy-policy`}>Privacy Policy</a>
-      <a href={`${site.appUrl}/terms-of-service`}>Terms of Service</a>
-    </div>
-    <div class="ft__col ft__col--sm">
-      <span>HIPAA compliant</span>
-      <span>All 50 states</span>
-    </div>
-  </div>
-</footer>
+<Gap />
+
+<Footer />
 
 <script>
   document.querySelectorAll<HTMLFormElement>('[data-form]').forEach((form) => {
@@ -269,6 +225,13 @@ const year = new Date().getFullYear();
 
   /* CTA */
   .cta {
+    /* A solid green panel: the dark-form tokens are re-pointed at black-on-green */
+    --dk: var(--glow);
+    --dk-2: #3cf08a;
+    --dk-line: rgba(0, 0, 0, 0.28);
+    --dk-txt: rgba(0, 0, 0, 0.7);
+    background: var(--glow);
+    color: #000;
     position: relative;
     padding-top: clamp(80px, 10vw, 128px);
     overflow: hidden;
@@ -289,6 +252,7 @@ const year = new Date().getFullYear();
     max-width: 14ch;
   }
   .cta .body {
+    color: rgba(0, 0, 0, 0.76);
     font-size: 16px;
     max-width: 48ch;
   }
@@ -327,23 +291,34 @@ const year = new Date().getFullYear();
     padding: 0;
     border: 0;
     background: transparent;
-    color: #fff;
+    color: #000;
     font-size: 16px;
   }
   input:focus {
     outline: none;
   }
   label:has(input:focus) {
-    box-shadow: inset 0 -2px 0 var(--glow);
+    box-shadow: inset 0 -2px 0 #000;
   }
   .checked label:has(input:invalid) {
-    box-shadow: inset 0 -2px 0 #f07a5f;
+    box-shadow: inset 0 -2px 0 #c2261a;
   }
   .form__foot {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 20px 32px;
+  }
+  /* Black button on the green panel; it inverts to white on hover */
+  .cta .form .btn {
+    border-color: #000;
+    background: #000;
+    color: #fff;
+  }
+  .cta .form .btn:hover {
+    border-color: #fff;
+    background: #fff;
+    color: #000;
   }
   .form .btn:disabled {
     opacity: 0.6;
@@ -356,10 +331,10 @@ const year = new Date().getFullYear();
     font-size: 14px;
   }
   .msg[data-t='ok'] {
-    color: var(--glow);
+    color: #000;
   }
   .msg[data-t='err'] {
-    color: #f6a08c;
+    color: #9c1d13;
   }
   .slashes {
     margin-top: clamp(64px, 8vw, 104px);
@@ -374,7 +349,7 @@ const year = new Date().getFullYear();
     padding-inline: 8px;
     font-size: 24px;
     line-height: 1;
-    color: var(--glow);
+    color: #000;
     opacity: calc(0.08 + var(--r) * 0.16);
     transform: translateX(calc(var(--r) * -6px));
   }
@@ -397,92 +372,6 @@ const year = new Date().getFullYear();
     }
   }
 
-  /* Footer */
-  .ft {
-    border-top: 1px solid var(--dk-line);
-  }
-  .ft__grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    max-width: 1440px;
-    margin-inline: auto;
-  }
-  .ft__grid > * {
-    border-bottom: 1px solid var(--dk-line);
-  }
-  .ft__a {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 48px;
-    padding: 32px 40px;
-    border-right: 1px solid var(--dk-line);
-  }
-  .ft__news {
-    font-size: clamp(22px, 2vw, 28px);
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    max-width: 18ch;
-  }
-  .ft__legal {
-    font-size: 11.5px;
-    line-height: 1.7;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--dk-txt);
-    max-width: 52ch;
-  }
-  .ft__col {
-    display: grid;
-    align-content: start;
-    gap: 10px;
-    padding: 32px 40px;
-  }
-  .ft__col + .ft__col,
-  .ft__a + .ft__col + .ft__col {
-    border-left: 1px solid var(--dk-line);
-  }
-  .ft__col h3 {
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--dk-txt);
-    margin-bottom: 8px;
-  }
-  .ft__col a {
-    width: fit-content;
-    font-size: 15px;
-  }
-  .ft__col a:hover {
-    color: var(--glow);
-  }
-  .ft__col--sm a,
-  .ft__col--sm span {
-    font-size: 11.5px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--dk-txt);
-  }
-  .ft__col--sm {
-    border-left: 1px solid var(--dk-line);
-  }
-  .ft__word {
-    display: flex;
-    align-items: center;
-    gap: clamp(12px, 2vw, 28px);
-    padding: 40px;
-    border-right: 1px solid var(--dk-line);
-    font-size: clamp(64px, 10vw, 148px);
-    font-weight: 500;
-    letter-spacing: -0.065em;
-    line-height: 0.8;
-    color: #f2f5f3;
-  }
-  .ft__word svg {
-    width: 0.62em;
-    height: 0.62em;
-    flex: none;
-  }
-
   @media (max-width: 960px) {
     .faq__grid,
     .cta__grid {
@@ -490,29 +379,6 @@ const year = new Date().getFullYear();
     }
     details p {
       padding: 0 24px 24px 76px;
-    }
-    .ft__grid {
-      grid-template-columns: 1fr 1fr;
-    }
-    .ft__a,
-    .ft__word {
-      grid-column: 1 / -1;
-      border-right: 0;
-    }
-    .ft__a {
-      padding: 32px var(--pad);
-    }
-    .ft__col {
-      padding: 28px var(--pad);
-    }
-    .ft__a + .ft__col {
-      border-left: 0;
-    }
-    .ft__word {
-      padding: 32px var(--pad);
-    }
-    .ft__word + .ft__col--sm {
-      border-left: 0;
     }
   }
   @media (max-width: 520px) {
